@@ -1,0 +1,19 @@
+# file: ~/.gitattributes
+
+[attr]crypt                           filter=git-crypt diff=git-crypt
+*                                     annex.largefiles=5M
+/.abook/*                             crypt
+/.abook/abookrc                      !crypt
+/.aws/*                               crypt
+/.config/hcloud/cli.toml              crypt
+/.config/mpd/creds.conf               crypt
+/.config/mpdscribble/mpdscribble.conf crypt
+/.config/vdirsyncer/config            crypt
+/.davfs2/secrets                      crypt
+/.docker/config.json                  crypt
+/.electrum/wallets/*                  crypt
+/.gnupg/*                             crypt
+/.gnupg/*.conf                       !crypt
+/.gnupg/*/*                           crypt
+/.secrets                             crypt
+/.ssh/known_hosts*                    crypt
