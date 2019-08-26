@@ -1,0 +1,5 @@
+# file: ~/.electrum/.gitignore
+
+/*
+!/.git*
+!/wallets

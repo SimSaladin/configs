@@ -1,0 +1,89 @@
+---
+# File: ~/.stack/config.yaml
+# Description: Default non-project-specific settings for 'stack', used in all projects.
+# Documentation: <url:https://docs.haskellstack.org/en/stable/yaml_configuration/>
+
+require-stack-version: ">= 2.1.0"
+
+### stack templates
+# I.e. stack new configuration
+#
+# TODO
+# default-template: ...
+#
+templates:
+  params:
+    author-name: Samuli Thomasson
+    author-email: samuli.thomasson@paivola.fi
+    category: Application
+    copyright: 'Copyright (c) 2019 Samuli Thomasson'
+    github-username: SimSaladin
+  # stack new can initialize git automatically
+  scm-init: git
+
+nix: {}
+  # enable: true
+  # pure: false
+  #
+  # packages: []
+  # shell-file: "./shell.nix"
+  # # Note: exclusive with shell-file option
+  #
+  # nix-shell-options: []
+  # path: []
+  # # e.g. [nixpkgs=/my/local/nixpkgs/clone] override NIX_PATH
+  #
+  # add-gc-roots: false
+  # # add gc roots for nix deps
+
+## build
+#
+# Pass options to cabal config per-project. Magic values: $everything/$targets/$locals
+# since 2.0.
+configure-options: {}
+
+# Like configue-options but for GHC options.
+ghc-options: {}
+#  $targets: -Weverything -Werror
+
+# rebuild-ghc-options: Set true to rebuild when package GHC options change. (default: false)
+# rebuild-ghc-options: true
+
+# See <url:https://docs.haskellstack.org/en/stable/build_command/>
+# And <url:https://docs.haskellstack.org/en/stable/GUIDE/#the-build-command>
+build:
+  # copy-bins:          copy to ~/.local/bin (use --install if desired)
+  # copy-compiler-tool: copies build tool binaries into some ~/.stack/compiler-tools/…/bin path
+  # *-stripping:        strip executables and/or libraries
+  copy-bins: false
+  copy-compiler-tool: false
+  executable-stripping: true
+  library-stripping: false
+  # interleaved-output: Build outputs from various packages interleaved. since stack 1.8
+  # open-haddocks:      Opens docs at end of build (disabled, use --open)
+  interleaved-output: true
+  open-haddocks: false
+  # keep-going: if one package fails to build, continue with what doesn't depend on it
+  keep-going: true
+  # Haddock all the things
+  # haddock: Always generate haddocks by default
+  haddock: true
+  # Haddock segfaults with haskell-src-exts on ghc-8.4. Fixed in GHC 8.6.1.
+  # https://github.com/haskell/haddock/issues/928
+  haddock-deps: true
+  haddock-internal: true
+  haddock-hyperlink-source: true
+  #  haddock-arguments:
+  #    haddock-args: ["--css=path/to/custom/css"]
+
+# dump-logs: Which log output to dump from non-dep packages. none/warning/all
+# hide-source-paths: enables ghc option -fhide-source-paths
+dump-logs: warning
+hide-source-paths: true
+
+# colors:       auto/always/never, --color option always overrides
+# stack-colors: color scheme. Solarized Dark
+color: always
+stack-colors: error=31:good=32:shell=35:dir=34:recommendation=32:target=95:module=35:package-component=95
+
+# vim:set et ts=2 tw=124:

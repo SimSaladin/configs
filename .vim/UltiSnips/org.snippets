@@ -1,0 +1,26 @@
+# ~/.vim/UltiSnips/org.snippets
+
+
+snippet src "#+BEGIN_SRC ${1:type} ... #+END_SRC" !b
+#+BEGIN_SRC ${1:type}
+${2:${VISUAL}}
+#+END_SRC
+endsnippet
+
+snippet src-end "#+BEGIN_SRC ${1:type}" !b
+#+BEGIN_SRC ${1:type}
+endsnippet
+
+snippet src-end "#+END_SRC" !b
+#+END_SRC
+endsnippet
+
+snippet quote "#+BEGIN_QUOTE..#+END_QUOTE" !b
+#+BEGIN_QUOTE
+${2:${VISUAL}}
+#+END_QUOTE
+endsnippet
+
+snippet link "[[ ${1:link} ][ ${2:description} ]]"
+[[${1:${VISUAL}}][${2:$1}]]
+endsnippet

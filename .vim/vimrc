@@ -1,0 +1,12 @@
+" File: ~/.vim/vimrc
+" Author: Samuli Thomasson
+" Description: $MYVIMRC
+
+if has('vim_starting')
+  call init#source_rc('init')
+endif
+
+call init#source_rc('options')
+call init#source_rc('local')
+call init#do_plugins()
+call init#do_syntax()

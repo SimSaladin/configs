@@ -1,0 +1,26 @@
+
+snippet tmuxps "tmux session file" !b
+# file: `!v expand('%:p:~')`
+
+session_name: ${1:session}
+start_directory: ./
+before_script: |
+  :
+shell_command_before:
+  - '${2::}'
+windows:
+${0}
+endsnippet
+
+snippet tmuxpw "tmuxp session file window definition" !b
+
+- window_name: ${1:window}
+  layout: main-horizontal
+  options:
+    main-pane-height: 35
+  panes:
+  - focus: true
+  - pane
+  - ${2}
+${0}
+endsnippet

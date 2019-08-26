@@ -1,0 +1,9 @@
+# File: ~/.config/tmuxp/notes.yaml
+
+session_name: notes
+start_directory: "~/notes"
+windows:
+  - panes:
+    - "vim -c NERDTree"
+  - panes:
+    - "vifm ~ ."

@@ -1,0 +1,15 @@
+# ~/.vim/UltiSnips/markdown.snippets
+# See also <url:file:vimwiki.snippets> <url:file:markdown.snippets>
+
+snippet "h(\d)" "Header 1..6" r
+`!p snip.rv = int(match.group(1))*'#'` $0
+endsnippet
+
+snippet hline "Horizontal Line"
+`!p snip.rv = 78*'-'`
+$0
+endsnippet
+
+snippet comment "Comment (markdown; not rendered in HTML )"
+[comment]: <> ($1)
+endsnippet

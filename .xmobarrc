@@ -1,0 +1,79 @@
+-- vim:tw=0:syn=haskell
+
+-- File <lnk:~/.xmobarrc is generated>
+-- from <lnk:~/.xmonad/xmobarrc.template>
+-- by   <lnk:~/.xmonad/xmobarrc-build>
+
+Config
+   { font         = "xft:xos4 Terminus:pixelsize=16,WenQuanYi Bitmap Song:pixelsize=14"
+   , bgColor      = "#002b36"
+   , fgColor      = "#839496"
+   , position     = Top
+   , allDesktops  = True
+   , lowerOnStart = True
+   , sepChar      = "%"
+   , alignSep     = "}{"
+   , template     = "\
+      \ <fc=#93a1a1>%kbd%</fc> <fc=#586e75>:</fc> %StdinReader%\
+      \}<fc=#cb4b16>%locks%</fc>{\
+      \ %top% %multicpu% <fc=#586e75>:</fc>\
+      \ %topmem% %memory% <fc=#586e75>:</fc>\
+      \ %wlp2s0wi% %dynnetwork% <fc=#586e75>:</fc>\
+      \ %default:Master% <fc=#586e75>:</fc>\
+      \ %EFHF% <fc=#586e75>:</fc>\
+      \ %btcprice% <fc=#586e75>:</fc>\
+      \ %battery% <fc=#586e75>:</fc>\
+      \ %date%"
+   , commands     =
+      [ Run StdinReader
+      , Run Com "cat"
+            [ "/tmp/xmobar.ticker" ] "btcprice" 600
+      , Run Date
+            "<fc=#586e75>%a</fc> <fc=#93a1a1>%-d</fc>.<fc=#657b83>%-m</fc> <fc=#93a1a1>%-H:%M</fc><fc=#586e75>.%S</fc> <fc=#586e75>%Z</fc>" "date" 10
+      , Run Kbd
+            [ ("fi", "qwerty-fi") ]
+      , Run Locks
+      , Run MultiCpu
+            [ "-L", "3", "-H", "50"
+            , "-l", "#586e75", "-n", "#859900", "-h", "#dc322f"
+            , "-t", "<total>|<system>"
+            ] 100
+      , Run Memory
+            [ "-t", "<fc=#859900><availableratio></fc>"
+            ] 100
+      , Run DynNetwork
+            -- 128 * 1024 = 131072 (128K)
+            -- 1024 * 1024 = 1048576 (1M)
+            [ "-L", "131072", "-H", "1048576", "-l", "#586e75", "-n", "#859900", "-h", "#cb4b16"
+            , "-t", "<tx>|<rx>"
+            ] 50
+      , Run Wireless "wlp2s0"
+            [ "-t", "<essid>"
+            , "-p", "2"
+            ] 100
+      , Run TopProc
+            [ "-t", "<name1>"
+            ] 60
+      , Run TopMem
+            [ "-t", "<name1> <fc=#586e75><mem1></fc> <name2> <fc=#586e75><mem2></fc>"
+            ] 200
+      , Run Volume "default" "Master"
+            [ "-L", "5", "-H", "60"
+            , "-l", "#586e75", "-n", "#859900", "-h", "#cb4b16"
+            , "-p", "2"
+            , "-t", "<volume>%"
+            ] 100
+      , Run Weather "EFHF"
+            ["-L", "5", "-H", "19"
+            , "-l", "#586e75", "-n", "#859900", "-h", "#cb4b16"
+            , "-t", "<tempC> C"
+            ] 1200
+      , Run Battery
+            [ "-t", "<acstatus><left>% <fc=#2aa198><timeleft></fc>"
+            , "-L", "15", "-H", "80"
+            , "-l", "#cb4b16"
+            , "--"
+            , "-O", "<fc=#859900>AC</fc> ", "-i", "", "-o", ""
+            ] 100
+      ]
+   }

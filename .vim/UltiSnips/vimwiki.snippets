@@ -1,0 +1,39 @@
+# file: ~/.vim/UltiSnips/vimwiki.snippets
+# See also <url:file:vimwiki.snippets> <url:file:markdown.snippets>
+
+extends pandoc
+
+priority 2
+
+# Vimwiki syntax description: <url:vimhelp:vimwiki-syntax>
+# Vimwiki's omnicomp is extensive too <C-X><C-O>
+# NOTE this isn't /the/ vimwiki filetype but its markdown variant. For now.
+
+snippet header "Standard vimwiki header" !b
+% file: `!v expand('%:~')`
+%
+%title `!v printf('%s: %s', expand('%:p:h:t:s^\(\w\)^\u\1^'), expand('%:t:r:r:s^\(\w\)^\u\1^'))`
+%date `date +%F`
+
+${1:% `!v expand('%:~') `
+}
+${2:# Contents
+}
+$0
+endsnippet
+
+snippet file "[[file:{filepath}]]"
+[[file:${1:${VISUAL}}]]
+endsnippet
+
+snippet task "* [ ] {title}"
+* [ ] ${1:${VISUAL}}
+endsnippet
+
+# - hyphen
+# * asterisk
+# + plus
+# 1. number
+snippet "(^\w*[-*+.])" "[-*+] List (change symbol <c-l><c-j>)" r
+`!p snip.rv='1.' if match.group(1)=='.' else match.group(1)` $0
+endsnippet

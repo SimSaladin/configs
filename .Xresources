@@ -1,0 +1,136 @@
+! ----------------------------------------------------------------------------
+! File:          ~/.Xdefaults
+! Last Modified: Apr 03 2012 [20:43:36]
+! Creation Date: Jun 16 2011
+! Created by:    Simsaladin
+!
+! vim:ft=xdefaults:
+!
+! ----- // X cursor // -------------------------------------------------------
+
+!Xcursor.theme: Neutral
+!Xcursor.size:  14
+
+! ----- // Xft // ------------------------------------------------------------
+
+! These are for applications that ignore fontconfig settings (rxvt-unicode).
+!Xft.autohint:  0
+!Xft.lcdfilter: lcddefault
+!Xft.hintstyle: hintslight
+!Xft.hinting:   1
+!Xft.antialias: 1
+! This helps fc if EDID info is not available (fc defaults to Xft.dpi)
+!Xft.dpi:			96
+
+! ----- // URxvt // ----------------------------------------------------------
+
+! Basic colors
+#include ".colors/solarized"
+! carefully tuned to look nice. -tr -tint "rgba:0200/2200/3800/ffff" -sh 108
+! XXX: buggy, not working
+!URxvt.transparent: true
+!URxvt.tintColor:   rgba:0200/2200/3800/ffff
+!URxvt.shading:     108
+! base1
+URxvt.underlineColor: #93a1a1
+URxvt.skipBuiltinGlyphs: false
+URxvt.lineSpace: 0
+URxvt.letterSpace: 0
+URxvt.scrollBar: false
+URxvt.cursorBlink: false
+URxvt.pointerBlank:true
+! Scrollback size
+URxvt.saveLines: 8192
+! Though bell is disabled, WM may catch this and act
+URxvt.urgentOnBell: true
+! By default, [<Shift>|<Ctrl>]+<PrintScreen> prints via `lpr`. Disable that
+URxvt.print-pipe: "cat > /dev/null"
+! This is the modifier passed to e.g. irssi
+URxvt.modifier: alt
+! Enabled extensions
+! <lnk:/usr/lib/urxvt/perl/resize-font>
+URxvt.perl-ext-common: default,url-select,clipboard,searchable-scrollback,keysym-list
+! plugin: url-select
+URxvt.url-select.autocopy:    true
+URxvt.url-select.button:      1
+URxvt.url-select.launcher:	  xdg-open
+URxvt.url-select.underline: 	true
+! URxvt font configuration
+!
+! Note:
+!  * Test fonts with
+!    $ printf '\e]710;%s\007' "xft:Terminess Powerline:pixelsize=12"
+!    $ terminal-font-test
+!  * Use `fc-list "Font Name"` to find exact matches for a font.
+!    Remember to `fc-list -vf` and start a new terminal when testing just
+!    installed fonts.
+!  * mixed-width fonts, for example noto by google, are not handled
+!  * font set codes
+!       710 = 50 = normal fontset
+!       711 = bold fontset
+!       712 = italic fontset
+!       713 = bold italic fontset
+!       704 = colour of italic (and bold italic) characters
+!
+!  * The community/terminus-font provided font is pretty bad. Terminess
+!    Powerline works much better via Xft.
+!  * "Terminess Powerline" available in px size: 12, 14, 16, 18, 20, 22, 24 28, 32
+!  * "WenQuanYi Micro Hei" makes sense from about 22px upwards.
+!    XXX: in 12px, WQI symbols cut off by one px at bottom
+
+! Main font, Small
+#define Font_Small xft:xos4 Terminess Powerline:style=Medium
+!#define Font_Small xft:xos4 Terminus
+#define Font_SmallBold xft:xos4 Terminess Powerline:style=Bold
+#define Font_SmallItalic xft:xos4 Terminess Powerline:style=Medium
+#define Font_SmallBoldItalic xft:xos4 Terminess Powerline:style=Bold
+#define Font_SUBST1 [codeset=JISX0208]xft:WenQuanYi WenQuanYi Bitmap Song
+! Main font, Large
+#define Font_Large xft:TerminessTTF Nerd Font Mono:style=Medium
+#define Font_LargeBold xft:TerminessTTF Nerd Font Mono:style=Bold
+#define Font_LargeItalic xft:TerminessTTF Nerd Font Mono:style=Italic
+#define Font_LargeBoldItalic xft:TerminessTTF Nerd Font Mono:style=Bold Italic
+#define Font_SUBST2 [codeset=JISX0208]xft:WenQuanYi Micro Hei
+! Main font in various sizes
+#define Font_12px Font_Small:pixelsize=12,Font_SUBST1
+! XXX: 12px terminus does not exist in bold
+#define Font_14px Font_Small:pixelsize=14,Font_SUBST1
+#define Font_16px Font_Small:pixelsize=16,Font_SUBST1
+#define Font_18px Font_Small:pixelsize=18,Font_SUBST1
+#define Font_20px Font_Large:pixelsize=20,Font_SUBST2
+#define Font_22px Font_Large:pixelsize=22,Font_SUBST2
+#define Font_24px Font_Large:pixelsize=24,Font_SUBST2
+#define Font_28px Font_Large:pixelsize=28,Font_SUBST2
+#define Font_32px Font_Large:pixelsize=32,Font_SUBST2
+! By default, urxvt synthesizes different styles from the main font.
+! For smaller sizes, all faces are not available, so all is explicit to make
+! changing between font sizes possible.
+URxvt.font: Font_18px
+URxvt.boldFont: Font_SmallBold
+URxvt.italicFont: Font_SmallItalic
+URxvt.boldItalicFont: Font_SmallBoldItalic
+! key bindings
+! <M-C-a>...<M-C-i>: font selections 12px-32px
+URxvt.keysym.M-C-a: command:\033]50;Font_12px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
+URxvt.keysym.M-C-b: command:\033]50;Font_14px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
+URxvt.keysym.M-C-c: command:\033]50;Font_16px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
+URxvt.keysym.M-C-d: command:\033]50;Font_18px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
+URxvt.keysym.M-C-e: command:\033]50;Font_20px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
+URxvt.keysym.M-C-f: command:\033]50;Font_22px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
+URxvt.keysym.M-C-g: command:\033]50;Font_24px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
+URxvt.keysym.M-C-h: command:\033]50;Font_28px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
+URxvt.keysym.M-C-i: command:\033]50;Font_32px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
+! <C-u> perl/url-select
+URxvt.keysym.M-u: perl:url-select:select_next
+! <M-g>: shortcut for piped grep
+URxvt.keysym.M-g: string: | grep\040
+! <M-n>: Nullify stdout&err
+URxvt.keysym.M-n: string: >/dev/null 2>&1
+! <M-h>: shortcut for piped head
+URxvt.keysym.M-h: string: | head\040
+
+! ----- // other // ---------------------------------------
+
+ncmpcpp*font: Font_Small
+x11-ssh-askpass*font: Font_Small
+Xmessage*font: Font_Small

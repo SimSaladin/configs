@@ -1,0 +1,15 @@
+[Unit]
+Description=git-annex assistant --autostart
+After=basic.target
+
+[Service]
+ExecStart=git-annex assistant --foreground --autostart
+Restart=on-failure
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=basic.target

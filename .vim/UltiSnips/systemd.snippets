@@ -1,0 +1,62 @@
+# ~/.vim/UltiSnips/systemd.snippets
+
+
+snippet service "[Service] unit template"
+[Unit]
+Description=${1}
+
+[Service]
+Type=simple
+ExecStart=${2}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+endsnippet
+
+snippet timer "[Timer] OnCalendar= unit template" !b
+[Unit]
+Description=$1 run of unit `!v expand('%:t:r')`
+
+[Timer]
+# See systemd.time.7 for possible values. Tune AccuracySec as high as possible
+# to minimize power usage.
+OnCalendar=${1:Daily}
+AccuracySec=${2:1min}
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+endsnippet
+
+snippet socket "[Socket] unit file" !b
+[Unit]
+Description=$2 (unix socket $1)
+
+[Socket]
+Service=${2}
+ListenStream=%t/${1}
+SocketMode=0600
+DirectoryMode=0700
+#FileDescriptorName=
+
+[Install]
+WantedBy=sockets.target
+endsnippet
+
+snippet link "[Link] Network device configuration file (with [Match])" !b
+#  file: `!v expand('%:p')`  -*- man systemd.link.5 -*-
+#
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  `!v strftime("%Y-%m-%d")`: `!v g:author_name`, base64:`!v system('base64', g:author_email)`
+
+[Match]
+${1}
+
+[Link]
+NamePolicy=kernel database onboard slot path
+MACAddressPolicy=persistent
+Alias=${2}
+
+endsnippet

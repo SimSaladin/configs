@@ -1,0 +1,16 @@
+# File: ~/.config/tmuxp/mail-and-stuff.yaml
+
+session_name: mail-and-stuff
+start_directory: "~"
+windows:
+- window_name: mail
+  panes:
+  - neomutt
+  - newsboat
+- window_name: notes
+  panes:
+  - vim -c "cd ~/notes | NERDTree"
+- window_name: tools
+  panes:
+  - khard
+  - khal

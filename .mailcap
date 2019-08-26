@@ -1,0 +1,18 @@
+# file: .mailcap
+#
+# man mailcap(4)
+#
+# <type>; [<field>; ...] [<flag>; ...]
+#
+# fields:
+# [command=]   :: passed to shell. Takes %s, %{some_content_type_opt}
+# test=cmd     :: a command that needs to pass for the entry to be chosen
+# compose=     :: command that can be used to compose new body (part). Takes %s
+# composetyped :: like compose, but must produce RFC822 compliant output
+#
+# flags:
+# needsterminal :: command requires be run in terminal
+# copiousoutput :: for non-interactive commands, their stdout will be piped
+
+text/html; mv %s %s.html && xdg-open %s.html; test=test -n "$DISPLAY"; needsterminal;
+text/html; w3m -I %{charset} -T text/html; copiousoutput;

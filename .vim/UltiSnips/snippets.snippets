@@ -1,0 +1,14 @@
+# ~/.vim/UltiSnips/snippets.snippets
+
+snippet header "Snippet file header" !b
+# `!v expand('%:p:~')`
+
+$0
+endsnippet
+
+snippet snippet "New snippet" !b
+snippet ${1:Trigger} "${2:Description}"${3: !b}
+$4
+`!v 'endsnippet'`
+$0
+endsnippet

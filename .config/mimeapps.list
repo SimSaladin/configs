@@ -1,0 +1,64 @@
+#
+# - https://wiki.archlinux.org/index.php/XDG_MIME_Applications#mimeapps.list
+# - <lnk:/usr/share/applications/> for global desktop files
+# - <lnk:~/.local/share/applications> for user-local desktop files.
+# - <lnk:https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types>
+#   large list of mime types
+#
+#   xdg-mime query filetype FILE
+#   xdg-mime query default  MIMETYPE
+#
+#   lsdesktopf --gen-mimeapps
+#
+#   xdg-open [FILE|URL]
+#
+#   dex path-to.desktop
+
+[Added Associations]
+
+[Removed Associations]
+
+[Default Applications]
+
+x-scheme-handler/about=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/http=org.qutebrowser.gutebrowser.desktop
+x-scheme-handler/https=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/magnet=rtorrent.desktop
+
+text/html=vim.desktop;gvim.desktop
+text/xml=vim.desktop;gvim.desktop
+text/plain=vim.desktop;gvim.desktop
+text/x-c=vim.desktop;gvim.desktop
+text/x-c++=vim.desktop;gvim.desktop
+text/x-c++hdr=vim.desktop;gvim.desktop
+text/x-chdr=vim.desktop;gvim.desktop
+text/x-c++src=vim.desktop;gvim.desktop
+text/x-csrc=vim.desktop;gvim.desktop
+text/x-java=vim.desktop;gvim.desktop
+text/x-makefile=vim.desktop;gvim.desktop
+text/x-moc=vim.desktop;gvim.desktop
+text/x-pascal=vim.desktop;gvim.desktop
+text/x-tcl=vim.desktop;gvim.desktop
+text/x-tex=vim.desktop;gvim.desktop
+
+application/xhtml+xml=org.qutebrowser.qutebrowser.desktop
+application/pdf=org.gnome.Evince.desktop
+
+image/bmp=feh.desktop
+image/gif=feh.desktop
+image/jpeg=feh.desktop
+image/jpg=feh.desktop
+image/pjpeg=feh.desktop
+image/png=feh.desktop
+image/tiff=feh.desktop
+image/x-bmp=feh.desktop
+image/x-pcx=feh.desktop
+image/x-png=feh.desktop
+image/x-portable-anymap=feh.desktop
+image/x-portable-bitmap=feh.desktop
+image/x-portable-graymap=feh.desktop
+image/x-portable-pixmap=feh.desktop
+image/x-tga=feh.desktop
+image/x-xbitmap=feh.desktop
+
+video/mpeg=mpv.desktop

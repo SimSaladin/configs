@@ -1,0 +1,39 @@
+# swap files
+.*.swp
+.*~
+.~lock*
+
+# binary
+*.hi
+*.o
+
+# dev
+doc/tags
+/tags
+*.bbl
+*.dvi
+*.out
+*.aux
+*.blg
+*.hp
+*.prof
+*.iml
+*.dump
+*.ghc.env*
+.classpath
+.project
+.settings
+.stack-work
+.envrc
+.uuid
+.vim
+.idea/
+.metadata
+.sass-cache
+.tmp
+.netrwhist
+node_modules
+bower_components
+
+# nix
+result

@@ -1,0 +1,13 @@
+# https://yamllint.readthedocs.io/en/stable/
+# /usr/lib/python3.7/site-packages/yamllint/conf/default.yaml
+---
+
+extends: default
+
+rules:
+  document-start: disable
+  indentation:
+    spaces: consistent
+    indent-sequences: consistent
+  colons:
+    max-spaces-before: 2

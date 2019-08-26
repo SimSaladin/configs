@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Git fast fast-forward - Fast-forward <branch> to <revision> without a checkout.
+
+# Copyright (C) 2014  Aleksander Nitecki
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+die () {
+	echo >&2 "$@"
+	exit 1
+}
+
+usage() {
+	die "Usage: git fff <branch> [<committish-to-merge>]
+
+<committish-to-merge> defaults to HEAD."
+}
+
+do_fff() {
+	branch="$1"
+	dest_commit="$2"
+
+	# Validate arguments
+	branch_orig_hash="$(git show-ref -s --verify refs/heads/$branch 2> /dev/null)" ||
+		die "fatal: unknown branch $branch"
+
+	dest_commit_hash="$(git rev-parse --verify $dest_commit 2> /dev/null)" ||
+		die "fatal: unknown revision $dest_commit"
+
+	# Special case - for current branch use git merge because of working copy.
+	if [ "$(git symbolic-ref HEAD)" = "refs/heads/$branch" ]; then
+		echo "$branch is current branch - using merge --ff-only."
+		exec git merge $quiet --ff-only "$dest_commit"
+	fi
+
+	git merge-base --is-ancestor "$branch_orig_hash" "$dest_commit_hash" ||
+		die "fatal: cannot fast-forward $branch to $dest_commit"
+
+	# Everything OK? Do the main job.
+	if git update-ref -m "fff: Fast forward to $dest_commit" "refs/heads/$branch" "$dest_commit_hash" "$branch_orig_hash"; then
+		if [ -z $quiet ]; then
+			echo -e "Fast forward \e[1;32m$branch\e[0m to \e[33m$dest_commit_hash\e[0m:"
+			git diff --stat "$branch@{1}" "$branch"
+		fi
+	else
+		die "error: fast forward using update-ref failed"
+	fi
+}
+
+while getopts "q" opt; do
+	case $opt in
+		q ) quiet="-q";;
+		* ) ;;
+	esac
+done
+shift $((OPTIND-1))
+
+case $# in
+	2 ) do_fff "$1" "$2";;
+	1 ) do_fff "$1" 'HEAD';;
+	* ) usage
+esac

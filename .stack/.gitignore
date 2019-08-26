@@ -1,0 +1,6 @@
+# file: ~/.stack/.gitignore
+
+*
+!.gitignore
+!/config.yaml
+!/global/stack.yaml

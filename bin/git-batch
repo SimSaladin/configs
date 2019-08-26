@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# script to run find to discover git repos in a hierarchy, and run a user-supplied
+# command on each repository.
+
+set -ue
+
+find_opts=(. -exec test -d {}/.git \; -prune)
+find_opts_user=()
+find_opts_cmd=()
+cmd=git
+cmd_opts=()
+
+while [[ $# -gt 0 ]]; do
+  o="$1"
+  shift
+  case "$o" in
+    ''|-h|--help)
+      echo "Usage: $0 <git-cmd> [<git-cmd-options>] <git-cmd-args>…"
+      echo "Usage: $0 [-<find-arg>…] -- <git-cmd> [<git-cmd-options>] <git-cmd-args>…"
+      echo "Usage: $0 [-<find-arg>…] -c <commandline>"
+      echo ""
+      echo " Find the first repositories in top-to-bottom fashion."
+      echo " Supplied command is executed at each repository's root (synchronously)."
+      echo ""
+      echo "Examples: $0 status           # same as: $0 -- -c git status"
+      echo "          $0 -print           # only print"
+      echo "          $0 -print -- status # print path and git status"
+      echo "          $0 -print -c status # print path and git status"
+      exit
+      ;;
+    -- ) cmd_opts+=( "$@" ); break ;;
+    -c ) cmd=$1; shift; cmd_opts+=( "$@" ); break ;;
+    *)
+      if [[ ${#find_opts_user[@]} -gt 0 && ${find_opts_user[-1]} =~ ^- ]]; then
+        find_opts_user+=("$o")
+      else
+        cmd_opts+=( "$o" "$@" )
+        break
+      fi
+      ;;
+  esac
+done
+
+if [[ ${#find_opts_user[@]} -eq 0 ]]; then
+  find_opts+=(-printf %P\\n)
+fi
+if [[ ${#cmd_opts[@]} -gt 0 ]]; then
+  find_opts_cmd=(-exec /usr/bin/env -C{} "$cmd" "${cmd_opts[@]}" \;)
+fi
+
+find "${find_opts[@]}" "${find_opts_user[@]}" "${find_opts_cmd[@]}"

@@ -1,0 +1,10 @@
+[Unit]
+Description=udiskie automount removable media
+After=basic.target
+
+[Service]
+ExecStart=/usr/bin/udiskie
+Restart=on-failure
+
+[Install]
+WantedBy=basic.target

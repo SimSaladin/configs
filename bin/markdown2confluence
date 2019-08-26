@@ -1,0 +1,9 @@
+#!/bin/bash
+
+before='<ac:structured-macro ac:name="markdown" ac:schema-version="1" ac:macro-id="436cb91e-f8d0-46f3-806f-4a9108b17196"><ac:plain-text-body><![CDATA['
+after=']]></ac:plain-text-body></ac:structured-macro>'
+
+echo "$before"
+< "${1:-/dev/stdin}" awk 'BEGIN{hdr=2}hdr>0&&/^---/{hdr--;next}hdr==2{hdr=0}hdr==1{next}hdr==0{print}'
+echo "$after"
+

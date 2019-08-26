@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily run of unit vdir-android-contacts
+
+[Timer]
+# See systemd.time.7 for possible values. Tune AccuracySec as high as possible
+# to minimize power usage.
+OnCalendar=Daily
+AccuracySec=3h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

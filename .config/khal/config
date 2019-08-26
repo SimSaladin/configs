@@ -1,0 +1,58 @@
+# file: ~/.config/khal/config
+# <lnk:man:khal.1>
+# <lnk:/usr/share/doc/khal/examples/khal.conf>
+# <lnk:/usr/lib/python3.7/site-packages/khal/settings/khal.spec>
+
+[calendars]
+
+[[calendar]]
+path = ~/.local/share/dav/calendars/calendar/
+color = dark green
+
+[[birthdays]]
+path = ~/.local/share/dav/calendars/birthdays/
+color = dark magenta
+
+[[work]]
+path = ~/.local/share/dav/calendars/work/
+readonly = True
+color = dark blue
+
+[[addressbook]]
+path = ~/.local/share/dav/contacts/addressbook/
+type = birthdays
+
+[sqlite]
+path = ~/.local/share/khal/khal.db
+
+[locale]
+#local_timezone   = Europe/Vienna
+default_timezone = Europe/Vienna
+firstweekday     = 0
+weeknumbers      = right
+
+timeformat = %H:%M
+dateformat = %d.%m.
+longdateformat = %d.%m.%Y
+datetimeformat = %d.%m. %H:%M
+longdatetimeformat = %d.%m.%Y %H:%M
+
+[default]
+# default_command = calendar
+default_calendar     = 'calendar'
+highlight_event_days = False
+print_new            = path
+show_all_days        = True
+# how far ahead "khal calendar" should show
+timedelta            = 3d
+
+[view]
+theme = dark
+frame = color
+bold_for_light_color = False
+agenda_event_format = '{calendar-color}{cancelled}{start-end-time-style} {title}{repeat-symbol}{description-separator}{description}{reset}'
+agenda_day_format   = '{bold}{name}, {date-long}{reset}'
+monthdisplay = firstday
+
+[highlight_days]
+method = fg

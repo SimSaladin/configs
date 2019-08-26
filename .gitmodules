@@ -1,0 +1,3 @@
+[submodule "bin/lennartcl-gitl"]
+	path = bin/lennartcl-gitl
+	url = https://github.com/lennartcl/gitl

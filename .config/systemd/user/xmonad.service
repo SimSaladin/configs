@@ -1,0 +1,13 @@
+# file: ~/.config/systemd/user/xmonad.service
+
+[Unit]
+Description=XMonad tiling window manager (xinit)
+BindsTo=graphical-session.target
+Before=graphical-session.target
+
+[Service]
+Type=forking
+KillMode=process
+SyslogIdentifier=xmonad
+ExecStartPre=%h/.xmonad/build
+ExecStart=sh -c "xmonad-my &"

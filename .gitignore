@@ -1,0 +1,54 @@
+# file: ~/.gitignore
+
+# ignore all top-level files and directories...
+/*
+# ...but unignore those that begin with a dot
+!/.*
+# ...also unignore bin which we manage
+!/bin
+
+# and then ignore some more specific ones
+/.Xauthority
+/.*history
+/.cache
+/.cargo
+/.ghc/ghci_history
+/.bitcoin
+/.viminf*
+/.unison/*
+!/.unison/*.prf
+/.steam
+# if .thumbnails is a symlink (i.e. not a dir)
+/.thumbnails
+!/.thumbnails/
+/.mozilla
+/.password-store
+/.nix*
+/.local
+/.lesshst
+/.ecr
+/.fehbg
+/.fltk
+/.ghc
+/.hplip
+/.icons
+/.lbdb/m_inmail*
+/.m2
+/.npm
+/.packer.d
+/.pki
+/.terraform.d
+/.cabal
+/.hoogle
+/.gnupg/*~
+/.abook/*~
+/.terminfo/
+/.ssh/id_rsa*
+/.rnd
+/.snapshots
+/.vim/LanguageClient.log
+/.vim/doc/
+/.nv/
+/.gem/
+/.vagrant.d/
+/.task/

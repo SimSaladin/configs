@@ -1,0 +1,8 @@
+[Unit]
+Description=Local archlinux repo update (/opt/archlinux/packages)
+ConditionPathExists=/opt/archlinux/packages
+
+[Service]
+Type=oneshot
+ExecStart=repose -f -J applicative
+WorkingDirectory=/opt/archlinux/packages

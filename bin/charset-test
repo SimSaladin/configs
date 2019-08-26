@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# File:          /home/sim/scripts/test_encodings.sh
+# Creation Date: Dec 19 2012 [01:16:06]
+# Last Modified: Apr 21 2013 [15:07:16]
+# Created By: Samuli Thomasson [SimSaladin] samuli.thomassonAtpaivola.fi
+
+
+# Tests encodings
+
+while read a; do 
+   iconv -l | while read enc
+   do
+      echo -n "$a" | iconv -f $enc -t utf-8 && echo -n " $enc"
+      echo
+   done
+done 2>/dev/null

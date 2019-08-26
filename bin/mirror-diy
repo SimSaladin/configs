@@ -1,0 +1,14 @@
+#!/bin/bash -eu
+
+fifo=${XDG_RUNTIME_DIR}/mpv-$$.fifo
+mkfifo "${fifo}"
+__rm_fifo(){ rm "${fifo}"; }
+trap __rm_fifo EXIT
+
+mpv \
+  --ao null \
+  --input-file "${fifo}" \
+  --vf hflip \
+  --demuxer-lavf-format video4linux2 \
+  --demuxer-lavf-o-set input_format=mjpeg \
+  av://v4l2:/dev/video0

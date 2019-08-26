@@ -1,0 +1,22 @@
+# ~/.vim/UltiSnips/haskell.snippets
+
+# [id=snip:haskell:file-header]
+snippet header
+------------------------------------------------------------------------------
+-- |
+-- Module         : `!v vimrc#haskell_module_name(expand('%:p'))`
+-- Maintainer     : `!v g:author_name` <`!v g:author_email`>
+-- Stability      : experimental
+-- Portability    : non-portable
+------------------------------------------------------------------------------
+module `!v vimrc#haskell_module_name(expand('%:p'))` where
+
+import Prelude
+
+$0
+endsnippet
+
+snippet i "import q? m? as s? (n??)" !b
+import ${3/.+/qualified/}${3: }${1:Data.Text}${2/.+/ as /}${2:${1/.*\.//}}${4/.+/ (/}${4:pack}${4/.+/)/}
+$0
+endsnippet

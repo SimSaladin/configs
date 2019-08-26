@@ -1,0 +1,101 @@
+#!/bin/bash
+# print terminal colors in different formats.
+
+#STYLES=(normal bold reverse bold-reverse bright)
+STYLES=()
+
+fgcodes="9 $(seq 0 7)"
+FGNAMES=('default' 'black' 'red' 'green' 'yellow' 'blue' 'magenta' 'cyan' 'white')
+FGBNAMES=('default' 'black' 'red' 'green' 'yellow' 'blue' 'magenta' 'cyan' 'white')
+FGBRNAMES=('default' 'black' 'red' 'green' 'yellow' 'blue' 'magenta' 'cyan' 'white')
+
+bgcodes=$(seq -1 15)
+BGNAMES=('DFT' 'BLK' 'RED' 'GRN' 'YEL' 'BLU' 'MAG' 'CYN' 'WHT')
+
+options=$(getopt -o '2nboNBOtiv' -l 'normal,bright,bold,reverse,bright-reverse,bold-reverse,term,irssi,vim' -- "$@")
+
+eval set -- "$options"
+
+while true; do case "$1" in
+   '-2')
+        for n in $(seq 16 255); do
+                printf "\033[38;5;%03d;7m    \033[27m %3i\033[0m\n" "$n" "$n"
+        done | column -c $(( 32 * 5 ))
+        exit
+        ;;
+   '-n'|'--normal')
+        STYLES+=( normal )
+        ;;
+   '-b'|'--bright')
+        STYLES+=( bright )
+        ;;
+   '-o'|'--bold'|'--bold-bright')
+        STYLES+=( bold )
+        ;;
+   '-N'|'--reverse')
+        STYLES+=( reverse )
+        ;;
+   '-B'|'--bright-reverse')
+        STYLES+=( bright-reverse )
+        ;;
+   '-O'|'--bold-reverse')
+        STYLES+=( bold-reverse )
+        ;;
+   '-t'|'--term')
+        FGNAMES=( '39m' '30m' '31m' '32m' '33m' '34m' '35m' '36m' '37m')
+        FGBNAMES=('1;39m' '1;30m' '1;31m' '1;32m' '1;33m' '1;34m' '1;35m' '1;36m' '1;37m')
+        FGBRNAMES=('99m' '90m' '91m' '92m' '93m' '94m' '95m' '96m' '97m')
+      ;;
+   '-i'|'--irssi')
+        FGNAMES=('%k' '%r' '%g' '%y' '%b' '%m' '%c' '%w')
+        FGBNAMES=('%K' '%R' '%G' '%Y' '%B' '%M' '%C' '%W')
+        BGNAMES=(' %N' ' %0' ' %1' ' %2' ' %3' ' %4' ' %5' ' %6' ' %7')
+      ;;
+   '-v'|'--vim')
+        BGNAMES=('none' '0' '1' '2' '3' '4' '5' '6' '7')
+        FGNAMES=('none' '0' '1' '2' '3' '4' '5' '6' '7')
+        FGBNAMES=('none' '8' '9' '10' '11' '12' '13' '14' '15')
+        BGNAMES=( "${BGNAMES[@]/#/ctermbg=}" )
+        FGNAMES=( "${FGNAMES[@]/#/ctermfg=}" )
+        FGBNAMES=( "${FGBNAMES[@]/#/ctermfg=}" )
+        ;;
+   '--')
+        shift
+        break
+        ;;
+   *)
+        exit 1
+        ;;
+esac; shift; done
+
+if [[ ${#STYLES[@]} -eq 0 ]]; then
+        STYLES=(normal bold)
+fi
+
+
+echo "     ----------------------------------------------------------------------------"
+for b in $bgcodes; do
+        bgname="${BGNAMES[$((b+1))]:-${BGNAMES[$((b-7))]}-BR}"
+        bgcode="49"
+        if [[ ${b} -ge 0 ]]; then
+                bgcode="48;5;${b}"
+        fi
+        for a in "${STYLES[@]}"; do
+                attr="${bgcode}"
+                fgnames=( "${FGNAMES[@]}" )
+                fgcodeoffset=30
+                case $a in
+                        *bold*  ) attr+=";1"; fgnames=( "${FGBNAMES[@]}" ) ;;&
+                        *rev*   ) attr+=";7" ;;&
+                        *bright*) fgcodeoffset=90; fgnames=( "${FGBRNAMES[@]}" ) ;;&
+                esac
+                fgnames=( "${fgnames[@]:1:8}" "none" "${fgnames[0]}" )
+                printf "%6s \033[%sm" "$bgname" "$attr"
+                for f in $fgcodes; do
+                        fgcode=$(( f + fgcodeoffset ))
+                        printf " \033[%sm%8s" "${fgcode}" "${fgnames[$f]:-unknown}"
+                done
+                printf "\033[0m (%s)\t%s\n" "$a" "\\e[${attr}m"
+        done
+done
+echo "     ----------------------------------------------------------------------------"

@@ -1,0 +1,46 @@
+#!/usr/bin/env stack
+-- stack script --resolver=lts-13.5 --package "text"
+-- vim:ft=haskell
+
+{-# LANGUAGE OverloadedStrings #-}
+
+-- | Interpolate @variables@ into @~/.xmobarrc@ using @~/.xmonad/xmobarrc.template@ as template.
+module Main where
+
+import qualified Data.Text as T
+import qualified System.Environment as Env
+
+-- | @(str, subst) <- variables@.
+--
+-- All occurances of @str@ are substituted with @subst@.
+variables :: [(T.Text, T.Text)]
+variables =
+   ("${separator}", "<fc=$color_sep>:</fc>")
+   : ("${lnh}", "\"-l\", \"$color_sep\", \"-n\", \"$green\", \"-h\", \"$orange\"")
+   : ("$color_sep", "$base01")
+
+   -- Solarized colors
+   : [ ("$base03", "#002b36")
+     , ("$base02", "#073642")
+     , ("$base01", "#586e75")
+     , ("$base00", "#657b83")
+     , ("$base0", "#839496")
+     , ("$base1", "#93a1a1")
+     , ("$base2", "#eee8d5")
+     , ("$base3", "#fdf6e3")
+     , ("$yellow", "#b58900")
+     , ("$orange", "#cb4b16")
+     , ("$red", "#dc322f")
+     , ("$magenta", "#d33682")
+     , ("$violet", "#6c71c4")
+     , ("$blue", "#268bd2")
+     , ("$cyan", "#2aa198")
+     , ("$green", "#859900")
+     ]
+
+main = do
+   home <- Env.getEnv "HOME"
+   tpl <- readFile (home ++ "/.xmonad/xmobarrc.template")
+   let res = T.unpack $ foldl (\str (var, val) -> T.replace var val str) (T.pack tpl) variables
+   writeFile (home ++ "/.xmobarrc") res
+   putStrLn "Restart xmonad for changes to take effect."

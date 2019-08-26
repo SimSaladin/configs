@@ -1,0 +1,17 @@
+# File: ~/.config/tmuxp/xmonad.yaml
+
+session_name: xmonad
+start_directory: ~/.xmonad
+windows:
+- window_name: xmonad
+  layout: main-vertical
+  panes:
+  - ghcid xmonad.hs
+  - shell_command:
+      - vim xmonad.hs
+    focus: true
+- window_name: stack
+  panes:
+    - stack install --file-watch
+    - stack ghci
+

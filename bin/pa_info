@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "===== sink-inputs ====="
+pacmd list-sink-inputs | egrep '(index|[^_.]name|sample|state|desc|latency|client|sink)'
+echo "===== source-outputs ====="
+pacmd list-source-outputs | egrep '(index|[^_.]name|sample|state|desc|latency)'
+echo "===== sinks ====="
+pacmd list-sinks | egrep '(index|[^_.]name|sample|state|desc|latency)'
+echo "===== sources ====="
+pacmd list-sources | egrep '(index|[^_.]name|sample|state|desc|latency)'

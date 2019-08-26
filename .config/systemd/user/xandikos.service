@@ -1,0 +1,21 @@
+# loosely based on /usr/lib/systemd/system/uwsgi@.service
+# NOTE: requires uwsgi-plugin-python
+[Unit]
+Description=xandikos CalDAV/CardDAV server via uWSGI
+Requisite=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+NotifyAccess=all
+Restart=on-failure
+Environment=XANDIKOSPATH=%h/dav
+ExecStart=/usr/bin/uwsgi --ini %E/xandikos/uwsgi.ini
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -INT $MAINPID
+StandardOutput=journal
+StandardError=journal
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=basic.target

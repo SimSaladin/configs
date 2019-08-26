@@ -1,0 +1,98 @@
+#!/usr/bin/pulseaudio -nF
+
+#{{{1 create sink 'combined-stereo', set as default sink
+load-module module-combine-sink sink_name=combined-stereo sink_properties='device.description="All available hw (2ch)"'  channels=2
+#set-default-sink combined-stereo
+
+#{{{1 restore properties of devices
+load-module module-card-restore
+load-module module-device-restore
+#load-module module-stream-restore
+
+### Automatically augment property information from .desktop files
+### stored in /usr/share/application
+load-module module-augment-properties
+
+### Switch ports and profiles when devices are plugged/unplugged
+### Should be after module-*-restore but before module-*-detect
+load-module module-switch-on-port-available
+
+### Automatically restore the default sink/source when changed by the user
+### during runtime
+### NOTE: This should be loaded as early as possible so that subsequent modules
+### that look up the default sink/source get the right value
+load-module module-default-device-restore
+
+#{{{1 Hardware
+### Automatically load driver modules depending on the hardware available
+#load-module module-udev-detect tsched=no fixed_latency_range=yes
+load-module module-udev-detect tsched=yes tsched_buffer_size=96000 fixed_latency_range=yes
+### Automatically load driver modules for Bluetooth hardware
+load-module module-bluetooth-discover
+### Automatically suspend sinks/sources that become idle for too long
+load-module module-suspend-on-idle timeout=15
+
+#{{{1 PA server and clients
+### If autoexit on idle is enabled we want to make sure we only quit
+### when no local session needs us anymore.
+load-module module-console-kit
+load-module module-systemd-login
+### Load several protocols
+load-module module-dbus-protocol
+load-module module-native-protocol-unix
+
+#{{{1 Mess with streams
+
+### Make sure we always have a sink around, even if it is a null sink.
+load-module module-always-sink
+
+### Automatically move streams to the default sink if the sink they are
+### connected to dies, similar for sources
+load-module module-rescue-streams
+
+### Honour intended role device property (recheck streams when devices become available)
+load-module module-intended-roles
+
+### Cork/duck music/video streams when a phone stream is active
+#load-module module-role-cork
+
+### Duck other streams when there's something important
+load-module module-role-ducking trigger_roles=phone ducking_roles=no_role,music,video global=true volume=-20dB
+
+### Match on sink-input media.name and set output
+# https://github.com/pulseaudio/pulseaudio/blob/master/src/modules/module-match.c
+#load-module module-match table=match.table
+
+### When a new hw sink or source port becomes available, connect unavailable
+# streams to it.
+load-module module-switch-on-connect only_from_unavailable=true ignore_virtual=false
+
+#{{{1 Positioned event sounds
+#load-module module-position-event-sounds
+
+#{{{1 Automatic filters (echo cancel)
+# Modules to allow autoloading of filters (such as echo cancellation)
+# on demand. module-filter-heuristics tries to determine what filters
+# make sense, and module-filter-apply does the heavy-lifting of
+# loading modules and rerouting streams.
+load-module module-filter-heuristics
+load-module module-filter-apply
+### Create echo-cancel pair for default sink&source
+#load-module module-echo-cancel source_name=echosource source_master=@DEFAULT_SOURCE@ sink_name=echosink sink_master=@DEFAULT_SINK@ use_master_format=1 aec_method=webrtc aec_args='analog_gain_control=0 digital_gain_control=1 agc_start_volume=190 voice_detection=1 high_pass_filter=1 noise_suppression=1  drift_compensation=1 extended_filter=0 intelligibility_enhancer=0'
+
+#{{{1 RTP send & receive
+## send (null sink + monitor source + RTP-sending source-output)
+load-module module-null-sink sink_name=rtp sink_properties='device.description = "RTP multicast (239.255.255.250:46226)"'
+load-module module-rtp-send source=rtp.monitor destination_ip=239.255.255.250 port=46226 inhibit_auto_suspend=never mtu=3960
+## suspend sending by default
+suspend-sink rtp 1
+## receive (connect incoming SAP/RTP streams to default sink)
+load-module module-rtp-recv sap_address=239.255.255.250
+
+#{{{1 sink 'voip-out': equalizer for conference calls etc. (filter combined-stereo)
+.ifexists module-ladspa-sink.so
+.nofail
+load-module module-ladspa-sink sink_name=voip-out sink_master=combined-stereo sink_input_properties='media.role=phone device.description="VoIP SC4 sink"' plugin=sc4m_1916 label=sc4m control=1,1.5,401,-30,20,5,12
+#load-module module-ladspa-sink sink_name=voip-out plugin=mbeq_1197 label=mbeq control=-30.0,-19.1,-18.6,-18.6,-18.6,-10.0,-8.0,-6.5,1.5,1.5,1.5,8.5,10.6,10.6,10.6
+.fail
+.endif

@@ -1,0 +1,61 @@
+# file: ~/.abook/abookrc
+# help:     <lnk:man:abookrc.5> <lnk:man:abook.1>
+# see also: <lnk:~/.lbdbq/rc> <lnk:man:lbdbq>
+
+## custom fields
+field birthday = Birthday, date
+field mobile2  = Mobile2
+
+## views
+#
+# Standard fields:
+#    nick, name, email,
+#    address, address2, city, state, zip, country,
+#    phone, workphone, fax, mobile,
+#    nick, url, notes, anniversary
+#
+view CONTACT = name, nick, email, url, birthday, notes
+view ADDRESS = address, address2, city, state, zip, country
+view PHONE   = mobile, mobile2, phone, workphone, fax
+
+# dummy fields for display purposes
+field __name     = "Name", string
+
+## what is shown in index
+set index_format="{__name:20|nick|name} {email:32} {mobile:18} {phone:18}"
+
+## preserve also non-standard fields in the database file
+set preserve_fields=all
+
+## how to open contact's URL
+set www_command=xdg-open
+
+## Colors
+## color can be: default, black, red, green, yellow, blue, magenta, cyan, white
+
+# use colors
+set use_colors = true
+
+# foreground
+set color_header_fg         = default
+set color_footer_fg         = default
+set color_list_even_fg      = default
+set color_list_odd_fg       = default
+set color_list_header_fg    = white
+set color_list_highlight_fg = cyan
+set color_tab_border_fg     = default
+set color_tab_label_fg      = white
+set color_field_name_fg     = white
+set color_field_value_fg    = cyan
+
+# background
+set color_header_bg         = default
+set color_footer_bg         = default
+set color_list_even_bg      = default
+set color_list_odd_bg       = default
+set color_list_header_bg    = default
+set color_list_highlight_bg = default
+set color_tab_border_bg     = default
+set color_tab_label_bg      = default
+set color_field_name_bg     = default
+set color_field_value_bg    = default

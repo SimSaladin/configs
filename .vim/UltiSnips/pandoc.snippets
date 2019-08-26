@@ -1,0 +1,29 @@
+# ~/.vim/UltiSnips/pandoc.snippets
+# See also <url:file:vimwiki.snippets> <url:file:markdown.snippets>
+
+extends markdown
+
+priority 1
+
+snippet header "Pandoc header"	!b
+---
+title: `!v expand("%:t:r:gs?-_? ?")`
+author: `!v g:author_name`
+email:  `!v g:author_email`
+date: `!v strftime("%Y-%m-%d")`
+---
+
+endsnippet
+
+# requires some style configuration too. (bulma.io?)
+snippet msg-warn ":::{.message .is-warning}"
+::: {.message .is-warning}
+::: {.message-header}
+${1}
+:::
+::: {.message-body}
+${2}
+:::
+:::
+endsnippet
+

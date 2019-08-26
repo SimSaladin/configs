@@ -1,0 +1,16 @@
+# ~/.vim/UltiSnips/tex.snippets
+
+snippet header "header [articlex]" !b
+%tex
+%file: `!v expand('%:t')`
+\documentclass[a4paper]{article}
+\usepackage[${1:english,finnish}]{babel}
+\usepackage[utf8x]{inputenc}
+\title{${1:Title}}
+\author{`!v g:default_author`}
+\begin{document}
+\maketitle
+
+$0
+\end{document}
+endsnippet

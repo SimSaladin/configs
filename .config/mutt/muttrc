@@ -1,0 +1,150 @@
+# file: ~/.config/mutt/muttrc     vim:fdm=marker fdl=0:
+# <lnk:man:neomuttrc.5>
+
+# {{{ general
+set   pipe_decode  = yes
+set   prompt_after = no
+set   wait_key     = no
+set   timeout      = 10
+unset help
+unset beep_new
+
+# caching
+set header_cache      = ~/.cache/mutt/`mkdir -p ~/.cache/mutt || echo _ mkdir-cache-failed`
+set message_cachedir  = ~/.cache/mutt/
+
+# color scheme
+# [mutt-solarized-github]: https://github.com/altercation/mutt-colors-solarized
+source ~/.config/mutt/colors/mutt-colors-solarized-dark-16.muttrc
+
+# charsets
+charset-hook ^us-ascii$ iso-8859-12
+set send_charset = "us-ascii:utf-8"
+
+# general IMAP settings
+unset imap_passive
+set   imap_idle
+set   imap_keepalive = 300
+set   mail_check     = 60
+unset mark_old
+# }}}
+
+## {{{ Index, Pager
+
+set strict_threads          = yes
+set sort                    = "threads"
+set sort_browser            = "reverse-date"
+set sort_aux                = "last-date-received"
+set pager_stop              = yes
+set pager_index_lines       = 5
+set prompt_after            = no
+set mime_type_query_command = "xdg-mime query filetype"
+set mime_type_query_first   = yes
+set markers                 = no # don't put '+' at the beginning of wrapped lines
+
+# index status line
+set status_format = "[%r] %f [Msgs:%?M?%M/?%m%?n? New:%n?%?o? Old:%o?%?d? Del:%d?%?F? Flag:%F?%?t? Tag:%t?%?p? Post:%p?%?b? Inc:%b?%?l? %l]--?%?V?[Limit:%V]?%>-(%s/%S)-(%h %v)-(%P)---"
+set status_chars  = "-*%A"  # unchanged/changed/read-only/attach-message
+
+# pager status line
+set pager_format = "[%Z] %C/%m: %-20.20n   %s%*  -- (%P)"
+
+# index entries
+set index_format = "%4C %Z %{%b %d} %-15.15L %s %> (%e/%-2E %?l?%4l&%4c?)"
+
+auto_view         text/html # auto-convert html mails to text for in-line previews
+alternative_order text/plain text/enriched text/html
+
+macro index        M  "T.*\n;WN" "[M]ark all messages as read"
+macro index,pager  a  "<pipe-message>abook --add-email-quiet >/dev/null<enter>" "[A]dd sender to address book"
+
+# }}}
+
+# {{{ Compose
+set copy           = yes
+set fast_reply     = yes
+set crypt_autosign = yes
+
+macro compose \e5  "F pandoc -s -f markdown -t html \nytext/html; charset=us-ascii\n" "Convert from markdown to text/html"
+# }}}
+
+# {{{ Aliases, address book, address scraping
+
+# Explanations of what's going on here, see <lnk:~/projects/00-personal/contacts.org>
+
+set query_command = "lbdbq %s"
+set query_format  = "%4c %t %-25.40n <%a> %> %?e?(%e)?"
+
+# automatically scrape addresses with lbdb when unread mail is opened.
+# XXX: can't do `message-hook ~U "push "<pipe-message>..." ` because it messes
+# with e.g. <tag-prefix> commands for whatever reason.
+message-hook .  "unset display_filter"
+message-hook ~U "set display_filter = \"bash -c '{ tee /dev/stderr | lbdb-fetchaddr -a; } 2>&1'\""
+
+# aliases defined from mutt
+set alias_file = "~/.config/mutt/alias_local.rc"
+
+# update mutt aliases from abook at startup
+source "abook --convert --infile $HOME/.abook/addressbook --outformat mutt|"
+# }}}
+
+# {{{ PGP
+
+set pgp_default_key   = "68F82A4F3ECA091D"
+set pgp_sign_as       = "6F811A5B47DF25F6"
+set pgp_use_gpg_agent = yes
+
+# see: /usr/share/doc/mutt/samples/gpg.rc)
+set pgp_decode_command = "gpg --no-verbose -q --batch --status-fd=2 %?p?--passphrase-fd 0? -o - %f"
+set pgp_verify_command = "gpg --no-verbose -q --batch --status-fd=2 -o - --verify %s %f"
+set pgp_decrypt_command = "gpg --no-verbose -q --batch --status-fd=2 %?p?--passphrase-fd 0? -o - %f"
+set pgp_sign_command = "gpg --no-verbose -q --batch -o - %?p?--passphrase-fd 0? -a -b --textmode %?a?-u %a? %f"
+set pgp_clearsign_command = "gpg --no-verbose -q --batch -o - %?p?--passphrase-fd 0? -a --textmode --clearsign %?a?-u %a? %f"
+set pgp_encrypt_only_command = "pgpewrap gpg --no-verbose -q --batch -o - -e --textmode -a --always-trust -- -r %r -- %f"
+set pgp_encrypt_sign_command = "pgpewrap gpg --no-verbose -q --batch %?p?--passphrase-fd 0? --textmode -o - -e -s %?a?-u %a? -a --always-trust -- -r %r -- %f"
+set pgp_import_command = "gpg --no-verbose --import %f"
+set pgp_export_command = "gpg --no-verbose --export -a %r"
+set pgp_verify_key_command = "gpg --verbose --batch --fingerprint --check-sigs %r"
+set pgp_list_pubring_command = "gpg --no-verbose -q --batch --with-colons --with-fingerprint --with-fingerprint --list-keys %r"
+set pgp_list_secring_command = "gpg --no-verbose -q --batch --with-colons --with-fingerprint --with-fingerprint --list-secret-keys %r"
+set pgp_good_sign = "^\\[GNUPG:\\] GOODSIG"
+set pgp_check_gpg_decrypt_status_fd = yes
+
+# }}}
+
+# {{{ accounts
+
+# {{{ <F2> pvl
+set my_pvl_username      = `pass paivola.fi/username 2>&1`
+set my_pvl_password      = `pass paivola.fi/password 2>&1`
+set my_pvl_address       = `pass paivola.fi/address  2>&1`
+set my_pvl_folder        = "imaps://$my_pvl_address@mail.paivola.fi"
+# }}}
+
+# {{{ <F3> relex
+set my_relex_username    = `pass show relex/microsoftonline.com_app_username`
+set my_relex_password    = `pass show relex/microsoftonline.com_app_password`
+set my_relex_domain      = `pass show relex/microsoftonline.com_domain`
+set my_relex_domain_from = `pass show relex/microsoftonline.com_domain_from`
+set my_relex_folder      = "imaps://$my_relex_username@$my_relex_domain@outlook.office365.com"
+# }}}
+
+# account hooks: set connection settings - used also when checking new mail etc.
+account-hook . 'unset imap_user; unset imap_pass'
+account-hook $my_pvl_folder   'set imap_user="$my_pvl_username" imap_pass="$my_pvl_password"'
+account-hook $my_relex_folder 'set imap_user="$my_relex_username@$my_relex_domain" imap_pass="$my_relex_password"'
+
+# mailboxes and folder hooks: change settings when changing mailbox
+mailboxes $my_relex_folder/INBOX
+folder-hook $my_relex_folder 'source ~/.config/mutt/relex.rc'
+mailboxes $my_pvl_folder/INBOX
+folder-hook $my_pvl_folder   'source ~/.config/mutt/pvl.rc'
+
+# key bindings
+macro index,pager <f2> "<sync-mailbox><change-folder>$my_pvl_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Switch to $my_pvl_folder"
+macro index,pager <f3> "<sync-mailbox><change-folder>$my_relex_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Switch to $my_relex_folder"
+
+# open default
+source ~/.config/mutt/relex.rc
+
+# }}}

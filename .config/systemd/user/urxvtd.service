@@ -1,0 +1,10 @@
+[Unit]
+Description=rxvt-unicode terminal emulator daemon
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=urxvtd -o
+Restart=on-failure
+
+[Install]
+WantedBy=de.target

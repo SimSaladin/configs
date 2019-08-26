@@ -1,0 +1,31 @@
+program_options:
+  udisks_version: 2
+  tray: false
+  automount: true
+  notify: true
+  password_cache: 0
+
+  # file_manager: "urxvtc -e ranger"
+
+  password_prompt: "builtin:gui"
+  #password_prompt: ["gnome-keyring-query", "get", "{id_uuid}"]
+  # [string|list] Set command to retrieve passwords. If specified
+  # as a list it defines the ARGV array for the program call. If
+  # specified as a string, it will be expanded in a shell-like
+  # manner. Each string will be formatted using `str.format`. For a
+  # list of device attributes, see below. The two special string values
+  # "builtin:gui" and "builtin:tty" signify to use udiskie's
+  # builtin password prompt.
+
+  #notify_command: "zenity --info --text '{event}: {device_presentation}'"
+  # [string|list] Set command to be executed on any device event.
+  # This is specified like `password_prompt`.
+
+device_config:
+  # XXX: Nokia 6
+  #- id_uuid: "2017-04-21-14-19-37-00"
+  #- device_file: /dev/libmtp-3-1.2.4
+  #  automount: true
+  #  options: ["subtype=fuse.jmtpfs"]
+  - device_file: /dev/sr0
+    automount: false

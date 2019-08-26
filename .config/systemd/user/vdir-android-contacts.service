@@ -1,0 +1,8 @@
+[Unit]
+Description=sync android contacts to vdir
+ConditionPathExists=/mnt/nextcloud/.Contacts-Backup
+
+[Service]
+Type=oneshot
+SyslogIdentifier=vdir-android-contacts
+ExecStart=%h/.config/vdirsyncer/android-vcard-convert.sh

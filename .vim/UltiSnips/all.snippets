@@ -1,0 +1,44 @@
+# ~/.vim/UltiSnips/all.snippets
+#
+# Python in vim <url:vimhelp:python-vim>
+
+#snippet "(\S+)\)" "(..) postfix" ir
+#(`!p snip.rv = match.group(1)`$1) $0
+#endsnippet
+
+# Insert-mode
+snippet now "Current timestamp" i
+`date`
+endsnippet
+snippet ... "… (Ellipsis)" i
+…
+endsnippet
+snippet "(%(:.)*)" "expand('%:…')" ir
+`!p snip.rv = vim.eval("expand('"+match.group(1)+"')") `$0
+endsnippet
+
+# Universal link templates <url:vimhelp:Utl>
+snippet url "url:…"
+<url:${1:${VISUAL}}>
+endsnippet
+snippet vimhelp "url:vimhelp:…"
+<url:vimhelp:${1:${VISUAL}}>
+endsnippet
+snippet man "url:man:…"
+<url:man:${1:${VISUAL}}>
+endsnippet
+snippet rfc-url "url:{{IETF/#RFC}}"
+<url:https://tools.ietf.org/html/rfc${1:0000}>
+endsnippet
+snippet vimscript "url:vimscript:…"
+<url:vimscript:${1:${VISUAL}}>
+endsnippet
+
+snippet stack-script "stack script --resolver" !b
+#!/usr/bin/env stack
+{- stack
+  script
+    --resolver lts-13.5
+    --package "process directory containers"
+ -}
+endsnippet

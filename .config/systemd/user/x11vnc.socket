@@ -1,0 +1,11 @@
+[Unit]
+Description=x11vnc.service (unix socket S.x11vnc)
+
+[Socket]
+Service=x11vnc.service
+ListenStream=%t/S.x11vnc
+SocketMode=0600
+DirectoryMode=0700
+
+[Install]
+WantedBy=sockets.target

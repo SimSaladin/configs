@@ -1,0 +1,145 @@
+# File: ~/.gitconfig                  :vim:set et tw=78 sw=2 fdm=indent:
+# Docs: <url:man:git-config.1>
+
+[user]
+  name       = Samuli Thomasson
+  email      = samuli.thomasson@relexsolutions.com
+  signingkey = F3D3AB3309F04D1CA4D851D068F82A4F3ECA091D
+[core]
+  excludesFile = ~/.gitignore_global
+  ; can be "auto" (but vim isn't smart enough to handle that well)
+  commentChar  = ";"
+  ; pager preference:
+  ; $GIT_PAGER > core.pager > $PAGER > less (compile-time default)
+  pager = diff-so-fancy | command less --tabs=4 -RFX
+[annex]
+  ; --jobs=N, defaults to 1.
+  jobs = 4
+  ; git command queue, default 10240. May be increased with more memory.
+  queuesize = 50000
+  ; git-annex defaults caching unencrypted creds on disk (.git/annex/creds),
+  ; so tell it not to
+  cachecreds = false
+[alias]
+  ; Note: Aliases that hide existing git commands are ignored.
+  ; Note: Arguments are split by spaces.
+  ; Note: Usual shell quoting and escaping (quote pair or backslash).
+  ; Note: Any expansion prefixed with ! is treated as a shell command.
+  ; Note: shell commands execute from the repository top-level directory!
+  ;
+  ; TODO: create new branch and track it
+  ; TODO: delete current checked out branch
+  co      = checkout
+  cm      = commit
+  cam     = commit --amend --no-edit
+  cfix    = commit --fixup            ; usage: cfix <commit-ref> [<commit-options>]
+  b       = pp-branches
+  bd      = branch --delete
+  bdd     = branch --delete --force
+  ba      = branch --all
+  br      = branch --remotes
+  bm      = branch --move
+  lg      = log --color --graph --abbrev-commit --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset'
+  lgg     = lg --boundary @{u}..
+  p       = push
+  pa      = push --all --tags
+  po      = push origin
+  st      = pp-status
+  sm      = submodule
+  smst    = submodule status
+  lazy    = !lazygit
+
+  up     = !git remote update -p\ngit merge --ff-only @{u}
+  up-all = !git remote update -p\n\
+    for b in  $(git for-each-ref refs/heads --format='%(refname)')\n\
+      do git fff "${b#refs/heads/}" "${b#refs/heads/}"@{u}\n\
+    done
+
+  branchdelete = !f() { set -x\n git branch -D \"$@\" \n git push --delete $(git remote) \"$@\" \n}\nf
+
+  branchuser   = !git b -a --list '${USER}-*' '$(git remote)/${USER}-*'
+
+  ; push-matching <push-args> <remote> <branch-pattern>
+  push-matching =!f(){\n\
+    args=' '\n\
+    while [[ $1 = -* ]]\n do args+='$1'\n shift\n done\n\
+    branches=$(git branch --list --format='%(refname:short)' '$2' | tr '\\n' ' ')\n\
+    cmd='git push${args}$1 $branches'\n\
+    echo -ne 'About to execute: $cmd\\n(press any to continue, Ctrl-C to abort)'\n\
+    read\neval '$cmd'\n}\nf
+  pp-status   = status --short --branch
+  ; Formats documented in <url:man:git-for-each-ref>
+  pp-branches = branch --format='%(color:red)%(objectname:short)%(color:reset) \
+%(if)%(upstream:remotename)%(then)\
+%(color:bold yellow)%(align:6)%(upstream:remotename)%(end) \
+%(color:nobold green)%(align:60,right)\
+%(creatordate:relative) ~ %(color:nobold magenta)%(if)%(upstream:track)%(then)%(upstream:track) %(end)\
+%(if)%(HEAD)%(then)%(color:magenta bold)%(else)%(color:cyan bold)%(end)%(refname:lstrip=2)\
+%(end) %(color:yellow nobold)%(upstream:lstrip=3)\
+%(else)%(if)%(HEAD)%(then)%(color:magenta bold)%(align:56,right)%(refname:short)%(end)\
+%(else)%(refname:lstrip=2) %(color:nobold green)~ %(creatordate:relative)%(end)\
+%(end)%(color:reset)'
+[branch]
+  ; See git-for-earch-ref(1) for available options.
+  ; The default is refname.
+  ; Dash (-) in front reverses order.
+  ; When defined multiple times last becomes primary.
+  sort = committerdate
+[blame]
+  blankBoundary = true
+  coloring = highlightRecent
+[color]
+  ui = true
+[color "diff-highlight"]
+  oldNormal    = green bold
+  oldHighlight = red bold
+  newNormal    = green bold
+  newHighlight = green
+[color "diff"]
+  meta       = blue
+  frag       = blue
+  commit     = magenta bold
+  old        = red bold
+  new        = green normal
+  whitespace = red reverse
+[diff]
+  tool        = icdiff
+  renameLimit = 5000
+[difftool]
+  prompt      = false
+[difftool "icdiff"]
+  cmd         = /usr/bin/icdiff --line-numbers $LOCAL $REMOTE | less -RFX
+[gc]
+  ; no auto gc: sometimes do:  git repack -d; git gc; git prune
+  auto        = 0
+[gpg]
+  program     = gpg2
+[help]
+  autocorrect = 1
+[index]
+  ; takes effect in newly initialized or cloned repositories. For existing repos
+  ; do git update-index --index-version=4.
+  ; version 4 from git 1.8.0 onwards.
+  version = 4
+[log]
+  decorate = full
+[merge]
+  conflictstyle = diff3
+  ; Preformatted merge commit messages include descriptions of the merged
+  ; commits (up to N). See <lnk:man:git-fmt-merge-msg.1>.
+  log           = 20
+  conflictstyle = diff3
+  tool          = vimdiff
+  guitool       = vimdiff
+  renameLimit   = 18654
+[mergetool]
+  ; keep *.orig files after merge?
+  keepBackup = false
+[push]
+  ; simple:   default from Git 2.0 onwards. act on only the checked-out branch.
+  ; upstream: like simple, but not caring if upstream branch name differs from local name.
+  default = upstream
+  ; check:    verify that changed submodule commits are available on at least one remote of the submodule.
+  recurseSubmodules = check
+[pull]
+  rebase = true

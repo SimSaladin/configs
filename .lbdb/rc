@@ -1,0 +1,34 @@
+# File: ~/.lbdb/rc
+# Documentation: <lnk:man:lbdbq.1>
+# See also:      <lnk:/etc/lbdb.rc>
+#                <lnk:~/.config/mutt/muttrc>
+#                <lnk:~/projects/00-personal/contacts.org>
+
+# {{{1 general
+
+#MODULES_PATH="$MODULES_PATH $HOME/.config/lbdb/modules"
+
+METHODS="m_getent m_gpg m_muttalias m_abook m_inmail"
+
+# one of false=no, name, comment, reverse_comment, address
+#SORT_OUTPUT=address
+
+# see <lnk:/etc/lbdb.rc> for meaning of these.
+KEEP_DUPES=no
+#MUNGE_LIMITCOUNT=3
+#MUNGE_LIMITDATE=`date ...`
+
+# Placeholder, see <lnk:/etc/lbdb.rc>. What does this do actually?
+#MAIL_DOMAIN_NAME=local
+
+# {{{1 m_inmail
+INMAIL_DB="$HOME/.lbdb/m_inmail.utf-8"
+
+# {{{1 m_abook
+ABOOK_FILES="$HOME/.abook/addressbook"
+
+# {{{1 m_mmuttalias
+# XXX: any better way to unify these sources at least a bit maybe?
+MUTT_DIRECTORY="$HOME/.config/mutt"
+MUTTALIAS_FILES="alias_local.rc"
+

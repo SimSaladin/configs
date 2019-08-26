@@ -1,0 +1,121 @@
+# file: ~/.config/newsboat/config
+# man page:       <url:man:newsboat.1>
+# release notes:  <url:https://newsboat.org/releases/2.15/docs/newsboat.html>
+
+## macros: press macro prefix (default ",") + macro key
+
+# Open actions {{{
+
+# default URL action
+browser xdg-open
+
+# ,i - open in feh
+macro i set browser "feh %u"; open-in-browser ; set browser "xdg-open %u"
+
+# }}}
+
+# Navigation j,k,l,h {{{1
+
+# Jump to the next unread item when an item’s read status is toggled in the
+# article list?
+toggleitemread-jumps-to-next-unread yes
+
+# jk JK
+unbind-key j
+unbind-key k
+unbind-key J
+unbind-key K
+
+bind-key j down
+bind-key k up
+bind-key l open
+bind-key h quit
+
+# }}}1
+
+# bookmarks {{{
+bookmark-autopilot false
+bookmark-cmd ""
+bookmark-interactive false
+# }}}
+
+# notifications {{{
+#
+notify-format   "newsboat: finished reload, <b>%f unread</b> feeds (%n unread articles total)"
+notify-program  "notify-send"
+notify-always   no
+notify-beep     no
+notify-screen   no
+notify-xterm    no
+# }}}
+
+# {{{ local urls <url:./urls>:
+#
+# https://foo/rss.xml   tagforfoo "another with space"
+# …                     "~assign name to feed"
+# …                     "!this hides the feed"
+#
+urls-source "local"
+# }}}
+
+# {{{ General
+
+# XXX file names
+cache-file    ~/.local/share/newsboat/cache.db
+cookie-cache  ~/.cache/newsboat/cookies.txt
+error-log     ~/.cache/newsboat/error.log
+
+# All feed items with no content but with a link, the link is downloaded and
+# the result used as content instead.
+download-full-page  yes
+auto-reload         yes
+max-items           200
+reload-time         180
+
+#define-filter "interesting only" "tags # \"foobar\""
+
+# }}}
+
+# Formats, dialogs, URLs {{{1
+
+# Limit HTML content width if set. Unset uses terminal width.
+#text-width  70
+
+html-renderer "w3m -dump -T text/html"
+
+# Use external program
+external-url-viewer "urlview"
+
+urlview-title-format "%N %V - URLs"
+
+# default:"%N %V - Articles in feed '%T' (%u unread, %t total) - %U"
+#     newsboat version - articles in feed 'feed' (unread unread, total total) - URL
+articlelist-title-format "%U - %T (%u unread) -  %N-%V"
+
+# default: "%4i %f %D %6L %?T?|%-17T| ?%t"
+articlelist-format "%4i %f %D %6L %?T?|%-17T| ?%t"
+
+# datetime in article list. default: "%b %d" i.e. Aug 07
+datetime-format "%b %d"
+
+# default: "%4i %n %11u %t"
+feedlist-format "%4i %n %11u %t"
+
+# default: "%N %V - Dialogs"
+dialogs-title-format "%N %V - Dialogs"
+
+# }}}1
+
+# Colors {{{1
+
+#     element            color      bg      [bold]
+
+color background         default    default
+color listnormal         green      default bold
+color listnormal_unread  blue       default bold
+color listfocus          black      yellow
+color listfocus_unread   black      yellow  bold
+color info               green      black   bold
+color article            default    default
+
+# }}}

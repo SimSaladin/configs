@@ -1,0 +1,11 @@
+[Unit]
+Description=tmux-server.service (unix socket under %t/tmux-%U/default)
+
+[Service]
+Type=forking
+Environment=TMUX_TMPDIR=%t
+ExecStartPre=/usr/bin/mkdir -p $TMUX_TMPDIR
+ExecStart=/usr/bin/tmux start-server
+
+[Install]
+WantedBy=basic.target

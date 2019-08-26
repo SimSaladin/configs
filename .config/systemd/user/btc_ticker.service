@@ -1,0 +1,7 @@
+[Unit]
+Description=BTC price ticker
+ConditionFileIsExecutable=%h/bin/kraken_dzen
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/kraken_dzen %t/btc-ticker

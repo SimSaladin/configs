@@ -1,0 +1,73 @@
+// Programmer Dvorak International, by Samuli Thomasson
+//
+// Original Programmer Dvorak, by Roland Kaufmann <rlndkfmn at gmail dot com>
+// License: BSD, available at <http://www.kaufmann.no/roland/dvorak/license.html>
+
+partial alphanumeric_keys
+xkb_symbols "intl" {
+
+    include "us(dvorak)"
+
+    name[Group1] = "English (Programmer Dvorak, programmer, intl.)";
+
+    //           [ Unmodified       Shift           AltGr            Shift+AltGr]
+    // R4: AE01..AE12 + TLDE + BKSP
+    key <TLDE> { [ dollar,          asciitilde,     dead_tilde                  ] };
+    key <AE01> { [ ampersand,       percent                                     ] };
+    key <AE02> { [ bracketleft,     7,              currency                    ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE03> { [ braceleft,       5,              cent                        ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE04> { [ braceright,      3,              yen                         ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE05> { [ parenleft,       1,              EuroSign                    ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE06> { [ equal,           9,              sterling                    ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE07> { [ asterisk,        0                                           ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE08> { [ parenright,      2,              onehalf                     ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE09> { [ plus,            4                                           ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE10> { [ bracketright,    6                                           ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE11> { [ exclam,          8,              exclamdown                  ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <AE12> { [ numbersign,      grave,          dead_grave                  ] };
+    key <BKSP> { [ BackSpace                                                    ] };
+
+    // R3: AD01..AD11
+    key <AD01> { [ semicolon,       colon,          dead_diaeresis              ] };
+    key <AD02> { [ comma,           less,           guillemotleft               ] };
+    key <AD03> { [ period,          greater,        guillemotright              ] };
+    key <AD04> { [ p,               P,              paragraph,       section    ] };
+    key <AD05> { [ y,               Y,              udiaeresis,      Udiaeresis ] };
+    //key <AD06>
+    //key <AD07>
+    key <AD08> { [ c,               C,              ccedilla,        Ccedilla   ] };
+    key <AD09> { [ r,               R,              registered,      trademark  ] };
+    key <AD11> { [ slash,           question,       questiondown                ] };
+    key <AD12> { [ at,              asciicircum,    dead_circumflex, dead_caron ] };
+
+    // R2: AC01..AC11+BKSL (home row)
+    key <AC01> { [ a,               A,              adiaeresis,      Adiaeresis ] };
+    key <AC02> { [ o,               O,              odiaeresis,      Odiaeresis ] };
+    key <AC03> { [ e,               E,              ae,              AE         ] };
+    key <AC04> { [ u,               U,              eacute,          Eacute     ] };
+    key <AC06> { [ d,               D,              eth,             ETH        ] };
+    key <AC07> { [ h,               H,              dead_acute                  ] };
+    key <AC08> { [ t,               T,              thorn,           THORN      ] };
+    key <AC09> { [ n,               N,              ntilde,          Ntilde     ] };
+    key <AC10> { [ s,               S,              ssharp                      ] };
+    key <AC11> { [ minus,           underscore,     hyphen                      ], type[Group1] = "FOUR_LEVEL_ALPHABETIC" };
+    key <BKSL> { [ backslash,       bar                                         ] };
+
+    // R1: AB01..AB10
+    key <AB01> { [ apostrophe,      quotedbl,       dead_acute                  ] };
+    key <AB02> { [ q,               Q,		          aring,           Aring      ] };
+    key <AB03> { [ j,               J		                                      ] };
+    key <AB04> { [ k,               K		                                      ] };
+    key <AB05> { [ x,               X,		          oslash,          Ooblique   ] };
+    key <AB06> { [ b,               B		                                      ] };
+    key <AB07> { [ m,               M		                                      ] };
+    key <AB08> { [ w,               W		                                      ] };
+    key <AB09> { [ v,               V		                                      ] };
+    key <AB10> { [ z,               Z		                                      ] };
+
+    // what is 
+    //include "kpdl(comma)"
+
+    // do NOT hardcode this switch; use lv3:ralt_switch option instead!
+    //include "level3(ralt_switch)"
+};

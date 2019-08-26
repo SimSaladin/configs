@@ -1,0 +1,14 @@
+# ~/.vim/UltiSnips/sh.snippets
+
+snippet header "/bin/bash header" !b
+#!/bin/bash
+#-----------------------------------------------------------------------------
+# File:          `!v expand('%:p:~')`
+# Creation Date: `date +"%H:%M'%S %d.%m.%y"`
+# Author:        `!v g:author_name` <`!v g:author_email`>
+# License:       `!v g:default_license`
+#-----------------------------------------------------------------------------
+set -eu
+
+$0
+endsnippet

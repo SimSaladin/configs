@@ -1,0 +1,11 @@
+#!/bin/bash
+
+sels=( clipboard primary secondary buffer-cut )
+
+while sleep 1; do
+  for s in "${sels[@]}"; do
+    y=$(xclip -o -s "$s")
+    echo "$s: ${y@Q}"
+  done
+  echo "----------------------------------------"
+done

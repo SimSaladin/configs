@@ -1,0 +1,17 @@
+# file: ~/.config/tmuxp/hs.yaml
+
+---
+session_name: $SESSION
+options:
+  default-command: exec env -C "$DIR" $SHELL
+window_options:
+  automatic-rename: "off"
+windows:
+- window_name: nam
+  layout: main-horizontal
+  options:
+    main-pane-height: 35
+  panes:
+  - focus: true
+  - pane
+  - vim -c NERDTree

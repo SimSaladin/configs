@@ -1,0 +1,70 @@
+# ~/.vim/UltiSnips/make.snippets
+
+snippet header "Makefile header" !b
+# File: `!v expand('%:~:.')`
+
+$0
+endsnippet
+
+snippet rule "Pattern rule"
+${1:pattern-$@}: ${2:prerequisite-$<}${3: }${3:other-prerequisites}
+  $0
+endsnippet
+
+snippet phony "PHONY target" !b
+.PHONY: $1
+${1:all}: ${3:$(${2:PROGRAMS})}
+endsnippet
+
+global !p
+def py_ifneqdef(snip, post):
+  body = snip.buffer[snip.line]
+  snip.buffer[snip.line] = ''
+  body += " ${1:Text}" if body[-1] == 'f' else " (${1:ARG1}, ${2:ARG2})"
+  body += post
+  snip.expand_anon(body)
+endglobal
+
+post_jump "py_ifneqdef(snip, '\n\t$0\nendif')"
+snippet "ifn?(eq|def)" "if[n]eq/…def CONDITION … endif" br
+`!p snip.rv = match.group(0) `
+endsnippet
+
+post_jump "py_ifneqdef(snip, '\n\t$0')"
+snippet "else ifn?(eq|def)" "else if[n]eq…def CONDITION …" br
+`!p snip.rv += match.group(0)`
+endsnippet
+
+snippet elif "else ifeq (a,b)" b
+else ifeq
+endsnippet
+
+snippet "(?:\$\()?(?:foreach|for|each)" "$(foreach var,values,body)" r
+$(foreach ${1:val},${3:$(${2:items})},${4:loopbody})$0
+endsnippet
+
+snippet template "define template" b
+define ${2:${1:Program}_tpl} =
+  ${5:${3:$(1)}: ${4:$(2)}}$0
+endef
+endsnippet
+
+snippet call "$(call TEMPLATE,ARG1)"
+$(call ${1:TemplateName},${2:ARG1})
+endsnippet
+
+snippet eval "$(eval ${VISUAL})"
+$(eval ${1:${VISUAL}})
+endsnippet
+
+snippet sub "$(subst FROM,TO,${VISUAL:TEXT})"
+$(subst ${1:FROM},${2:TO},${3:${VISUAL:TEXT}})
+endsnippet
+
+snippet patsub "$(patsubst PATTERN,REPLACEMENT,${VISUAL:TEXT})"
+$(patsubst ${1:PATTERN},${2:REPLACEMENT},${3:${VISUAL:TEXT}})
+endsnippet
+
+snippet subp "$(${VISUAL:TEXT}:PATTERN=REPLACEMENT)"
+$(${3:${VISUAL:VAR}}:${1:PAT}=${2:REPLACE})
+endsnippet

@@ -1,0 +1,12 @@
+# ~/.pam_environment
+#
+# http://www.linux-pam.org/Linux-PAM-html/mwg-expected-by-module-item.html
+# pam_env.conf.5
+
+REMOTEHOST      DEFAULT=localhost OVERRIDE=@{PAM_RHOST}
+TMUX_TMPDIR     DEFAULT="${XDG_RUNTIME_DIR}"
+TMUXP_CONFIGDIR DEFAULT="@{HOME}/.config/tmuxp"
+
+# XXX openssh won't honor if any of these are set here
+#DISPLAY       DEFAULT=${REMOTEHOST}:0.0 OVERRIDE=${DISPLAY}
+#SSH_AUTH_SOCK DEFAULT="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"

@@ -1,0 +1,6 @@
+[Unit]
+Description=VNC Server for X11 (localhost)
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=x11vnc -rfbport 0 -rfbportv6 0 -unixsock %t/S.%N -nopw -find -forever
