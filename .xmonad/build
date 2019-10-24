@@ -1,6 +1,0 @@
-#!/bin/sh -ex
-
-cd ~/.xmonad \
-        && stack --verbosity error --no-terminal setup \
-        && stack --verbosity error --no-terminal install \
-        || which xmonad-my

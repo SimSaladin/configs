@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /usr/bin/Xorg -keeptty -ardelay 150 -arinterval 50 -nolisten tcp "$@" vt$XDG_VTNR

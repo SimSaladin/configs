@@ -1,7 +1,0 @@
-# file: ~/.xmonad/.gitignore
-
-/workspaces
-/xmonad.errors
-/xmonad-x86_64-linux
-/prompt-history
-/*.cabal

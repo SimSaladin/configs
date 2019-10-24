@@ -1,4 +1,0 @@
-[Unit]
-Description=Desktop Environment (graphical-session)
-BindsTo=graphical-session.target
-After=graphical-session.target
