@@ -16,6 +16,3 @@ git config --worktree --unset filter.git-crypt.smudge
 
 The plugin manager (dein.vim) + plugins will be installed automatically when
 starting vim (if needed). Network connection required.
-
-At least Vim 8.+ or Neovim, Python 3 and some libs is needed for some of the
-stuff.
