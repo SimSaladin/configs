@@ -1,240 +1,258 @@
-#!/bin/bash
-# file: ~/.bashrc
-# vim: fdm=marker fdl=0
+#!/usr/bin/env bash
+# vim:noet:ts=4:
+# shellcheck disable=SC1090,SC1091
+# shellcheck disable=SC2139
+# shellcheck disable=SC2015
+#
+# -l -i : .bash_profile | .bashrc | $BASH_ENV |
+#  X  X :    X          |   X*    |           | * .bash_profile sources .bashrc
+#  X    :    X          |   X*    |           | * .bash_profile sources .bashrc
+#     X :               |   X     |           |
+#       :               |         |  X*       | if $BASH_ENV exists; e.g. when `ssh host bash -c ...'
 
-# bash is weird, ~/.bashrc is only read when interactive and non-login;
-# it reads ~/.bash_profile when shell is login. So we have:
-# - login (interactive or not): bash_profile is sourced, bashrc is not (but
-#   profile sources it explicitly anyways)
-# - non-login & interactive: bashrc is sourced, bash_profile is not
-# - non-login & non-interactive: if $BASH_ENV value points to a file, that is
-#   sourced. (Example of a non-login non-interactive shell: ssh host bash -c echo)
 
-# {{{1 Globals
-if cmd=$(tty); then
-  export GPG_TTY=$cmd
-fi
+# POSIX-compatible string quoting
+quote () { printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ; }
 
-if [[ -z $SSH_AUTH_SOCK ]]; then
-  export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/run/user/$UID}/gnupg/S.gpg-agent.ssh"
-fi
+# POSIX-compatible replacement for `[[ arg = a??* ]]'
+fnmatch () { case $2 in $1) return 0 ;; esac; return 1; }
 
-export VAGRANT_DEFAULT_PROVIDER=libvirt
-
-export ANSIBLE_SSH_EXECUTABLE=/usr/bin/ssh
-
-[[ -r "$SECRETS" ]] && source "$SECRETS"
-
-PATH="$HOME/bin:$HOME/.local/bin:$HOME/bin/lennartcl-gitl:/usr/lib/cw:$PATH"
-
-# {{{2 XDG_*
-if [[ "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}" == "/usr/local/share:/usr/share" ]]; then
-   export XDG_DATA_DIRS="$HOME/.nix-profile/share:${XDG_DATA_DIRS}"
-fi
-if [[ -z ${XDG_DATA_HOME:-} ]]; then
-  export XDG_DATA_HOME="$HOME/.local/share"
-fi
-if [[ -z ${XDG_CONFIG_HOME:-} ]]; then
-  export XDG_CONFIG_HOME="$HOME/.config"
-fi
-if [[ -z ${XDG_CACHE_HOME:-} ]]; then
-  export XDG_CACHE_HOME="$HOME/.cache"
-fi
-if [[ -z ${XDG_MUSIC_DIR:-} && -d ~/music ]]; then
-  export XDG_MUSIC_DIR=~/music
-fi
-
-# {{{2 less, PAGER, MANPAGER, EDITOR
-if cmd=$(type -p vimpager 2>/dev/null); then
-  export PAGER=$cmd
-fi
-if cmd=$(type -p vim 2>/dev/null); then
-  EDITOR=$cmd
-  MANPAGER=$cmd
-  MANPAGER+=" -u ~/.vim/vimpagerrc -M +MANPAGER -"
-  export EDITOR MANPAGER
-fi
-
-# {{{1 Shell setup
-
-# {{{2 history
-export HISTCONTROL="erasedups:ignoreboth"
-export HISTFILESIZE=500000
-export HISTSIZE=100000
-export HISTIGNORE="&:[ ] *:exit"
-shopt -s lithist    # multi-line commands with newlines instead of semicolons
-shopt -s histappend # don't overwrite HISTFILE, append instead
-shopt -s histverify # load history substitutions to readline buffer instead of parser direct (replaces current buffer contents)
-
-# {{{2 glob, complete, correct
-shopt -s no_empty_cmd_completion  # show all 5000 possibilities in PATH?
-shopt -s autocd           # automatically cd to paths: $ /etc
-shopt -s direxpand        # completing e.g. $HOME/<Tab> expands to canonical path
-shopt -q progcomp \
-  || complete -cf sudo    # If bash-completions is not provided by system, at least complete sudo
-shopt -s cdspell dirspell # correct minor spelling mistakes for cd invocation and path expansion
-shopt -s checkhash        # automatically rehash executables
-shopt -s globstar         # enable ** and **/ recursive glob
-
-# {{{2 prompt
-if [[ ! -v __shell_prompt && -r "${SHELL_PROMPT:=$HOME/.shell_prompt.sh}" ]]; then
-   source "$SHELL_PROMPT"
-fi
-if [[ -r "${DIRCOLORS:=$HOME/.dircolors}" ]] && _dircolors=$(type -P dircolors); then
-   eval "$("$_dircolors" -b "$DIRCOLORS")"
-fi
-
-# {{{2 direnv hook
-if script=$(command direnv hook bash 2>&-); then eval "$script"; fi
-
-# {{{2 Shell completion (stack, pandoc, tmuxp)
-if type -tf stack >/dev/null; then eval "$(stack --bash-completion-script stack)"; fi
-if type -tf pandoc >/dev/null; then eval "$(pandoc --bash-completion)"; fi
-if type -tf tmuxp >/dev/null; then eval "$(_TMUXP_COMPLETE=source tmuxp)"; fi
-
-# {{{1 Aliases and functions
-
-# {{{2 github & gitlab
-gh(){
-   path=${*: -1}
-   if [[ $path != */* ]]
-   then path=SimSaladin/$path
-   fi
-   cmd=${*: 1:$(( ${#@} - 1 ))}
-   git ${cmd} https://github.com/${path}
+# sets [-v variable] [-s separator] [[-aA] value]
+sets () {
+	local OPTIND OPTARG opt
+	local -n v || return $?
+	local s=:
+	local pre post
+	while getopts v:s:a:A:p opt; do
+		case $opt in
+			v) v=$OPTARG ;;
+			s) s=$OPTARG ;;
+			a) pre=$OPTARG${pre:+$s}$pre ;;
+			A) post=$post${post:+$s}$OPTARG ;;
+			?) echo "Unrecognized option: $OPTARG" >&2; return 2 ;;
+		esac
+	done
+	shift $((OPTIND - 1))
+	if [ $# -gt $((OPTIND - 1)) ]; then
+		printf "Too many arguments: %s (%s): %s\n" "$#" "$OPTIND" "$*" >&2
+		return 2
+	fi
+	local value=$pre$s${v:-}$s$post
+	local x=''
+	local vnew=$s
+	while [ "$value" != "$x" ]; do
+		x=${value##*$s}
+		vnew=${x:+$s}$x${vnew//$s$x$s/$s}
+		value=${value%$s$x}
+	done
+	vnew=${vnew/%"$s"}
+	vnew=${vnew/#"$s"}
+	if [ -z "$pre$post" ]; then
+		printf '%b\n' "${vnew//$s/\\n}"
+	else
+		v=$vnew
+	fi
 }
 
-# checkout GitLab merge-request
-glmr(){
-   git fetch origin merge-requests/"$1"/head:mr-"$1" && git checkout mr-"$1"
-}
+export PATH
+sets -v PATH -a ~/bin/lennartcl-gitl -a ~/.local/bin -a ~/bin
 
-# {{{2 aliases: ls, find, du, grep, etc.
-alias ls='ls -cb --color=auto --group-directories-first'
+export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_RUNTIME_DIR XDG_DATA_DIRS XDG_MUSIC_DIR
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
+: "${XDG_CACHE_HOME:=$HOME/.cache}"
+: "${XDG_DATA_HOME:=$HOME/.local/share}"
+: "${XDG_RUNTIME_DIR:=/run/user/$UID}"
+: "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}"
+: "${XDG_MUSIC_DIR:=$HOME/music}"
+sets -v XDG_DATA_DIRS -a ~/.nix-profile/share
+
+export SSH_AUTH_SOCK
+: "${SSH_AUTH_SOCK:="$XDG_RUNTIME_DIR"/gnupg/S.gpg-agent.ssh}"
+
+export VAGRANT_DEFAULT_PROVIDER
+: "${VAGRANT_DEFAULT_PROVIDER:=libvirt}"
+
+export FZF_DEFAULT_OPTS
+FZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
+
+#export ANSIBLE_SSH_EXECUTABLE
+
+export EDITOR PAGER MANPAGER GPG_TTY SSH_ASKPASS CM_LAUNCHER
+
+[ -n "${LS_COLORS+y}" ] || eval "$(dircolors -b ~/.dircolors || dircolors)" 2>/dev/null || :
+#[ -v LS_COLORS ] || eval "$(dircolors -b ~/.dircolors || dircolors)" 2>/dev/null || :
+
+[ -t 1 ] && GPG_TTY=$(tty) || :
+
+if command -v vim >/dev/null; then
+	EDITOR=vim
+	PAGER=vimpager
+	MANPAGER=manpager
+fi
+
+case ${PAGER:-} in
+	*vimpager) alias less="$PAGER" ;;
+esac
+
+if [ -n "${DISPLAY+y}" ] && test -x /usr/lib/ssh/x11-ssh-askpass; then
+	SSH_ASKPASS=$_
+elif test -x "$(command -v systemd-ask-password)"; then
+	SSH_ASKPASS=$_
+fi
+
+if command -v rofi >/dev/null; then
+	CM_LAUNCHER=rofi
+elif command -v dmenu >/dev/null; then
+	CM_LAUNCHER=dmenu
+fi
+
+alias path='sets -v PATH'
+
+alias -- -='cd -'
+
+alias _='<&- &>/dev/null'  # NOTE: "_ cmd... >&255" can restore shell sockets!
+alias r='fc -s'
+
+alias ls='ls -b --color=auto --group-directories-first'
 alias la='ls -A'
-alias ll='ls -liZ --author'
-alias lt='ll -t'
-alias lal='ll -A'
-alias lsdots='ls -d .*' # ls dot files only
-
-alias findexts="find . -maxdepth 1 -type f -printf '%f\n' | sed 's|.*\.\([^.]*\)$|\1|' | sort -u"
+alias ll='ls -li --author'
+alias lla='ll -A'
+alias llt='ll -t'
+alias ll.='ll -d .*'
+if id -Z >/dev/null 2>&1; then
+	alias ll='ls -li --author -Z'
+fi
 
 alias mkdir='mkdir -p'
-alias df='df -h'
-alias dus='du -hd 1 | sort -h'
+
+alias df='df -aTh'
+alias dus='du -xh -d 1 | sort -h'
 
 alias grep='grep --color=auto'
 alias gr='grep --color=auto -inHPT1'  # GNU grep only
-alias rawcode='grep -cv ^#\|^$'
-alias ${PAGER:+less=}"$PAGER"
 
-# {{{2
-function mvto(){
-        command mkdir -p "$2" && command git mv "$1" "$2"
-}
-
-function cd(){
-   if [[ $1 == -- ]]; then shift; fi
-   if [[ $# -gt 1 ]]; then echo "cd: too many arguments" >&2; exit 1; fi
-   local - target=${1:-~} i
-   case $target in
-      - ) [[ -n ${DIRSTACK[1]} ]] && pushd +1 ;;
-      + ) [[ -n ${DIRSTACK[1]} ]] && pushd -0 ;;
-      ~+) return ;;
-      ~-) target=$OLDPWD ;;&
-      * ) target=$(realpath -s "$target")
-         for i in "${!DIRSTACK[@]}"; do
-            if [[ $target == "${DIRSTACK[$i]/#~/$HOME}" ]]; then
-               pushd +"$i"
-               return $?
-            fi
-         done
-         pushd "$target"
-         ;;
-   esac >/dev/null
-}
-
-alias -- -='cd -'
-alias -- +='cd +'
-
-# {{{2 random
-alias g=git
-alias open='xdg-open'
-alias ap='ansible-playbook'
-alias tf='terraform'
-alias assh='autossh -M 0'
 alias ip='ip -c=auto'
 alias myip='curl --ipv4 -sS https://tnx.nl/ip'
-alias myip6='curl --ipv6 -sS http://icanhazip.com/'
+alias myip6='curl --ipv6 -sS http://icanhazip.com'
+
+alias g=git
+alias gax='git annex'
+
+alias open=xdg-open
+alias ap=ansible-playbook
+alias tf=terraform
+alias sctl=systemctl
+alias sctlu='systemctl --user'
+alias journalctl='journalctl -oshort-iso --no-hostname -b -q'
+alias jctl=journalctl
+alias jctlu='journalctl --user'
+
+alias pacman='sudo pacman'
+
+alias findexts="find . -maxdepth 1 -type f -printf '%f\n' | sed 's|.*\.\([^.]*\)$|\1|' | sort -u"
+
 alias birthdays="khal list -a birthdays -df '' -f '{calendar-color}{start}{reset} {title}' today 366d"
 
-function path { set -- "${1:-PATH}"; echo -e "${!1//:/\\n}"; }
-function _ { "$@" &>/dev/null & }
+export MPC_FORMAT="%title% - %artist% #[%album%#]"
 
-function pacman {
-   if [[ " $* " =~ \ -(D|R|U|S|[RUS][^ hbpirlsk]*)\  &&
-      ! " $*" =~ \ --(help|dbpath|root|info|list|search|check)([= ]) ]]
-   then command sudo pacman "$@"
-   else command pacman "$@"
-   fi
-}
+alias np='mpc status'
+alias t='mpc toggle'
+alias pnext='mpc next'
+alias pprev='mpc prev'
 
-function calc { awk 'BEGIN { print '"$*"' }'; }
+if command -v neomutt >/dev/null; then alias mutt=neomutt; fi
 
-function xkcd {
-   wget "http://dynamic.xkcd.com/comic/random/" -qO- \
-      | awk -F\" '/comics/ { print "http:"$2
-                           ; print "http:"$2 > "/dev/stderr"
-                           ; system("recode html..ascii <<< \"" $4 "\" >/dev/stderr")
-                           ; exit }' \
-      | wget -qi- -O- | display -
-}
-
-if cmd=$(type -P neomutt)       ; then alias mutt=$cmd; fi
-if cmd=$(type -P time)          ; then alias time=$cmd; fi
-if cmd=$(type -P udiskie-umount); then alias udu=$cmd; fi
-
-# {{{2 pwgen
-if   cmd=$(type -P pwgen)  ; then alias pwgen="$cmd -scnB 18"
-elif cmd=$(type -P openssl); then alias pwgen="$cmd rand -base64"
+if command -v pwgen >/dev/null;		then alias pwgen="pwgen -scnB 18"
+elif command -v openssl >/dev/null; then alias pwgen="openssl rand -base64 18"
 fi
 
-# {{{2 aliases: systemd{,-journal}
-alias journalctl='journalctl -oshort-iso --no-hostname -b -q'
-alias sc=systemctl
-alias scuser="systemctl --user"
-alias jc=journalctl
-alias jcuser="journalctl --user"
+alias fzfvi='fzf -m --bind "enter:execute(vim {})"'
 
-# {{{2 aliases: mpc
-if type -p mpc >/dev/null; then
-   alias np='mpc --format "%title% - %artist% #[%album%#]" | head -n1'
-   alias P='mpc --no-status toggle; np'
-   alias n='mpc --no-status next; np'
-   alias p='mpc --no-status prev; np'
-   alias s='mpc --no-status stop; np'
-fi
+alias vw='env -C ~/notes fzf +s --tac --tiebreak=end -q .wmd\$\ \!^diary/\ '
 
-# {{{2 aliases: Input devices - These are for X220, IIRC
-alias no_touch='xinput set-prop "SynPS/2 Synaptics TouchPad" "Device Enabled" 0'
-alias xi='xinput       set-prop 8 "Device Enabled" 1 && xinput set-prop 10 "Device Enabled" 1'
-alias nxi='xinput      set-prop 8 "Device Enabled" 0 && xinput set-prop 10 "Device Enabled" 0'
+MAILCHECK=0
+HISTCONTROL='erasedups:ignoreboth'
+HISTIGNORE='&:[ ] *:exit'
+HISTSIZE=100000
+HISTFILESIZE=500000
 
-# {{{1 motd
+set -b
 
-# Print the arch triangle on archlinux.
-if cmd=$(type -P archey3); then "$cmd"; else cat /etc/motd || true; fi
+shopt -s checkwinsize
+shopt -s lithist histappend histverify
+shopt -s autocd
+shopt -s cdspell
+shopt -s dirspell
+shopt -s checkhash
+shopt -s no_empty_cmd_completion
+shopt -s extglob
+shopt -s globstar # globstar: ** matches files + zero or more subdirectories
+#shopt -s direxpand
 
-# Show udisk info
-if cmd=$(type -P udisksctl); then "$cmd" status; echo; fi
+shopt -q progcomp || complete -cf sudo
 
-# Show last info
-if cmd=$(type -P last); then "$cmd" -an 5 | head -n-1; fi
+{
+	complete -p git		|| source /usr/share/git/completion/git-completion.bash
+	complete -p pandoc	|| eval "$(pandoc --bash-completion)"
+	complete -p stack	|| eval "$(stack --bash-completion-script stack)"
+	complete -p tmuxp	|| eval "$(_TMUXP_COMPLETE=source tmuxp)"
+} >/dev/null 2>&1
 
-# Show stty deviations
-stty | tail -n+2 | xargs printf "note: \033[0;36mstty %s\033[0m\n"
+awkexpr () { awk 'BEGIN { print '"$*"'}'; }
 
-# Check if some random programs are available.
-for prg in vim nix direnv shellcheck; do
-  if ! type -t $prg >/dev/null; then echo "** program $prg not found **" >&2; fi
-done
+_prompt_hostcolor(){
+	# select a c_host by hashing the hostname
+	{ cat /etc/machine-id || hostname; } 2>/dev/null \
+		| cksum | cut -f1 -d ' ' | { read -r X; printf '%s' "${@:$(((X%$#)+1)):1}"; }
+}
+
+tput_ps(){ printf '%s' '\[' "$(tput "$@")" '\]'; }
+
+_prompt(){
+
+	local C R B Cw Ch C2 C3
+
+	C=$(tput_ps setaf 11)
+	R=$(tput_ps sgr 0)
+	B=$(tput_ps bold)
+	Cw=$(tput_ps setaf 6)
+	C2=$(tput_ps setaf 10)
+	C3=$(tput_ps setaf 4)
+	Ch="\[\e[$(_prompt_hostcolor '0;32' '0;33' '0;34' '0;37' '0;91' '0;95' '0;96')m\]"
+
+	local Cret="\[\e[0;\$((\$??91:32))m\]"
+	local Ceuid="\[\e[0;\$((EUID?33:31))m\]"
+	local line1 line2
+	# shellcheck disable=SC2016
+	line1="$C┌{$B\t$R$C}─{$Ceuid\u$C@$Ch\H$C:$Cw\w$C}─[$B$C2\\\${SHLVL}$R$C|$B\\\${\$}$R$C%$C3\j$C]"
+	line2="$C├$B\!$R$C|$Cret\\\${?}$C┄$Ceuid\\\\\$$R "
+
+	PS1="$line1\n$line2"
+	PS2="$C│$R"
+	PROMPT_COMMAND=$(cat <<-END
+	case \$? in
+		0) type -t __git_ps1 >/dev/null || __git_ps1(){ PS1=\$1\$2; } ;;&
+		*) __git_ps1 "$line1" "\n$line2" " %s" ;;&
+		0) test -x "\$(command -v direnv)" && eval "\$("\$_" export bash)" || : ;;&
+	esac
+	END
+	)
+}
+
+case $- in
+	*i*)
+		export PS1 PS2 PROMPT_COMMAND
+
+		export GIT_PS1_DESCRIBE_STYLE=branch
+		export GIT_PS1_HIDE_IF_PWD_IGNORED=1
+		export GIT_PS1_SHOWCOLORHINTS=1
+		export GIT_PS1_SHOWDIRTYSTATE=1
+		export GIT_PS1_SHOWSTASHSTATE=1
+		export GIT_PS1_SHOWUNTRACKEDFILES=1
+		export GIT_PS1_SHOWUPSTREAM="auto verbose name"
+
+		type -t __git_ps1 >&2 || . /usr/share/git/completion/git-prompt.sh
+
+		_prompt 2>/dev/null
+		;;
+esac

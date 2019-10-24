@@ -1,0 +1,66 @@
+# File:	~/.vim/ft.dein.toml
+# Author: Samuli Thomasson
+# Description: Various custom ftplugin scripts. Loaded through dein.
+# Documentation: <url:vimhelp:dein.txt>
+# License: WTFPL
+
+# Note: 'b:undo_ftplugin' variable is automatically initialized here.
+
+[ftplugin]
+
+# The special '_' key script is loaded after all others.
+_ = '''
+  if empty(&l:buftype) && &l:shiftwidth == 0
+    Findent --no-messages
+  endif
+'''
+
+# These ftplugins are loaded as <dein_dir>/after/ftplugin/{filetype}...
+vim     = 'setl sw=2 et'
+toml    = 'setl sw=2 et'
+ruby    = 'setl sw=4 et'
+python  = 'setl sw=4 et'
+elm     = 'setl sw=4 et'
+java    = 'setl sw=4 et'
+groovy  = 'setl sw=4 et'
+vimwiki = 'setl sw=2 tw=120'
+
+#text = ''' '''
+
+mail = '''
+  setl fo-=c fo+=1na
+  let b:undo_ftplugin .= 'setl fo<'
+'''
+
+help = '''
+  setl fo-=c ma noro
+  let b:undo_ftplugin .= "setl fo< ma< ro<"
+'''
+
+json = '''
+  setl noet fp=jq\ .
+  let b:undo_ftplugin .= 'setl fp<'
+'''
+
+sh = '''
+  setl fdm=syntax comments=:# cms=#\ %s
+  let b:undo_ftplugin .= "setl fdm< com< cms<"
+'''
+
+systemd = '''
+  setl com=:#,:; cms=#\ %s fo-=t
+  let b:undo_ftplugin .= 'setl com< cms< fo<'
+'''
+
+make = '''
+  setl noet ts=2 vts=2,8 vsts=2,8 fo-=t fo+=croql
+  let b:undo_ftplugin .= 'setl et< ts< vts< vsts< fo<'
+'''
+
+haskell = '''
+  setl sw=2 et tw=120
+  setl fp=stylish-haskell
+  setl fdm=expr fde=haskell#foldexpr(v:lnum) fdt=haskell#foldtext()
+  let b:undo_ftplugin .= 'setl fdm< fde< fdt<'
+'''
+

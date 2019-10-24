@@ -10,5 +10,39 @@ snippet header "/bin/bash header" !b
 #-----------------------------------------------------------------------------
 set -eu
 
-$0
+endsnippet
+
+snippet CURRENT_DIR "Define script directory as CURRENT_DIR" !b
+CURRENT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+endsnippet
+
+snippet getopts "getopts (builtin)" !b
+while getopts "$1" opt; do
+	case $opt in
+		$2
+		?) usage >&2; exit 2 ;;
+	esac
+done
+shift $(( OPTIND - 1 ))
+endsnippet
+
+snippet getopt "getopt (GNU)" !b
+parse_args () {
+	local opt
+	opt=$(getopt -n "\$0" --options "$1" --longoptions "$2" -- "$@") || return $?
+	eval set -- "$opt"
+	while
+		opt=\${1:-}
+		shift
+	do
+		case $opt in
+			${3:* ) : ;;}
+			-- )
+				${4:break}
+				;;
+		esac
+	done
+}
+
+parse_args "$@" || exit $?
 endsnippet

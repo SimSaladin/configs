@@ -1,12 +1,30 @@
-" File: ~/.vim/vimrc
-" Author: Samuli Thomasson
-" Description: $MYVIMRC
+" ~/.vim/vimrc
 
 if has('vim_starting')
-  call init#source_rc('init')
+  call init#rc('options')
+  call init#rc('init')
 endif
 
-call init#source_rc('options')
-call init#source_rc('local')
-call init#do_plugins()
-call init#do_syntax()
+call init#rc('settings')
+call init#rc('dein')
+call init#rc('solarized')
+
+if has('vim_starting')
+
+  colorscheme solarized
+
+  augroup myvimrc
+    autocmd VimEnter * ++once ++nested call init#on_filetype() | syntax enable
+    au ColorScheme * ++nested call init#on_colors()
+  augroup END
+endif
+
+if exists('g:vimpager.enabled')
+
+  set nu& rnu& scl& fdc& so& hls
+
+  if has('vim_starting')
+    call init#on_filetype() | syntax enable
+  endif
+endif
+

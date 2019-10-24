@@ -4,5 +4,5 @@ ConditionPathExists=/opt/archlinux/packages
 
 [Service]
 Type=oneshot
-ExecStart=repose -f -J applicative
+ExecStart=/usr/bin/repose -f -J applicative
 WorkingDirectory=/opt/archlinux/packages

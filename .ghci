@@ -1,1 +1,34 @@
 :set prompt "λ "
+
+:set +t
+
+:seti -XConstraintKinds
+:seti -XDataKinds
+:seti -XDefaultSignatures
+:seti -XDeriveDataTypeable
+:seti -XDeriveGeneric
+:seti -XDeriveTraversable
+:seti -XFlexibleContexts
+:seti -XFlexibleInstances
+:seti -XFunctionalDependencies
+:seti -XGADTs
+:seti -XInstanceSigs
+:seti -XLambdaCase
+:seti -XMultiWayIf
+:seti -XNamedFieldPuns
+:seti -XPolyKinds
+:seti -XRankNTypes
+:seti -XRecordWildCards
+:seti -XStandaloneDeriving
+:seti -XTupleSections
+:seti -XTypeApplications
+:seti -XTypeFamilies
+:seti -XTypeOperators
+:seti -XViewPatterns
+
+:seti -Weverything
+:seti -Wno-missing-import-lists
+:seti -Wno-partial-type-signatures
+:seti -Wno-missing-local-signatures
+:seti -Wno-type-defaults
+:seti -Wunused-imports

@@ -1,19 +1,16 @@
-" File: ~/.vim/ftplugin/vimwiki_maps.vim
-" Author: Samuli Thomasson
+" ~/.vim/ftplugin/vimwiki_maps.vim
 
-scriptencoding utf-8
-
-if exists('b:did_local_vimwiki_mappings')
+if exists('b:did_vimwiki_maps')
   finish
 endif
-let b:did_local_vimwiki_mappings = 1
+let b:did_vimwiki_maps = 1
 
-nmap <silent><buffer> <localleader>> <Plug>VimwikiAddHeaderLevel
-nmap <silent><buffer> <localleader>< <Plug>VimwikiRemoveHeaderLevel
-nmap <silent><buffer> <c-j>          <Plug>VimwikiNextLink
-nmap <silent><buffer> <c-k>          <Plug>VimwikiPrevLink
-nmap <silent><buffer> L              <Plug>VimwikiNormalizeLink
-vmap <silent><buffer> L              <Plug>VimwikiNormalizeLinkVisual
-nmap <silent><buffer> <localleader>d <Plug>VimwikiDeleteLink
-nmap <silent><buffer> <localleader>l <Plug>VimwikiRenameLink
-
+nmap <unique><silent><buffer> t              <Plug>VimwikiTabnewLink
+nmap <unique><silent><buffer> <localleader>> <Plug>VimwikiAddHeaderLevel
+nmap <unique><silent><buffer> <localleader>< <Plug>VimwikiRemoveHeaderLevel
+nmap <unique><silent><buffer> <c-j>          <Plug>VimwikiNextLink
+nmap <unique><silent><buffer> <c-k>          <Plug>VimwikiPrevLink
+nmap <unique><silent><buffer> L              <Plug>VimwikiNormalizeLink
+vmap <unique><silent><buffer> L              <Plug>VimwikiNormalizeLinkVisual
+nmap <unique><silent><buffer> <localleader>d <Plug>VimwikiDeleteLink
+nmap <unique><silent><buffer> <localleader>l <Plug>VimwikiRenameLink

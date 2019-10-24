@@ -1,0 +1,85 @@
+#!/bin/sh
+repo=${XDG_CACHE_HOME:-$HOME/.cache}/vim/dein/repos/github.com/rkitover/vimpager
+mode=$(basename -- "$0")
+case $mode in
+	vimcat)
+		exec "$repo/vimcat" "$@"
+		exec cat "$@"
+		;;
+	vimpager)
+		exec "$repo/vimpager" "$@"
+		exec less "$@"
+		;;
+	manpager)
+		exec "$repo/vimpager" -c "setl nomodifiable" -c +MANPAGER "$@"
+		;;
+esac || exit $?
+
+case $1 in
+	-v|--version)
+		"$repo/vimpager" --version 2>&1
+		"$repo/vimcat" --version 2>&1
+		cat <<-END
+		This wrapper: $(realpath -- "$0")
+		vimpager:     $repo/vimpager
+		vimcat:       $repo/vimcat
+		Vimpagerrepo  $repo
+
+		PAGER=$PAGER
+		MANPAGER=$MANPAGER
+		END
+		;;
+	-h|--help|--usage )
+		cat <<-"USAGE"
+		Usage: vimpager [option]...	(Matched $0) See `vimpager --help`
+		Usage: vimcat   [option]...	(Matched $0) See `vimcat --help`
+		Usage: $0 [option]...
+
+		    vimpager, vimcat		longer form of [vimpager | vimcat] [option]...
+		    -h, --help, --usage
+		    -v, --version
+		    -x				Debugging to stderr
+
+		    $0 [opts]			(where $0 is vimpager or vimcat)
+		    $0 vimpager			for PAGER, aliases less, zless
+		    vim -u ... -M +MANPAGER	for MANPAGER
+
+		    VIMPAGER_VIM		The vim executable to use
+		    VIMPAGER_RC			The vimrc to use
+		    VIMPAGER_DEBUG=yes		If non-zero, vim errors are not suppressed
+
+		plugin/vimpager.vim		Use the plugin inside vim $VIMPAGER
+		    g:less.enabled		Use or don't use less-like keys.	(<leader>v)
+		    g:less.hlsearch		Set hls in less mode.			(ESC-u)
+		    g:less.number		Set number in less mode.		-N
+		    g:less.scrolloff		Set 'scrolloff' in less mode.
+		    g:less.statusfunc		See autoload/vimpager_utils.vim
+		    g:vimpager.X11		Disabling X11 connection can make startup faster
+		    g:vimpager.ansiesc		Whether to use AnsiEsc
+		    g:vimpager.enabled		Switch on vimpager in VIMRC
+		    g:vimpager.gvim		Open in gvim instead
+		    g:vimpager.passthrough	Pass through highlight only if output fits terminal
+		    g:vimpager.ptree		Process tree. Example: if g:vimpager.ptree[-2] == 'wman' | set ft=man | endif
+
+		macros/less.vim			Either standard from $VIMRUNTIME, or vimpager's alternate version
+		macros/less.sh			for less (option), sets g:no_plugin_maps=1
+		    :Page[!]			Toggle (bang! turn) less mode for current flie
+		    :Page[!] [-tvwb] [arg]	Open file [arg] in less mode. [!]: open output of command [arg]
+			-t			new tab
+			-v			vertical split
+			-w			new window
+			-b			new buffer (default)
+
+		ftplugin/man.vim		Define :Man (standard $VIMRUNTIME)
+		plugin/manpager.vim		???
+		    :Man :MANPAGER
+		    g:ft_man_folding_enable = 1	Enable folding in man view
+
+		Website	http://github.com/rkitover/vimpager
+		USAGE
+		;;
+	* )
+		echo "Unrecognized argument: $1" >&2
+		exit 2
+		;;
+esac

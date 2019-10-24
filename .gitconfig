@@ -69,16 +69,16 @@
     read\neval '$cmd'\n}\nf
   pp-status   = status --short --branch
   ; Formats documented in <url:man:git-for-each-ref>
-  pp-branches = branch --format='%(color:red)%(objectname:short)%(color:reset) \
-%(if)%(upstream:remotename)%(then)\
-%(color:bold yellow)%(align:6)%(upstream:remotename)%(end) \
-%(color:nobold green)%(align:60,right)\
-%(creatordate:relative) ~ %(color:nobold magenta)%(if)%(upstream:track)%(then)%(upstream:track) %(end)\
+  pp-branches = branch --format='\
+%(color:red)%(objectname:short)%(color:reset)\
+ %(color:nobold green)~ %(align:20)%(creatordate:relative)%(end)\
+ %(align:42,right)%(color:nobold yellow)%(if)%(upstream:remotename)%(then)%(upstream:remotename)/%(upstream:lstrip=3) %(end)%(end)\
 %(if)%(HEAD)%(then)%(color:magenta bold)%(else)%(color:cyan bold)%(end)%(refname:lstrip=2)\
-%(end) %(color:yellow nobold)%(upstream:lstrip=3)\
-%(else)%(if)%(HEAD)%(then)%(color:magenta bold)%(align:56,right)%(refname:short)%(end)\
-%(else)%(refname:lstrip=2) %(color:nobold green)~ %(creatordate:relative)%(end)\
-%(end)%(color:reset)'
+ %(color:nobold magenta)%(upstream:track)\
+%(color:reset)'
+
+  gitlab-mr-co = !f(){ git fetch origin merge-requests/"$1"/head:mr-"$1" && git checkout mr-"$1"\n}\nf
+
 [branch]
   ; See git-for-earch-ref(1) for available options.
   ; The default is refname.
@@ -124,10 +124,10 @@
 [log]
   decorate = full
 [merge]
-  conflictstyle = diff3
-  ; Preformatted merge commit messages include descriptions of the merged
-  ; commits (up to N). See <lnk:man:git-fmt-merge-msg.1>.
-  log           = 20
+  ff  = false
+  log = 20 ; Preformatted merge commit messages include descriptions of the merged
+  ; commits (up to N). <url:man:git-fmt-merge-msg.1>.
+  branchdesc    = true ; include branch descriptions in the message
   conflictstyle = diff3
   tool          = vimdiff
   guitool       = vimdiff

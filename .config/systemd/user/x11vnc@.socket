@@ -1,0 +1,13 @@
+# ~/.config/systemd/user/x11vnc@.socket
+[Unit]
+Description=x11vnc socket DISPLAY=:%I (%t/%P/%i)
+Documentation=man:x11vnc(1) man:vncviewer(1)
+
+[Socket]
+ListenStream=%t/%P/%i
+SocketMode=0600
+DirectoryMode=0700
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

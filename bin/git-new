@@ -1,21 +1,7 @@
-#!/bin/bash
-
+#!/bin/sh
 # git new
 
-[[ -z $DEBUG ]] || set -x
-
-c(){
-        color=$1 val="${3:-}%(${2})${4:-}"
-        printf "%%(color:%s)%s%%(color:reset)" "$color" "$val"
-}
-
-
-obj=$(c red objectname:short)
-crd=$(c blue creatordate:relative '(' ')')
-printf -v track "[%1s%s%1s]" "%(upstream:trackshort)" "$(c green HEAD)" "%(push:trackshort)"
-fmt="echo ${obj@Q} ${track@Q} '%(refname:short)' ${crd@Q}"
-
-fmt='
+fmt+=$(cat <<"END"
         objname=%(color:red)%(objectname:short)%(color:reset)
         refname=%(refname:short)
         head=%(color:green)%(HEAD)%(color:reset)
@@ -33,22 +19,14 @@ fmt='
         printf " %s"   "$objname"
         printf " %s"    "$head"
         printf "%%-30s " "$refname"
-        if [[ -z "$up$push" ]]; then
-                printf "%s" "--"
-        else
-                printf "%-2s" "$trackup"
-        fi
-        if [[ ! $up == "$push" ]]; then
-                printf " - %-2s" "$trackpush"
-        fi
-        if [[ -n $up ]]; then
-                printf " %s%s%s" %(color:yellow) "$up" %(color:reset)
-        fi
+        [ -z "$up$push"   ] || printf "%-2s" "$trackup"
+        [ "$up" = "$push" ] || printf " - %-2s" "$trackpush"
+        [ -z "$up"        ] || printf " %s%s%s" %(color:yellow) "$up" %(color:reset)
         printf "\n"
-'
-
+END
+)
 
 if s=$(git for-each-ref --shell --format="$fmt" --color=always --sort=creatordate "${@}")
-then [[ -n $DEBUG ]] || eval "$s"
+then [ -n "$DEBUG" ] || eval "$s"
 else exit 1
 fi

@@ -1,60 +1,85 @@
-" File: ~/.vim/rc/init.vim
-" Author: Samuli Thomasson
-" License: RELEX Solutions proprietary
+" ~/.vim/rc/init.vim
 
-scriptencoding utf-8
-
-if &compatible
-  set nocompatible
+" Load once                                                               {{{1
+if exists('g:did_myvimrc_init')
+  finish
 endif
+let g:did_myvimrc_init = 1
 
-language message C    " Use the standard locale for vim UI
+let g:myvimrc#initrtp = &g:rtp
 
-" Both leaders expand when a mapping is defined, so it's useful to define them early.
+language message C
+
+" Leaders expand when a mapping is defined, so it's useful to define them early.
 let g:mapleader      = ','
 let g:maplocalleader = '\'
 
-let s:cache    = exists('$XDG_CACHE_HOME') ? $XDG_CACHE_HOME.'/vim' : $HOME.'/.cache/vim'
-let g:deindir  = s:cache . '/dein'
+" Files and directories                                                   {{{1
 
-let g:datadir = s:cache . '/data' " XXX
+if empty($XDG_CACHE_HOME)
+  call setenv('XDG_CACHE_HOME',$HOME.'/.cache')
+endif
 
-" XXX: The directory, backupdir, undodir options get in set in
-" /usr/share/vim/vimfiles/archlinux.vim on Arch.
-" Can't depend on that though, so create everything always.
-let &g:undodir      = s:cache . '/undo//'
-let &g:backupdir    = s:cache . '/backup//'
-let &g:directory    = s:cache . '/swap//'
-let &g:viewdir      = s:cache . '/view//'
-let &g:viminfofile  = s:cache . '/viminfo'
+if !exists('g:myvimrc#cachedir')
+  let g:myvimrc#cachedir = $XDG_CACHE_HOME . '/vim'
+endif
+if !isdirectory(g:myvimrc#cachedir)
+  call mkdir(g:myvimrc#cachedir, 'p', 0700)
+endif
 
-" system() uses $TMPDIR and doesn't consider &g:shelltemp.
-let $TMPDIR = exists('$TMPDIR') ? $TMPDIR :
-      \ exists('$XDG_RUNTIME_DIR') ? $XDG_RUNTIME_DIR . '/vim' :
-      \ s:cache . '/tmp'
+" Note: directory, backupdir, undodir are set in /usr/share/vim/vimfiles/archlinux.vim on ArchLinux.
+let &g:directory   = g:myvimrc#cachedir . '/swap//'
+let &g:backupdir   = g:myvimrc#cachedir . '/backup//'
+let &g:undodir     = g:myvimrc#cachedir . '/undo//'
+let &g:viewdir     = g:myvimrc#cachedir . '/view//'
+let &g:viminfofile = g:myvimrc#cachedir . '/viminfo'
 
-" Create missing
-for var in [expand(g:datadir),expand(&g:undodir),expand(&g:backupdir),expand(&g:directory),expand(&g:viewdir),expand($TMPDIR)]
-  if !isdirectory(var)
-    silent! call mkdir(var, 'p', 0700)
+" Note: system() does not consider 'shelltemp', so we setup $TMPDIR if it doesn't exist yet.
+if empty($TMPDIR) || $TMPDIR ==# '/tmp'
+  if isdirectory($XDG_RUNTIME_DIR) && filewritable($XDG_RUNTIME_DIR)
+    call setenv('TMPDIR', $XDG_RUNTIME_DIR . '/vim')
+  else
+    call setenv('TMPDIR', $XDG_CACHE_HOME . '/vim/tmp')
   endif
-endfor
+endif
 
-" Don't load default plugins
-let g:loaded_2html_plugin      = 1
-let g:loaded_logiPat           = 1
-let g:loaded_getscriptPlugin   = 1
-let g:loaded_gzip              = 1
-let g:loaded_man               = 1
-let g:loaded_matchit           = 1
-let g:loaded_matchparen        = 1
-let g:loaded_netrwFileHandlers = 1
-let g:loaded_netrwPlugin       = 1
-let g:loaded_netrwSettings     = 1
-let g:loaded_rrhelper          = 1
-let g:loaded_shada_plugin      = 1
-let g:loaded_spellfile_plugin  = 1
-let g:loaded_tarPlugin         = 1
-let g:loaded_tutor_mode_plugin = 1
-let g:loaded_vimballPlugin     = 1
-let g:loaded_zipPlugin         = 1
+if !isdirectory($TMPDIR)
+  call mkdir($TMPDIR, '', 0700)
+endif
+
+let g:myvimrc#runtimedir = $TMPDIR
+
+" Standard plugins                                                        {{{1
+
+" Skip loading default plugins
+let g:loaded_getscriptPlugin  = 1
+let g:loaded_gzip             = 1
+let g:loaded_logiPat          = 1
+let g:loaded_matchparen       = 1
+let g:loaded_netrwPlugin      = 1
+let g:loaded_rrhelper         = 1
+let g:loaded_spellfile_plugin = 1
+let g:loaded_tarPlugin        = 1
+let g:loaded_2html_plugin     = 1
+let g:loaded_vimballPlugin    = 1
+let g:loaded_zipPlugin        = 1
+
+" See <url:vimhelp:ft-bsah-syntax> and syntax/sh.vim
+let g:is_bash         = 1
+let g:sh_fold_enabled = 7 " For foldmethod=syntax
+
+" See <url:vimhelp:ft-man-plugin>
+let g:ft_man_folding_enable = 1
+
+" Extra                                                                   {{{1
+
+" The cecutil plugin is included in so many other plugins
+let g:no_cecutil_maps = 1
+
+" $VIMRUNTIME/macros/less.sh
+let g:less        = get(g:,'less',{})
+let g:less.number = 0
+
+" plugin/vimpager.vim - gvim ansiesc passthrough enabled ptree
+let g:vimpager     = get(g:,'vimpager',{})
+let g:vimpager.X11 = has('gui_running')

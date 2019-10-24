@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+cd "$(dirname "$0")"
+
+stack --verbosity error --no-terminal setup
+stack --verbosity error --no-terminal install

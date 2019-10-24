@@ -1,206 +1,299 @@
-# File: ~/.vim/dein.toml              vim:set vsts=2,12:
-# Author: Samuli Thomasson
-# Description: dein plugins configuration
-
+# ~/.vim/dein.toml                                    vim:tw=80:et:
+#
+# <url:./deinlazy.toml>
+# <url:~/.vim/autoload/init.vim>
+# <url:~/.cache/vim/dein/repos/github.com/>
+# <url:~/.cache/vim/dein/.cache/>
+#
+# Fields [[plugin]]: repo rev augroup
+#
 # TODO if you use vim-textobj-multiblock
 # TODO if you use vim-textobj-anyblock
 # TODO if you use vim-textobj-between
 
-# Plugins plugins                                                        {{{1
-[[plugins]] # dein - Plugin Manager                                        {{{2
+# libraries/general                                                       {{{1
+
+[[plugins]] # (lazy)
 repo = 'Shougo/dein.vim'
-[[plugins]] # yarp - Remote plugins (lazy)                                 {{{2
+
+[[plugins]] # (lazy)
 repo = 'roxma/nvim-yarp'
 name = 'yarp'
-[[plugins]] # hug-neovim-rpc - VIM8-Nvim compatibility                     {{{2
+on_if = ''' has('nvim') || (v:version > 800 && has('python3')) '''
+hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
+
+[[plugins]] # (lazy)
 repo = 'roxma/vim-hug-neovim-rpc'
 on_if = '!has("nvim")'
-[[plugins]] # ingo - library (needed by SyntaxRange)                       {{{2
+hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
+
+[[plugins]] # (lazy)
 repo = 'inkarkat/vim-ingo-library'
-name = 'ingo'
 
-# Motions, operators, text objects                                       {{{1
-# Align, AutoAlign, tabular                                                {{{2
-[[plugins]] # cecutil v18h. AlignCtrl, Align, AlignPush, AlignPop <url:vimhelp:align.txt>
-repo = 'vim-scripts/Align'
-[[plugins]] # aligns bib, c/pp, tex, vim content <url:vimhelp:autoalign-AA>
-repo = 'vim-scripts/AutoAlign'
-depends = 'Align'
-[[plugins]] # :Tabularize /pat/flags  <url:vimhelp:tabular>
-repo = 'godlygeek/tabular'
-# repeat                                                                   {{{2
-[[plugins]] # (lazy) <url:vimhelp:repeat.txt>
-repo = 'vim-scripts/repeat.vim'
-name = 'repeat'
-# camelcasemotion     CamelCase i?[wbe]       <url:vimhelp:camelcasemotion>{{{2
-[[plugins]]
-repo = 'vim-scripts/camelcasemotion'
-# caw                 Comments                <url:vimhelp:caw.txt>        {{{2
-[[plugins]] # Alternative: tomtom/tcomment_vim, nerdcomment
-repo = 'tyru/caw.vim'
-name = 'caw'
-depends = 'operator-user'
-# dentures            Indent-blocks           <url:vimhelp:dentures>       {{{2
-[[plugins]]
-repo = 'qstrahl/vim-dentures'
-name = 'dentures'
-# niceblock                                                                {{{2
-[[plugins]] # v_b_[IA] wherever       <url:vimhelp:niceblock.txt>
-repo = 'kana/vim-niceblock'
-name = 'niceblock'
-# smartchr                                                                 {{{2
-[[plugins]]    # New multi-mappings (lazy)<url:vimhelp:smartchr.txt>
-repo = 'kana/vim-smartchr'
-name = 'smartchr'
-# operator-.*                                                              {{{2
-[[plugins]]
-repo = 'kana/vim-operator-user'
-name = 'operator-user'
-[[plugins]]
-repo = 'kana/vim-operator-replace'
-name = 'operator-replace'
-depends = 'operator-user'
-[[plugins]] # See help for config variables, e.g. <url:vimhelp:g:operator#surround#blocks>
-repo = 'rhysd/vim-operator-surround'
-name = 'operator-surround'
-depends = 'operator-user'
-# textobj-.*                                                               {{{2
-[[plugins]] # (lazy) New textobjects <url:vimhelp:textobj-user.txt>
-repo = 'kana/vim-textobj-user'
-[[plugins]]
-repo = 'kana/vim-textobj-entire'
-[[plugins]]
-repo = 'kana/vim-textobj-fold'
-[[plugins]]
-repo = 'kana/vim-textobj-line'
-[[plugins]]
-repo = 'kana/vim-textobj-syntax'
+[[plugins]] # (lazy)
+repo = 'Shougo/context_filetype.vim'
 
-# Fold                                                                   {{{1
-[[plugins]] # FastFold <url:vimhelp:fastfold>                              {{{2
-repo = 'Konfekt/FastFold'
-name = 'fastfold'
-[[plugins]] # foldcycle - Intuitive (un)folding <url:vimhelp:fold-cycle>   {{{2
-repo = 'arecarn/vim-fold-cycle'
-name = 'foldcycle'
-[[plugins]] # anyfold <url:vimhelp:anyfold>                                {{{2
-repo = 'pseewald/vim-anyfold'
-name = 'anyfold'
-# Syntax                                                                 {{{1
-# AnsiEsc             ANSI escape sequences                                {{{2
+# Plugins                                                                 {{{1
+
 [[plugins]]
+repo = 'wesQ3/vim-windowswap'
+#on_event = 'WinNew'
+hook_add = '''
+let g:windowswap_map_keys = 0
+'''
+
+[[plugins]] # TODO: plugin
 repo = 'powerman/vim-plugin-AnsiEsc'
 name = 'AnsiEsc'
-# findent             Deduce indent settings                               {{{2
-[[plugins]]
-repo = 'lambdalisue/vim-findent'
-name = 'findent'
-# context_filetype    Nested ftplugins                                     {{{2
-[[plugins]] # (lazy) <url:vimhelp:context_filetype.txt>
-repo = 'Shougo/context_filetype.vim'
-name = 'context_filetype'
-# SyntaxRange         Nested syntax                                        {{{2
-[[plugins]] # The global plugin just defines one command <url:vimhelp:SyntaxRange>
-repo = 'vim-scripts/SyntaxRange'
-depends = 'ingo'
-# Solarized           Solarized colors                                     {{{2
-[[plugins]]
-repo = 'altercation/vim-colors-solarized'
-name = 'solarized'
-# polyglot            Filetype plugins                                     {{{2
-[[plugins]] # (lazy) <url:~/.cache/vim/dein/repos/github.com/sheerun/vim-polyglot/README.md>
-repo = 'sheerun/vim-polyglot'
-name = 'polyglot'
-# colorizer           Hilight color codes                                  {{{2
-[[plugins]] # <url:https://github.com/lilydjwg/colorizer/blob/master/plugin/colorizer.vim>
-repo = 'lilydjwg/colorizer'
 
-# quickfixsigns       qf/ll in signcolumn                                  {{{2
-[[plugins]] # <url:vimhelp:quickfixsigns.txt>
+[[plugins]] # XXX plugin/
 repo = 'tomtom/quickfixsigns_vim'
 name = 'quickfixsigns'
 
-# Sessions                                                               {{{1
-[[plugins]] # Obsession - session management                               {{{2
-repo = 'tpope/vim-obsession'
-name = 'obsession'
-# Integrations                                                           {{{1
-# Fugitive            Git mappings            <url:vimhelp:fugitive>       {{{2
-[[plugins]]
-repo = 'tpope/vim-fugitive'
-name = 'fugitive'
-# nerdtree            nerdtree                <url:vimhelp:NERDTRee>       {{{2
-[[plugins]]
+[[plugins]] # XXX: plugin/
 repo = 'scrooloose/nerdtree'
-[[plugins]]
-repo = 'Xuyuanp/nerdtree-git-plugin'
-# utl                 hyperlink anything      <url:vimhelp:utl>            {{{2
-[[plugins]]
+
+[[plugins]] # TODO: plugin/
+repo = 'rkitover/vimpager'
+merged = 0 # XXX why not?
+
+[[plugins]] # XXX: plugin/
+repo = 'Konfekt/FastFold'
+augroup = 'FastFold'
+
+[[plugins]] # XXX: plugin/
+repo = 'arecarn/vim-fold-cycle'
+hook_add = '''
+let g:fold_cycle_default_mapping = 0
+'''
+
+[[plugins]] # XXX: plugin
+repo = 'kshenoy/vim-origami'
+#on_event = 'VimEnter'
+
+[[plugins]] # XXX: plugin
+repo = 'mattn/calendar-vim'
+#on_event = 'VimEnter'
+
+[[plugins]] # XXX plugin/
+repo = 'tpope/vim-fugitive'
+
+[[plugins]] # TODO: plugin/
 repo = 'vim-scripts/utl.vim'
-name = 'utl'
-# Filetype                                                               {{{1
-# css-syntax                                                               {{{2
+
+# motion/operator/textobject                                              {{{1
+
+[[plugins]] # (lazy)
+repo = 'kana/vim-operator-user'
+
+[[plugins]] # (lazy)
+repo = 'kana/vim-smartchr'
+
+[[plugins]] # (lazy)
+repo = 'vim-scripts/repeat.vim'
+
+[[plugins]] # (lazy)
+repo = 'kana/vim-textobj-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'vim-scripts/camelcasemotion'
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-niceblock'
+
+[[plugins]] # XXX: plugin/
+repo = 'qstrahl/vim-dentures'
+
+[[plugins]] # XXX: plugin/
+repo = 'tyru/caw.vim'
+depends = 'operator-user'
+hook_add = '''
+let g:caw_operator_keymappings = 1
+'''
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-operator-replace'
+depends = 'operator-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'rhysd/vim-operator-surround'
+depends = 'operator-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-textobj-entire'
+depends = 'textobj-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-textobj-fold'
+depends = 'textobj-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-textobj-line'
+depends = 'textobj-user'
+
+[[plugins]] # XXX: plugin/
+repo = 'kana/vim-textobj-syntax'
+depends = 'textobj-user'
+
+# YankRing                                                                {{{1
+
+[[plugins]]
+# TODO: special version v20.0
+repo     = 'RobertAudi/YankRing.vim'
+rev      = 'pr/v20.0'
+augroup  = 'YankRing'
+#on_event = 'VimEnter'
+
+# Lazy                                                                    {{{1
+
+[[plugins]] # (lazy)
+repo = 'Xuyuanp/nerdtree-git-plugin'
+
+[[plugins]] # (lazy)
+repo = 'vim-airline/vim-airline-themes'
+
+# deoplete etc.                                                           {{{1
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+#on_event = 'InsertEnter'
+#depends = 'yarp'
+hook_add = '''
+autocmd InsertEnter * ++once call vimrc#deoplete_init()
+'''
+
+[[plugins]] # (lazy)
+repo = 'tbodt/deoplete-tabnine'
+build = './install.sh'
+merged = 1
+
+[[plugins]]
+repo = 'Shougo/echodoc.vim'
+#on_event = 'CompleteDone'
+hook_add = '''
+autocmd CompleteDone * ++once call echodoc#enable()
+'''
+
+[[plugins]]
+repo = 'Shougo/neco-vim'
+#depends = 'deoplete'
+#on_ft = 'vim'
+
+# syntax                                                                  {{{1
+
+[[plugins]] # (lazy)
+repo = 'altercation/vim-colors-solarized'
+name = 'solarized'
+
+[[plugins]] # (lazy)
+repo = 'sheerun/vim-polyglot'
+
+[[plugins]] # XXX: global plugin defines a few commands
+repo = 'inkarkat/vim-SyntaxRange'
+depends = 'ingo-library'
+hook_add = '''
+augroup SyntaxRange
+  autocmd!
+  autocmd Syntax * unlet! b:SyntaxRange_IncludedFiletypes
+augroup END
+'''
+
+# Filetypes                                                               {{{1
+
+[[plugins]]
+repo = 'jamessan/vim-gnupg'
+#on_path = ['\.gpg$','\.asc$','\.pgp$']
+
 [[plugins]] # (lazy)
 repo = 'hail2u/vim-css3-syntax'
-name = 'css-syntax'
-# dhall                                                                    {{{2
-[[plugins]] # (lazy) <url:~/.cache/vim/dein/repos/vmchale/dhall-vim/README.md>
-repo = 'vmchale/dhall-vim'
-name = 'dhall'
-# diff-fold                                                                {{{2
+
+[[plugins]]
+repo = 'ElmCast/elm-vim'
+
+[[plugins]]
+repo = 'aiya000/vim-ghcid-quickfix'
+
+#[[plugins]]
+#repo = 'Twinside/vim-haskellFold'
+#on_ft = 'haskell'
+
+#[[plugins]] # (lazy)
+#repo = 'vmchale/dhall-vim'
+# XXX via polyglot(?)
+
+[[plugins]]
+repo = 'LnL7/vim-nix'
+
 [[plugins]] # (lazy)
 repo = 'thinca/vim-ft-diff_fold'
 name = 'diff-fold'
-# gnupg                                                                    {{{2
-[[plugins]] # XXX: plugin
-repo = 'jamessan/vim-gnupg'
-name = 'gnupg'
-# vint (Vim lint)                                                          {{{2
-[[plugins]] # (needs vlint executable)
-repo = 'Kuniwak/vint'
-on_if = 'executable("vint")'
-# help-fold, -lint                                                         {{{2
-[[plugins]]    # (lazy)
-repo = 'thinca/vim-ft-help_fold'
-name = 'help-fold'
-[[plugins]]
-repo = 'machakann/vim-vimhelplint'
-name = 'help-lint'
-# yaml-fold (e?yaml|raml|sls)                                              {{{2
-[[plugins]]    # (lazy)
-repo = 'pedrohdz/vim-yaml-folds'
-name = 'yaml-fold'
-# nftables                                                                 {{{2
+
 [[plugins]] # (lazy)
 repo = 'nfnty/vim-nftables'
-name = 'nftables'
-# vimwiki                                                                  {{{2
-[[plugins]] # <url:vimhelp:vimwiki>
-repo = 'vimwiki/vimwiki'
-# csv                                                                      {{{2
-[[plugins]] # <url:vimhelp:ft-csv.txt>
-repo = 'chrisbra/csv.vim'
-name = 'csv'
-# elm                                                                      {{{2
-[[plugins]] # <url:vimhelp:elm-vim> (syntax, indent, ide integ, compl)
-repo = 'ElmCast/elm-vim'
-name = 'elm'
-# uml (slumlord, plantuml)                                                 {{{2
-[[plugins]]
-repo = 'scrooloose/vim-slumlord'
-merged = 0
-[[plugins]]
+
+[[plugins]] # (lazy)
+repo = 'Kuniwak/vint'
+on_if = 'executable("vint")'
+
+[[plugins]] # (lazy)
+repo = 'thinca/vim-ft-help_fold'
+name = 'help-fold'
+
+[[plugins]] # (lazy)
+repo = 'machakann/vim-vimhelplint'
+name = 'help-lint'
+
+[[plugins]] # (lazy)
+repo = 'pedrohdz/vim-yaml-folds'
+name = 'yaml-fold'
+
+[[plugins]] # (lazy)
+repo = 'jceb/vim-orgmode'
+
+[[plugins]] # (lazy)
+repo = 'tmux-plugins/vim-tmux'
+
+[[plugins]] # (lazy)
 repo = 'aklt/plantuml-syntax'
-# info (:Info)           {{{2                                              {{{2
-[[plugins]] # <url:vimhelp:info.txt>
-repo = 'https://gitlab.com/HiPhish/info.vim'
-name = 'info'
-# taskwiki (vimwiki)                                                       {{{2
-[[plugins]] # <url:vimhelp:taskwiki>
-repo = 'tbabej/taskwiki'
-build = 'pip install --user --upgrade tasklib'
-on_if = 'execute("python3 import tasklib; print(1)","silent!")'  # yes really need it
-# taskwarrior (tasksreport)                                                {{{2
+
+# UML/slumlord {{{1
+
+[[plugins]] # (lazy)
+repo = 'scrooloose/vim-slumlord'
+depends = 'plantuml-syntax'
+# XXX: conflicting files ftplugin/plantuml.vim with plantuml-syntax.
+# patched locally.
+frozen = 1
+# merged = 0
+
+# vimwiki, taskwiki, taskwarrior                                          {{{1
+
+[[plugins]] # (lazy)
+repo = 'vimwiki/utils'
+name = 'vimwiki-utils'
+
+[[plugins]] # (lazy)
+repo   = 'tbabej/taskwiki'
+merged = 1
+on_if  = ''' (!empty(init#py3module('tasklib'))) '''
+hook_post_update = ''' call init#pip3installupgrade('tasklib') '''
+
+[[plugins]] # XXX: plugin/
+repo = 'vimwiki/vimwiki'
+
 [[plugins]]
 repo = 'xarthurx/taskwarrior.vim'
-name = 'taskwarrior'
+# includes airline integration, unite integration, ...
+
+# vim-pandoc                                                              {{{1
+
+[[plugins]]
+repo = 'vim-pandoc/vim-pandoc-syntax'
+
+[[plugins]]
+repo = 'vim-pandoc/vim-pandoc'
+#on_event = 'VimEnter'
+
+[[plugins]]
+repo = 'vim-pandoc/vim-pandoc-after'
+merged = 0  # XXX conflicts.. plugin/pandoc.vim should go before pandoc-after.vim

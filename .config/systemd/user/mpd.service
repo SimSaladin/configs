@@ -1,0 +1,31 @@
+# ~/.config/systemd/user/mpd.service
+[Unit]
+Description=Music Player Daemon
+Documentation=man:mpd(1) man:mpd.conf(5)
+After=network.target sound.target
+
+[Service]
+# systemd.service
+Type=notify
+ExecStart=/usr/bin/mpd --no-daemon
+TimeoutStartSec=10min
+# systemd.resource-control
+Slice=mpd.slice
+# systemd.exec SECURITY
+NoNewPrivileges=yes
+# systemd.exec PROCESS PROPERTIES
+LimitRTPRIO=50
+LimitRTTIME=infinity
+# systemd.exec SANDBOXING
+ProtectSystem=strict
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=no
+# systemd.exec LOGGING AND STANDARD I/O
+StandardError=journal
+
+# ps -o pid,tid,cls,rtprio,comm H -C mpd
+
+[Install]
+WantedBy=basic.target

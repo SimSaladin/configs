@@ -1,0 +1,20 @@
+# ~/.config/systemd/user/x11vnc@.service
+[Unit]
+Description=x11vnc per-connection daemon
+Documentation=man:x11vnc(1) man:vncviewer(1)
+
+[Service]
+ExecStart=/usr/bin/x11vnc -inetd -norc -forever -shared -nopw -rfbport 0 -rfbportv6 0
+StandardInput=socket
+StandardError=journal
+#Slice=xorg.slice
+
+# XXX
+# -display :0
+# -rfbauth path/to/vnc-pass
+# -unixsock %t/%P/%i -nolookup
+
+# XXX
+#Environment=DISPLAY=
+#Environment=XAUTHORITY=
+#Environment=X11VNC_AVAHI_NAME=x11vnc@%H

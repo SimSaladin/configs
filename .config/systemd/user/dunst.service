@@ -1,0 +1,32 @@
+# ~/.config/systemd/user/dunst.service
+[Unit]
+Description=Dunst notification daemon
+Documentation=man:dunst(1)
+Requires=dbus.socket
+After=dbus.socket
+
+[Service]
+# systemd.service
+Type=dbus
+BusName=org.freedesktop.Notifications
+ExecStart=/usr/bin/dunst
+IgnoreSIGPIPE=no
+TimeoutSec=5
+# systemd.resource-control
+#Slice=xorg.slice
+# system.exec
+NoNewPrivileges=yes
+#LimitFSIZE=16M
+#LimitMEMLOCK=64M
+#LimitNOFILE=500
+#LimitNPROC=8
+Nice=5
+#ProtectSystem=full
+#MemoryDenyWriteExecute=yes
+#RestrictAddressFamilies=AF_UNIX
+#RestrictNamespaces=yes
+#RestrictRealtime=yes
+StandardError=journal
+
+[Install]
+WantedBy=graphical.target

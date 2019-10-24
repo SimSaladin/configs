@@ -9,16 +9,13 @@ priority 2
 # Vimwiki's omnicomp is extensive too <C-X><C-O>
 # NOTE this isn't /the/ vimwiki filetype but its markdown variant. For now.
 
-snippet header "Standard vimwiki header" !b
-% file: `!v expand('%:~')`
-%
-%title `!v printf('%s: %s', expand('%:p:h:t:s^\(\w\)^\u\1^'), expand('%:t:r:r:s^\(\w\)^\u\1^'))`
-%date `date +%F`
+snippet header "vimwiki header" !b
+:${2:tags}:
+%title ${1:`!v printf('%s: %s', expand('%:p:h:t:s^\(\w\)^\u\1^'), expand('%:t:r:r:s^\(\w\)^\u\1^'))`}
+%date  `date +%F`
 
-${1:% `!v expand('%:~') `
-}
-${2:# Contents
-}
+# Contents
+
 $0
 endsnippet
 

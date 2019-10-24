@@ -1,83 +1,80 @@
 " File: ~/.vim/autoload/init.vim
-" Author: Samuli Thomasson
 
-function! init#source_rc(path) abort "{{{1
-  let abspath = resolve(expand('~/.vim/rc/' . fnamemodify(a:path.'.vim', ':t')))
-  if filereadable(abspath)
-    execute 'source' fnameescape(abspath)
+if &compatible
+  set nocompatible
+endif
+
+function! init#rc(name) abort
+  let l:file = resolve($HOME.'/.vim/rc/'.fnamemodify(a:name,':t').'.vim')
+  if filereadable(l:file)
+    execute 'source ' . fnameescape(l:file)
   else
-    echo 'File '.abspath.' not readable!'
+    echoerr 'File ' . l:file . ' not readable!'
   endif
-endfun "}}}1
+endfunction
 
-function! init#setup_dein() abort "{{{1
-  let s:dein_url = 'github.com/Shougo/dein.vim'
-  " setup plugin manager
-  let l:dir = g:deindir . '/repos/' . s:dein_url
-  if &runtimepath !~ l:dir
-    if !isdirectory(l:dir)
-      execute '!git clone https://'.s:dein_url fnameescape(l:dir)
-    endif
-    execute 'set runtimepath^=' . l:dir
+function! init#on_filetype() abort
+  if execute('filetype') =~# 'OFF'
+    silent! filetype plugin indent on
+    filetype detect
   endif
-endfunction "}}}1
+endfunction
 
-function! init#do_plugins() abort "{{{1
-
-  call init#setup_dein()
-
-  let g:dein#auto_recache           = 1
-  let g:dein#install_progress_type  = 'title'
-  let g:dein#enable_notification    = 1
-  let g:dein#notification_time      = 10
-  let g:dein#enable_name_conversion = 1
-  let g:dein#install_log_filename   = $TMPDIR.'/dein.log'
-
-  let s:dein_lazy   = $HOME.'/.vim/deinlazy.toml'
-  let s:dein_normal = $HOME.'/.vim/dein.toml'
-
-  call init#source_rc('plugin-vars')
-
-  if !dein#load_state(g:deindir)
-    return
+function! init#redetect_filetype() abort
+  if &l:filetype ==# '' || exists('b:ftdetect')
+    unlet! b:ftdetect
+    filetype detect
   endif
+endfunction
 
-  call dein#begin(g:deindir, [expand('$MYVIMRC')]) " s:dein_toml, s:dein_lazy_toml])
-  call dein#load_toml(s:dein_lazy, {'lazy': 1})
-  call dein#load_toml(s:dein_normal, {'lazy': 0})
-  call dein#end()
-  call dein#save_state()
-
-  if !has('vim_starting') && dein#check_install()
-    call dein#install()
-  endif
-
-  if !has('vim_starting')
-    call dein#call_hook('source')
-    call dein#call_hook('post_source')
-  endif
-endfunction "}}}1
-
-function! init#do_syntax() abort "{{{1
-  filetype plugin indent on
-  syntax on
-  colorscheme solarized
-  if has('vim_starting')
-    return
-  endif
-
-  " XXX Workaround when re-sourcing quickfixsigns vcsdiff
-  if exists('#QuickFixSignsVscdiff#ColorScheme')
-    doautocmd QuickFixSignsVscdiff ColorScheme
-  endif
-
-  " XXX Workaround when re-sourcing utl
+" Re-sourcing workarounds
+function! init#on_colors() abort
   if exists('#utl_highl#BufWinEnter')
-    doautocmd utl_highl BufWinEnter
+    doautoall utl_highl BufWinEnter
   endif
-
-  " XXX Workaround re-sourcing airline
+  if exists('#QuickFixSignsVscdiff#ColorScheme')
+    doautoall QuickFixSignsVscdiff ColorScheme
+  endif
   if exists(':AirlineRefresh')
-    execute 'AirlineRefresh'
+    AirlineRefresh
   endif
-endfunction "}}}1
+endfunction
+
+function! init#setup_dein(to, src) abort
+  " return value:
+  " 0: setup failed
+  " 1: setup succeeded (rtp updated)
+  " 2: already setup (probably)
+  if stridx(&g:runtimepath, a:to) > 0 || exists('#dein')
+    return 2
+  endif
+  if !isdirectory(a:to) && !get(g:, 'myvimrc#dein_only_cached')
+    try
+      exe '!git clone -q' shellescape(a:src) shellescape(a:to)
+    catch /.*/
+      echomsg 'WARNING: couldn''t perform initial dein checkout from ' . a:src . ' to ' . a:to . ' the exception was: ' . v:exception
+      return 0
+    endtry
+  endif
+  exe 'set runtimepath+=' . a:to
+  return 1
+endfunction
+
+" Check for existance of a python3 module (not actually importing it).
+function! init#py3module(module) abort                                   "{{{1
+  if has('python3')
+    py3 import importlib
+    return py3eval('getattr(importlib.util.find_spec("'.a:module.'"),"origin",None)')
+  endif
+  return v:none
+endfunction
+
+" If the python3 module a:module is not available, install it for the local
+" user if pip3 is available. If the module is installed for local user,
+" attempt to upgrade it.
+function! init#pip3installupgrade(module) abort                          "{{{1
+  let l:check = vimrc#py3module(a:module)
+  if has('python3') && (empty(l:check) || filewritable(l:check))
+    py3 import pip; pip.main(['install', '--user', '--upgrade', a:module])
+  endif
+endfunction

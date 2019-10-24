@@ -1,21 +1,7 @@
 #!/bin/sh
-
-date=$(date +:%M)
-
-VOL_COL="#2AA198"
-HIGH_COL="#859900"
-LOW_COL="#cb4b16"
-STAMP_COL="#586E75"
-LAST_COL="#FFF"
-
-function fetch(){
-   curl https://api.kraken.com/0/public/Ticker?pair=BTCEUR 2>&- \
-      | jshon -e result -e XXBTZEUR \
-      -s "<fc=$LAST_COL>"       -upe   c -e 0 -u \
-      | sed 's/\.[0-9]*//' \
-      | tr -d '\n' \
-      | sed "s/$/<\/fc><fc=$STAMP_COL>$date<\/fc>/"
-}
-
-res=$(fetch)
-echo $res > /tmp/xmobar.ticker
+STAMP_COL='#586E75'
+LAST_COL='#FFF'
+url='https://api.kraken.com/0/public/Ticker?pair=BTCEUR'
+exec > /tmp/xmobar.ticker
+printf "<fc=%s>%'.f</fc>" "$LAST_COL" "$(curl -fsS "$url"|jq -r '.result.XXBTZEUR.b[0]')"
+printf '<fc=%s>%s</fc>\n' "$STAMP_COL" "$(date +:%M)"

@@ -7,7 +7,7 @@ load-module module-combine-sink sink_name=combined-stereo sink_properties='devic
 #{{{1 restore properties of devices
 load-module module-card-restore
 load-module module-device-restore
-#load-module module-stream-restore
+load-module module-stream-restore
 
 ### Automatically augment property information from .desktop files
 ### stored in /usr/share/application
@@ -27,8 +27,11 @@ load-module module-default-device-restore
 ### Automatically load driver modules depending on the hardware available
 #load-module module-udev-detect tsched=no fixed_latency_range=yes
 load-module module-udev-detect tsched=yes tsched_buffer_size=96000 fixed_latency_range=yes
+
 ### Automatically load driver modules for Bluetooth hardware
+.ifexists module-bluetooth-discover
 load-module module-bluetooth-discover
+.endif
 ### Automatically suspend sinks/sources that become idle for too long
 load-module module-suspend-on-idle timeout=15
 
@@ -77,15 +80,20 @@ load-module module-switch-on-connect only_from_unavailable=true ignore_virtual=f
 # loading modules and rerouting streams.
 load-module module-filter-heuristics
 load-module module-filter-apply
+
 ### Create echo-cancel pair for default sink&source
 #load-module module-echo-cancel source_name=echosource source_master=@DEFAULT_SOURCE@ sink_name=echosink sink_master=@DEFAULT_SINK@ use_master_format=1 aec_method=webrtc aec_args='analog_gain_control=0 digital_gain_control=1 agc_start_volume=190 voice_detection=1 high_pass_filter=1 noise_suppression=1  drift_compensation=1 extended_filter=0 intelligibility_enhancer=0'
 
 #{{{1 RTP send & receive
+
 ## send (null sink + monitor source + RTP-sending source-output)
 load-module module-null-sink sink_name=rtp sink_properties='device.description = "RTP multicast (239.255.255.250:46226)"'
+
 load-module module-rtp-send source=rtp.monitor destination_ip=239.255.255.250 port=46226 inhibit_auto_suspend=never mtu=3960
+
 ## suspend sending by default
 suspend-sink rtp 1
+
 ## receive (connect incoming SAP/RTP streams to default sink)
 load-module module-rtp-recv sap_address=239.255.255.250
 

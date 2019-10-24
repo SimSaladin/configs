@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly run of unit bugwarrior-pull
+
+[Timer]
+Unit=bugwarrior.service
+OnCalendar=Hourly
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=git-annex watch @ %I (watch for changes and autocommit)
+Documentation=https://git-annex.branchable.com/git-annex-watch/
+Wants=dbus.socket
+After=dbus.socket remote-fs.target network.target
+ConditionPathIsDirectory=%I/.git
+
+[Service]
+ExecStart=git-annex watch --quiet --foreground --notify-finish --notify-start
+WorkingDirectory=%I
+Restart=always
+RestartSec=30s
+Slice=%p.slice
+OOMScoreAdjust=500
+Nice=10
+IOSchedulingClass=idle
+MemoryHigh=512M
+MemoryMax=1024M
+MemorySwapMax=0
+StandardError=journal
+
+[Install]
+WantedBy=basic.target

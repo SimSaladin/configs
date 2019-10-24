@@ -1,15 +1,35 @@
 [Unit]
-Description=git-annex assistant --autostart
-After=basic.target
+Description=git-annex assistant
+Wants=dbus.socket
+After=dbus.socket remote-fs.target network.target
 
 [Service]
-ExecStart=git-annex assistant --foreground --autostart
+Type=simple
 Restart=on-failure
-NoNewPrivileges=yes
-MemoryDenyWriteExecute=yes
-RestrictRealtime=yes
+RestartSec=60s
+StandardError=journal
+ExecStart=/usr/local/bin/git-annex assistant -q --foreground --startdelay 15 --autostart --notify-finish --notify-start
+Slice=%p.slice
+
+MemoryHigh=2048G
+MemoryMax=2100M
+MemorySwapMax=0
 Nice=10
+OOMScoreAdjust=500
 IOSchedulingClass=idle
+ProtectSystem=strict
+MemoryDenyWriteExecute=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+#LimitFSIZE=1G
+#LimitDATA=256M
+#LimitSTACK=4M
+LimitNOFILE=8192
+#LimitNPROC=256
+#LimitMEMLOCK=1G
+#LimitLOCKS=1024
+#LimitMSGQUEUE=1M
+LimitNICE=+10
 
 [Install]
 WantedBy=basic.target

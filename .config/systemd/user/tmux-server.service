@@ -1,11 +1,13 @@
+# ~/.config/systemd/user/tmux-server.service
 [Unit]
-Description=tmux-server.service (unix socket under %t/tmux-%U/default)
+Description=tmux server @ %t/tmux-%U/default
 
 [Service]
 Type=forking
-Environment=TMUX_TMPDIR=%t
-ExecStartPre=/usr/bin/mkdir -p $TMUX_TMPDIR
 ExecStart=/usr/bin/tmux start-server
+Environment=TMUX_TMPDIR=%t
+StandardError=journal
+Slice=shell-tmux-default.slice
 
 [Install]
 WantedBy=basic.target

@@ -1,54 +1,48 @@
 # file: ~/.gitignore
 
-# ignore all top-level files and directories...
+# Ignore top-level files and directories except dotfiles and "/bin"
 /*
-# ...but unignore those that begin with a dot
 !/.*
-# ...also unignore bin which we manage
 !/bin
 
-# and then ignore some more specific ones
-/.Xauthority
-/.*history
-/.cache
-/.cargo
-/.ghc/ghci_history
-/.bitcoin
-/.viminf*
-/.unison/*
-!/.unison/*.prf
-/.steam
-# if .thumbnails is a symlink (i.e. not a dir)
-/.thumbnails
-!/.thumbnails/
-/.mozilla
+# Repositories
 /.password-store
-/.nix*
-/.local
-/.lesshst
-/.ecr
-/.fehbg
-/.fltk
-/.ghc
-/.hplip
-/.icons
-/.lbdb/m_inmail*
-/.m2
-/.npm
-/.packer.d
-/.pki
-/.terraform.d
-/.cabal
-/.hoogle
-/.gnupg/*~
-/.abook/*~
-/.terminfo/
-/.ssh/id_rsa*
-/.rnd
-/.snapshots
-/.vim/LanguageClient.log
-/.vim/doc/
-/.nv/
+
+# Common
+/.*_history
+/.Xauthority
+/.cache
 /.gem/
+/.icons
+/.lesshst
+/.local
+/.nv/
+/.snapshots/
+/.ssh/id_rsa*
+/.terminfo/
+
+# Other
+/.cabal/
+/.ghc/ghci_history
+/.bitcoin/
+/.steam/
+/.mozilla/
+/.ecr/
+/.packer.d/
+/.terraform.d/
 /.vagrant.d/
+/.nix-defexpr/
+/.nix-profile
+
+# todo
+/.rnd
+/.gnupg/*~
+/.gnupg/random_seed
+/.pki/
+/.abook/*~
+/.lbdb/m_inmail*
+/.hplip/
 /.task/
+/.cups/
+/.java/
+

@@ -1,39 +1,25 @@
-# swap files
+# ~/.gitignore_global
+
+result
+tags
+
+# *.* - filename extensions
+*.aux
+*.bbl
+*.blg
+*.dump
+*.dvi
+*.ghc.env*
+*.hi
+*.hp
+*.iml
+*.o
+*.out
+*.prof
+
+# .* - hidden files
+.stack-to-nix.cache
+.stack-work
 .*.swp
 .*~
 .~lock*
-
-# binary
-*.hi
-*.o
-
-# dev
-doc/tags
-/tags
-*.bbl
-*.dvi
-*.out
-*.aux
-*.blg
-*.hp
-*.prof
-*.iml
-*.dump
-*.ghc.env*
-.classpath
-.project
-.settings
-.stack-work
-.envrc
-.uuid
-.vim
-.idea/
-.metadata
-.sass-cache
-.tmp
-.netrwhist
-node_modules
-bower_components
-
-# nix
-result

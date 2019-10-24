@@ -1,0 +1,25 @@
+# ~/.config/systemd/user/mpd-notification.service
+[Unit]
+Description=MPD Notification
+Documentation=file:/usr/share/doc/mpd-notification/README.html
+Requires=dbus.socket
+Requisite=mpd.service
+After=mpd.service
+
+[Service]
+# systemd.service
+Type=notify
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/mpd-notification -H localhost -p 6600 -m "${XDG_MUSIC_DIR}" -t 15
+# systemd.resource-control
+Slice=mpd.slice
+# systemd.exec
+Nice=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+
+[Install]
+WantedBy=basic.target

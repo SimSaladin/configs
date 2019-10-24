@@ -52,27 +52,33 @@ ghc-options: {}
 # See <url:https://docs.haskellstack.org/en/stable/build_command/>
 # And <url:https://docs.haskellstack.org/en/stable/GUIDE/#the-build-command>
 build:
+
   # copy-bins:          copy to ~/.local/bin (use --install if desired)
-  # copy-compiler-tool: copies build tool binaries into some ~/.stack/compiler-tools/…/bin path
-  # *-stripping:        strip executables and/or libraries
   copy-bins: false
+
+  # copy-compiler-tool: copies build tool binaries into some ~/.stack/compiler-tools/…/bin path
   copy-compiler-tool: false
+
+  # *-stripping:        strip executables and/or libraries
   executable-stripping: true
   library-stripping: false
+
   # interleaved-output: Build outputs from various packages interleaved. since stack 1.8
-  # open-haddocks:      Opens docs at end of build (disabled, use --open)
   interleaved-output: true
+
+  # open-haddocks:      Opens docs at end of build (disabled, use --open)
   open-haddocks: false
+
   # keep-going: if one package fails to build, continue with what doesn't depend on it
   keep-going: true
-  # Haddock all the things
-  # haddock: Always generate haddocks by default
-  haddock: true
+
   # Haddock segfaults with haskell-src-exts on ghc-8.4. Fixed in GHC 8.6.1.
   # https://github.com/haskell/haddock/issues/928
-  haddock-deps: true
+
+  haddock: true
+  haddock-deps: false
   haddock-internal: true
-  haddock-hyperlink-source: true
+  haddock-hyperlink-source: false
   #  haddock-arguments:
   #    haddock-args: ["--css=path/to/custom/css"]
 
@@ -86,4 +92,4 @@ hide-source-paths: true
 color: always
 stack-colors: error=31:good=32:shell=35:dir=34:recommendation=32:target=95:module=35:package-component=95
 
-# vim:set et ts=2 tw=124:
+# vim:et:ts=2:tw=120:

@@ -1,0 +1,6 @@
+# ~/.config/systemd/user/graphical.target
+[Unit]
+Description=Graphical Desktop
+AllowIsolate=true
+Requires=basic.target
+After=basic.target

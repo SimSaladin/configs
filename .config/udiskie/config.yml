@@ -1,14 +1,15 @@
 program_options:
   udisks_version: 2
   tray: false
-  automount: true
+  automount: false
   notify: true
-  password_cache: 0
+  password_cache: 30
 
-  # file_manager: "urxvtc -e ranger"
+  file_manager: "urxvtc -cd"
 
+  # TODO
   password_prompt: "builtin:gui"
-  #password_prompt: ["gnome-keyring-query", "get", "{id_uuid}"]
+  # password_prompt: ["gnome-keyring-query", "get", "{id_uuid}"]
   # [string|list] Set command to retrieve passwords. If specified
   # as a list it defines the ARGV array for the program call. If
   # specified as a string, it will be expanded in a shell-like
@@ -17,15 +18,41 @@ program_options:
   # "builtin:gui" and "builtin:tty" signify to use udiskie's
   # builtin password prompt.
 
-  #notify_command: "zenity --info --text '{event}: {device_presentation}'"
+  notify_command: ["notify-send", "udiskie", "'{event}: {device_presentation}'"]
   # [string|list] Set command to be executed on any device event.
   # This is specified like `password_prompt`.
 
 device_config:
-  # XXX: Nokia 6
-  #- id_uuid: "2017-04-21-14-19-37-00"
-  #- device_file: /dev/libmtp-3-1.2.4
-  #  automount: true
-  #  options: ["subtype=fuse.jmtpfs"]
-  - device_file: /dev/sr0
-    automount: false
+- systeminternal: true
+  ignore: true
+
+# notifications:
+  # Customize which notifications are shown for how long. Possible
+  # values are:
+  #   positive number         timeout in seconds
+  #   false                   disable
+  #   -1                      use the libnotify default timeout
+
+  # timeout:          1.5     # set the default for all notifications
+
+  # Specify only if you want to overwrite the the default:
+  # device_mounted:   5       # mount notification
+  # device_unmounted: false   # unmount notification
+  # device_added:     false   # device has appeared
+  # device_removed:   false   # device has disappeared
+  # device_unlocked:  -1      # encrypted device was unlocked
+  # device_locked:    -1      # encrypted device was locked
+  # job_failed:       -1      # mount/unlock/.. has failed
+
+# notification_actions:
+#   # Define which actions should be shown on notifications. Note that there
+#   # are currently only a limited set of actions available for each
+#   # notification. Events that are not explicitly specified show the default
+#   # set of actions. Specify an empty list if you don't want to see any
+#   # notification for the specified event:
+#
+#   device_mounted:   [browse]
+#   device_added:     [mount]
+
+# icon_names:
+

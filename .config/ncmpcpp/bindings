@@ -1,7 +1,6 @@
-## vim:set et ts=2 tw=78:
-# File: ~/.ncmpcpp/bindings ($XDG_CONFIG_HOME/ncmpcpp/bindings)
-##
-## {{{1 General rules
+# File: ~/.ncmpcpp/bindings                               vim:tw=78:ts=2:et:
+#
+# General rules                                                          {{{1
 ##
 ## 1) Because each action has runtime checks whether it's
 ##    ok to run it, a few actions can be bound to one key.
@@ -139,7 +138,7 @@
 ##
 ## Note: Function def_key accepts non-ascii characters.
 ##
-## {{{1 unbound
+# Unbound actions / dummy bindings                                       {{{1
 ##
 ## The following actions are not bound to any key/command:
 ##
@@ -176,22 +175,21 @@ def_key "|"
   dummy
 def_key "="
   dummy
-## {{{1 commands
+# Custom commands                                                        {{{1
 
 def_command "append_selected_to_playlist" [immediate]
   add_selected_items
   require_screen "selected_items_adder"
   run_action
 
-## }}}1
+# key: y                                                                 {{{1
 
-## {{{1 y - multi-function
 #def_key "y"
 #  save_tag_changes
 #def_key "y"
 #  start_searching
 
-## {{{1 enter - multi-function
+# key: enter                                                             {{{1
 def_key "enter"
   require_screen "playlist"
   play_item
@@ -205,7 +203,7 @@ def_key "enter"
 def_key "enter"
   toggle_output
 
-## {{{1 space - multi-function
+# key: space                                                             {{{1
 def_key "space"
   add_item_to_playlist
 def_key "space"
@@ -213,21 +211,19 @@ def_key "space"
 def_key "space"
   toggle_visualization_type
 
-## }}}1
-
-## {{{1 screens
-
+# key: tab (toggle screen)                                               {{{1
 def_key "tab"
   next_screen
-
 def_key "shift-tab"
   previous_screen
 
+# key: F1 (help screen)                                                  {{{1
 def_key "f1"
   show_help
 def_key "f1"
   previous_screen
 
+# key: 1..9 (show screen)                                                {{{1
 def_key "1"
   show_playlist
 
@@ -263,6 +259,8 @@ def_key "8"
 def_key "9"
   show_lyrics
 
+# key: @, i (show info)                                                  {{{1
+
 def_key "@"
   show_server_info
 
@@ -272,7 +270,8 @@ def_key "@"
 #def_key "I"
 #  show_artist_info
 
-## {{{1 directional navigation [ hjkl HJKL ^H^J^K^L ]
+# key: h, j, k, l                                                        {{{1
+
 def_key "h"
   require_screen "song_info"
   show_song_info
@@ -322,7 +321,8 @@ def_key "L"
 def_key "ctrl-l"
   slave_screen
 
-# {{{1 directional navigation (arrow keys)
+# key: arrow keys                                                        {{{1
+
 def_key "up"
   push_characters "k"
 def_key "shift-up"
@@ -335,16 +335,14 @@ def_key "shift-down"
 
 def_key "right"
   push_characters "l"
+
 def_key "left"
   push_characters "h"
 
-# {{{1 jumping navigation [ oeEG~ ]
+# key: o, G, ~ (jump)                                                    {{{1
 
 def_key "o"
   jump_to_playing_song
-
-def_key "E"
-  jump_to_tag_editor
 
 def_key "G"
   jump_to_browser
@@ -354,6 +352,7 @@ def_key "G"
 def_key "~"
   jump_to_media_library
 
+# key: e (edit)                                                          {{{1
 def_key "e"
   edit_playlist_name
 def_key "e"
@@ -365,7 +364,10 @@ def_key "e"
 def_key "e"
   edit_library_album
 
-# {{{1 scrolling
+def_key "E"
+  jump_to_tag_editor
+
+# scroll                                                                 {{{1
 
 def_key "ctrl-u"
   page_up
@@ -396,7 +398,7 @@ def_key "{"
 def_key "}"
   scroll_down_artist
 
-## {{{1 system
+# system                                                                 {{{1
 
 def_key "u"
   update_database
@@ -426,23 +428,32 @@ def_key "ctrl-a"
 #  toggle_separators_between_albums
 
 
-## {{{1 playback
+# playback                                                               {{{1
+
 def_key "P"
   pause
+
 def_key "s"
   stop
+
 def_key "+"
   volume_up
+
 def_key "-"
   volume_down
+
 def_key ">"
   next
+
 def_key "<"
   previous
+
 def_key "shift-enter"
   play_item
+
 def_key "backspace"
   replay_song
+
 #def_key "y"
 #  toggle_single
 #def_key "Y"
@@ -460,11 +471,7 @@ def_key "backspace"
 #def_key "Z"
 #  shuffle
 
-## {{{1 playlists
-
-# XXX: what is this?
-#def_key "ctrl-p"
-#  set_selected_items_priority
+# playlists                                                              {{{1
 
 def_key "S"
   save_playlist
@@ -491,23 +498,25 @@ def_key "delete"
 def_key "`"
   add_random_items
 
-## {{{1 selections
+# select / actions with selection                                        {{{1
 
 #def_key "B"
 #  select_album
+
+# XXX: what is this?
+#def_key "ctrl-p"
+#  set_selected_items_priority
 
 def_key "V"
   select_range
 
 def_key "v"
   reverse_selection
-
 def_key "ctrl-v"
   remove_selection
 
 def_key "a"
   add_selected_items
-
 # A: add selected to end of playlist
 def_key "A"
   add_selected_items
@@ -519,10 +528,12 @@ def_key "A"
 def_key "m"
   move_selected_items_to
 
-## {{{1 finding and filtering
+# filter                                                                 {{{1
 
 #def_key "ctrl-f"
 #  apply_filter
+
+# find                                                                   {{{1
 
 def_key "/"
   find
@@ -536,6 +547,7 @@ def_key "?"
 
 def_key "n"
   next_found_item
+
 def_key "p"
   previous_found_item
 
@@ -545,7 +557,7 @@ def_key "p"
 #def_key "w"
 #  toggle_find_mode
 
-## {{{1 seek in current song
+# seek / jump song                                                       {{{1
 
 #def_key "b"
 #  seek_backward
@@ -554,14 +566,11 @@ def_key "p"
 #def_key "g"
 #  jump_to_position_in_song
 
-## {{{1 sorting
+# sort                                                                   {{{1
 
 def_key "ctrl-s"
   sort_playlist
-
 #def_key "ctrl-s"
 #  toggle_browser_sort_mode
 #def_key "ctrl-s"
 #  toggle_media_library_sort_mode
-
-## }}}1

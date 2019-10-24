@@ -1,22 +1,43 @@
 # ~/.vim/UltiSnips/haskell.snippets
 
 # [id=snip:haskell:file-header]
-snippet header
+#
+# Haddock module description
+#
+# - Fields must appear in the specified order, all fields are optional
+# - No format is enforced for any of the fields
+#
+# <url:https://haskell-haddock.readthedocs.io/en/latest/markup.html#the-module-description>
+#
+snippet header "Module header (hs)" !b
+
 ------------------------------------------------------------------------------
 -- |
--- Module         : `!v vimrc#haskell_module_name(expand('%:p'))`
--- Maintainer     : `!v g:author_name` <`!v g:author_email`>
--- Stability      : experimental
--- Portability    : non-portable
+-- Module      : `!v vimrc#haskell_module_name(expand('%:p'))`
+-- Description : ${1:Short description}
+-- Copyright   : (c) `!v g:author_name`, `date +%Y`
+-- License     : `!v g:default_license`
+--
+-- Maintainer  : `!v g:author_name` <`!v g:author_email`>
+-- Stability   : unstable
+-- Portability : unportable
+--
+-- ${2:Longer description of this module.}
+--
 ------------------------------------------------------------------------------
-module `!v vimrc#haskell_module_name(expand('%:p'))` where
 
-import Prelude
+module `!v vimrc#haskell_module_name(expand('%:p'))`${3/.+/ (/}
+  ${3:export-list}
+  ${3/.+/) /}where
 
-$0
 endsnippet
 
 snippet i "import q? m? as s? (n??)" !b
-import ${3/.+/qualified/}${3: }${1:Data.Text}${2/.+/ as /}${2:${1/.*\.//}}${4/.+/ (/}${4:pack}${4/.+/)/}
+import ${3/.+/qualified/}${3: }${1:Prelude}${2/.+/ as /}${2:${1/.*\.//}}${4/.+/ (/}${4:print}${4/.+/)/}
 $0
+endsnippet
+
+snippet fun "New function" !b
+$1 :: ${5:ctx}${5/.+/ => /}${2:A}${3/.+/ -> /}${3:B}
+${1:f} ${9:x}${9/.+/ /}= $0
 endsnippet

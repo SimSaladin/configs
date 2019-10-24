@@ -1,1 +1,1 @@
-../tmux-server.service
+/home/sim/.config/systemd/user/tmux-server.service

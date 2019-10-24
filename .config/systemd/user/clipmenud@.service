@@ -1,0 +1,33 @@
+# ~/.config/systemd/user/clipmenud.service
+[Unit]
+Description=clipmenu daemon @ DISPLAY=:%I
+Documentation=file:///usr/bin/clipmenud
+After=xorg@%i.service
+#Requisite=xorg@%i.service
+
+[Service]
+StandardError=journal
+Restart=always
+RestartSec=5s
+ExecStart=/usr/bin/clipmenud
+Environment=DISPLAY=:%I
+# NOTE: autocutsel manages primary selection
+Environment=CM_SELECTIONS=clipboard
+Environment=CM_MAX_CLIPS=5000
+Environment=CM_DEBUG=0
+Environment=CM_IGNORE_WINDOW=
+Environment=CM_DIR=%t
+Environment=CM_OWN_CLIPBOARD=1
+Environment=CM_ONESHOT=0
+
+Nice=10
+ProtectSystem=strict
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=
+RestrictRealtime=yes
+
+#Slice=xorg.slice
+
+[Install]
+WantedBy=graphical.target

@@ -12,8 +12,9 @@
 /.davfs2/secrets                      crypt
 /.docker/config.json                  crypt
 /.electrum/wallets/*                  crypt
-/.gnupg/*                             crypt
+/.gnupg/*.*                           crypt
 /.gnupg/*.conf                       !crypt
+/.gnupg/.git*                        !crypt
 /.gnupg/*/*                           crypt
 /.secrets                             crypt
 /.ssh/known_hosts*                    crypt

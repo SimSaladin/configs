@@ -1,33 +1,47 @@
 # file: ~/.vim/UltiSnips/help.snippets (helphelp)
 
-snippet --        "---- ruler (tw)" !b
+snippet -- "ruler -" !b
 `!v repeat('-', &l:tw ? &l:tw : 78)`
 endsnippet
-snippet ==        "==== ruler (tw)" !b
+
+snippet == "ruler =" !b
 `!v repeat('=', &l:tw ? &l:tw : 78)`
 endsnippet
 
-snippet modeline "a help modeline" !b
+snippet modeline "Modeline (help)" !b
 vim:tw=78:ts=8:noet:ft=help:norl:
 endsnippet
 
-snippet h1      "1. Top-level section header" !b
+snippet 1 "Section (numbered)" !b
 ==============================================================================
-1. ${1:${VISUAL:Title}}			*${2:`!p
-snip.rv = t[1].lower().replace(' ','-')`}*$0
-endsnippet
-snippet h2      "1.1 Second-level section header" !b
-1.1 ${1:${VISUAL:Title}} ~
+${1:1}. ${2:${VISUAL:Title}}			*${3:`!p snip.rv = t[2].lower().replace(' ','-')`}*
+$0
 endsnippet
 
-snippet rtag    "right-justified *tag*" !b
+snippet 2 "Sub-section (numbered)" !b
+------------------------------------------------------------------------------
+${1:1}.${2:1} ${3:${VISUAL:Title}} ~
+endsnippet
+
+snippet 3 "Sub-sub-section (not numbered)" !b
+${1:${VISUAL:TITLE}}			*${2:${1}}*
+$0
+endsnippet
+
+snippet 4 "Sub-sub-sub-section (not numbered)" !b
+						*${2:${1}}*
+${1:${VISUAL:Title}} ~
+endsnippet
+
+snippet > "Verbatim"
+>
+	${1:${VISUAL:(block-start)}}
+${0:(block-end)}
+endsnippet
+
+snippet tag "Tag (right)" !b
 							*${0:tag}*
 ${VISUAL}
-endsnippet
-snippet >       "Code block"
->
-	${1:${VISUAL:Block begins}}
-${0:Block ended}
 endsnippet
 
 # vim:set ft=snippets:et:

@@ -2,9 +2,9 @@
 Description=BTC price ticker update timer
 
 [Timer]
-Unit=btc_ticker.service
-OnActiveSec=0s
-OnUnitActiveSec=15min
+OnActiveSec=5min
+OnUnitActiveSec=10min
+AccuracySec=5min
 
 [Install]
 WantedBy=timers.target

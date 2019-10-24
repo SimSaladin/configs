@@ -4,4 +4,4 @@ ConditionFileIsExecutable=%h/bin/kraken_dzen
 
 [Service]
 Type=oneshot
-ExecStart=%h/bin/kraken_dzen %t/btc-ticker
+ExecStart=%h/bin/kraken_dzen

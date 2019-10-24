@@ -1,10 +1,13 @@
+# ~/.config/systemd/user/urxvtd.service
 [Unit]
-Description=rxvt-unicode terminal emulator daemon
-PartOf=graphical-session.target
+Description=urxvtd - terminal emulator daemon service
+PartOf=graphical.target
 
 [Service]
-ExecStart=urxvtd -o
 Restart=on-failure
+ExecStart=/usr/bin/urxvtd -o
+StandardError=journal
+Slice=shell-urxvtd.slice
 
 [Install]
-WantedBy=de.target
+WantedBy=graphical.target

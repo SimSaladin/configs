@@ -1,0 +1,22 @@
+[Unit]
+Description=Last.fm updater for MPD
+After=mpd.service network.target
+AssertPathExists=%E/mpd/mpdscribble.conf
+
+[Service]
+# systemd.service
+ExecStartPre=/usr/bin/mkdir -p '%C/mpdscribble'
+ExecStart=/usr/bin/mpdscribble --no-daemon --conf '%E/mpd/mpdscribble.conf'
+# systemd.resource-control
+Slice=mpd.slice
+# systemd.exec
+NoNewPrivileges=yes
+Nice=10
+ProtectSystem=strict
+MemoryDenyWriteExecute=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+StandardError=journal
+
+[Install]
+WantedBy=basic.target

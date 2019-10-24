@@ -1,6 +1,6 @@
 # File:    ~/.config/dunst/dunstrc
 # Docs:    <url:man:dunst.1>
-# Example: /usr/share/dunst/dunstrc
+# Example: <url:/usr/share/dunst/dunstrc>
 # Reload:  <lnk:vimscript:!systemctl --user restart dunst.service>
 
 [global]
@@ -34,7 +34,7 @@
     # the top and down respectively.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "0x5-30+20"
+    geometry = "0x5+30+20"
 
     # Show how many messages are currently hidden (because of geometry).
     indicate_hidden = yes
@@ -107,7 +107,7 @@
     #        <u>underline</u>
     #
     #        For a complete reference see
-    #        <http://developer.gnome.org/pango/stable/PangoMarkupFormat.html>.
+    #        <https://developer.gnome.org/pango/stable/pango-Markup.html>.
     #
     # strip: This setting is provided for compatibility with some broken
     #        clients that send markup even though it's not enabled on the
@@ -133,7 +133,6 @@
     #   %n  progress value if set without any extra characters
     #   %%  Literal %
     # Markup is allowed
-    # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
     format = "<b>%s</b>\n%b"
 
     # Alignment of message text.
@@ -181,7 +180,7 @@
 
     # Should a notification popped up from history be sticky or timeout
     # as if it would normally do.
-    sticky_history = no
+    sticky_history = yes
 
     # Maximum amount of notifications kept in history
     history_length = 20
@@ -206,7 +205,7 @@
     # Print a notification on startup.
     # This is mainly for error detection, since dbus (re-)starts dunst
     # automatically after a crash.
-    startup_notification = true
+    startup_notification = false
 
     # Manage dunst's desire for talking
     # Can be one of the following values:
@@ -359,9 +358,9 @@
 #
 # Make the handling of transient notifications more strict by making them not
 # be placed in history.
-#[transient_history_ignore]
-#    match_transient = yes
-#    history_ignore = yes
+[transient_history_ignore]
+    match_transient = yes
+    history_ignore = yes
 
 # fullscreen values
 # show: show the notifications, regardless if there is a fullscreen window opened

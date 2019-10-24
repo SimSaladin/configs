@@ -1,0 +1,94 @@
+#!/bin/bash
+# shellcheck disable=SC2162
+
+tmux=/usr/bin/tmux
+tmux_opts=()
+
+tmux_ () { exec "$tmux" "${tmux_opts[@]}" "$@"; }
+
+tmux () { command "$tmux" "${tmux_opts[@]}" "$@"; }
+
+new-session () {
+	local OPTIND opt arg_c=$PWD arg_E='' arg_d='' arg_s='' arg_x arg_y arg_n
+	while getopts Edc:s:x:y:n: opt; do
+		case $opt in
+			E) arg_E=1 ;;
+			d) arg_d=1 ;;
+			c) arg_c=$OPTARG ;;
+			s) arg_s=$OPTARG ;;
+			x) arg_x=$OPTARG ;;
+			y) arg_y=$OPTARG ;;
+			n) arg_n=$OPTARG ;;
+			?) tmux_ new-session --help ;;
+		esac
+	done
+	shift $((OPTIND - 1))
+	until [ -n "$arg_s" ]; do
+		read -r -e -p "Session name: " arg_s
+	done
+	session_id=$(tmux 'new-session' -d -P -c "$arg_c" -F '#{session_id}' -s "$arg_s" ${arg_x:+-x "$arg_x"} ${arg_y:+-y "$arg_y"} ${arg_n:+-n "$arg_n"} )
+	attach-session ${arg_d:+-d} ${arg_E:+-E} -t "$session_id" "$@"
+}
+
+# $0 [-dEr] [-c PWD] [-t SESSION]
+attach-session () {
+	local arg_t='' arg_c='' args=() session=''
+	local OPTIND opt
+	while getopts dErc:t: opt; do
+		case $opt in
+			d) args+=( -d ) ;;
+			r) args+=( -r ) ;;
+			E) args+=( -E ) ;;
+			c) arg_c=$OPTARG ;;
+			t) arg_t=$OPTARG ;;
+			?) tmux_ attach-session --help || exit 1 ;;
+		esac
+	done
+	shift $(( OPTIND - 1 ))
+	# Find target session (group) id
+	choose-session_id arg_t
+	# Find session (group) name
+	group_q=$(tmux display-message -p -F '#{?:#{==:#{session_group},},#{q:session_name},#{q:session_group}}' -t "$arg_t")
+	session_q=$(tmux display-message -p -F '#{q:session_name}' -t "$arg_t")
+	# Name temporary session
+	local c=1
+	until ! tmux has-session -t "$session_q ($c)" 2>&-; do (( c++ )); done
+	session=$(tmux display-message -p -F "#S" -t "$arg_t")" ($c)"
+	session_q+=" ($c)"
+	# Create new temporary session
+	tmux_ new-session -d -s "$session" -t "$group_q" \; set-option destroy-unattached \; attach-session -t "$session_q"
+	#tmux_ new-session -d -c "$arg_c" -t "=$sid" -s "$sid-$cid" \; attach-session -c "$arg_c" -t "=$sid-$cid"
+}
+
+# Prompt for a session in case none was given.
+# $1 reference to variable to write the chosen name to
+choose-session_id () {
+	local -n t=$1
+	local input=''
+	until [[ $t == \$+([0-9]) ]]; do
+		tmux list-sessions
+		read -r -e -p 'Select session: ' input
+		t=$(tmux display-message -p "#{S:#{?#{&&:#{==:#{destroy-unattached},0},#{m:*${input}*,#S}},#{session_id},}}")
+	done
+	printf "Selected session id '%s'\n" "$t"
+}
+
+main () {
+	local OPTIND opt
+	while getopts 2CluvVc:f:L:S: opt; do
+		case $opt in
+			2|C|l|u|v|V)	tmux_opts+=( "-$opt" ) ;;
+			c|f|L|S)	tmux_opts+=( "-$opt" "$OPTARG" ) ;;
+			?)		tmux_ --help >&2 ;;
+		esac || return 1
+	done
+	shift $(( OPTIND - 1 ))
+	[ -t 1 ] || tmux_ "$@" || exit $?
+	case $1 in
+		attach|attach-session|''|a ) attach-session "${@:2}" ;;
+		new|new-session ) new-session "${@:2}" ;;
+		* ) tmux_ "$@" ;;
+	esac
+}
+
+main "$@"

@@ -1,12 +1,9 @@
-" File: ~/.vim/ftplugin/denite_maps.vim
-" Author: Samuli Thomasson
+" ~/.vim/ftplugin/denite_maps.vim
 
-scriptencoding utf-8
-
-if exists('b:loaded_denite_maps')
+if exists('b:did_denite_maps')
   finish
 endif
-let b:loaded_denite_maps = 1
+let b:did_denite_maps = 1
 
 nnoremap <silent><buffer><expr> <CR>    denite#do_map('do_action')
 nnoremap <silent><buffer><expr> a       denite#do_map('choose_action')
@@ -18,5 +15,4 @@ nnoremap <silent><buffer><expr> f       denite#do_map('open_filter_buffer')
 nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
 nnoremap <silent><buffer><expr> r       denite#do_map('do_action', 'quickfix')
 nnoremap <silent><buffer><expr> <C-r>   denite#do_map('restore_sources')
-
-nnoremap <silent><buffer><expr> <F1> ":\<C-u>Utl openLink file:~/.vim/deinlazy.toml#denite\<CR>"
+nnoremap <silent><buffer><expr> <F1>    ":\<C-u>Utl openLink file:~/.vim/deinlazy.toml#denite\<CR>"

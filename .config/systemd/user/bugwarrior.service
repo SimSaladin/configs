@@ -1,0 +1,9 @@
+[Unit]
+Description=Run bugwarrior-pull
+Requisite=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bugwarrior-pull
+StandardError=journal

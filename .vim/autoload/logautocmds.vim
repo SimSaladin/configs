@@ -1,36 +1,34 @@
-" Original Author: https://github.com/lervag/dotvim
+" File: ~/.vim/autoload/logautocmds.vim
+" Original: https://github.com/lervag/dotvim
+" Description: For debugging autocommands.
 
 " command! LogAutocmds call logautocmds#toggle()
 
-let s:logfile = $TMPDIR.'/vim_log_autocommands'
-
 function! logautocmds#toggle() abort "{{{
-  augroup LogAutocmd
-    autocmd!
-  augroup END
-
-  call mkdir(fnamemodify(s:logfile,':p:h'),'p')
-
-  echom 'LogAutocmds log:' s:logfile
-
-  let l:date = strftime('%F', localtime())
   let s:activate = get(s:, 'activate', 0) ? 0 : 1
+
   if !s:activate
-    call s:log('Stopped autocmd log', l:date)
+    augroup LogAutocmd
+      autocmd!
+    augroup END
+    call s:log('LogAutocmds', 'Stop')
     return
   endif
 
-  call s:log('Started autocmd log', l:date)
+  let s:logfile = tempname()
+  echomsg 'LogAutocmds: logging to file:' s:logfile
+
+  call s:log('LogAutocmds', 'Start')
   augroup LogAutocmd
     for l:au in s:aulist
-      silent execute 'autocmd' l:au '* call s:log(''' . l:au . ''', expand(''<amatch>:t''))'
+      silent execute 'autocmd' l:au '* call s:log(''' . l:au . ''', expand(''<amatch>:t''), expand(''<afile>''))'
     endfor
   augroup END
 endfunction "}}}
 
-function! s:log(event, match) abort "{{{
+function! s:log(event, match, ...) abort "{{{
   silent execute 'silent !echo'
-        \ shellescape(strftime('%T', localtime()).' - '.a:event.' '.a:match)
+        \ shellescape(strftime('%T', localtime()).' - '.a:event.' '.a:match . ' ' . string(a:000))
         \ . ' >> ' . shellescape(s:logfile)
 endfunction "}}}
 
@@ -42,6 +40,11 @@ endfunction "}}}
 " - FileReadCmd
 " - BufReadCmd
 " - FuncUndefined
+
+ "      \ 'CursorHold',
+ "      \ 'CursorHoldI',
+ "      \ 'CursorMoved',
+ "      \ 'CursorMovedI',
 
 "{{{
 let s:aulist = [
@@ -100,10 +103,6 @@ let s:aulist = [
       \ 'VimResized',
       \ 'FocusGained',
       \ 'FocusLost',
-      \ 'CursorHold',
-      \ 'CursorHoldI',
-      \ 'CursorMoved',
-      \ 'CursorMovedI',
       \ 'WinEnter',
       \ 'WinLeave',
       \ 'TabEnter',
@@ -117,6 +116,7 @@ let s:aulist = [
       \ 'TextChanged',
       \ 'TextChangedI',
       \ 'ColorScheme',
+      \ 'ColorSchemePre',
       \ 'RemoteReply',
       \ 'QuickFixCmdPre',
       \ 'QuickFixCmdPost',

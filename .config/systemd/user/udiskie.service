@@ -1,10 +1,11 @@
+# ~/.config/systemd/user/udiskie.service
 [Unit]
-Description=udiskie automount removable media
-After=basic.target
+Description=udiskie - automount removable media
 
 [Service]
-ExecStart=/usr/bin/udiskie
 Restart=on-failure
+ExecStart=/usr/bin/udiskie
+StandardError=journal
 
 [Install]
 WantedBy=basic.target
