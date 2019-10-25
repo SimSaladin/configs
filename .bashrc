@@ -70,30 +70,20 @@ export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_RUNTIME_DIR XDG_DATA_DIR
 
 sets -v XDG_DATA_DIRS -a ~/.nix-profile/share
 
-export GPG_TTY=$(tty)
-unset SSH_AGENT_PID
-if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+#export GPG_TTY=$(tty)
+if [ -z "${SSH_AUTH_SOCK-}" ] && command -v gpgconf >/dev/null; then
 	export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 fi
 
 export VAGRANT_DEFAULT_PROVIDER=${VAGRANT_DEFAULT_PROVIDER-libvirt}
-export FFZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
 
+export FFZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
 if [ -z "${LS_COLORS-}"	]; then
 	eval "$(dircolors -b ~/.dircolors 2>/dev/null || dircolors)"
 fi
-
-
-if [ -n "${DISPLAY-}" ] && [ -z "${SSH_CONNECTION-}" ] && test -x /usr/lib/ssh/x11-ssh-askpass; then
-	export SSH_ASKPASS=$_
-else
-	export SSH_ASKPASS=/usr/bin/systemd-ask-password
-fi
-
-if [ -z "${RANDFILE-}" ] && mkdir -p "$XDG_DATA_HOME/openssl" 2>&-; then
+if [ -z "${RANDFILE-}" ] && mkdir -p "$XDG_DATA_HOME/openssl" 2>/dev/null; then
 	export RANDFILE=$_/rnd
 fi
-
 if EDITOR=$(command -v vim);		then export EDITOR; fi
 if PAGER=$(command -v vimpager);	then export PAGER; fi
 if MANPAGER=$(command -v manpager); then export MANPAGER; fi

@@ -3,8 +3,6 @@
 # shellcheck disable=SC1090
 [ ! -r ~/.bashrc ] || . ~/.bashrc
 
-systemctl --user import-environment PATH SSH_ASKPASS CM_LAUNCHER NIX_PATH NIX_SSL_CERT_FILE NIX_REMOTE
-
 my_motd () {
 	[ -t 1 ] || return
 	archey3
@@ -16,7 +14,7 @@ my_motd () {
 
 if [ -z "${DISPLAY-}" ] && [ "${XDG_VTNR-}" = 1 ] && ! systemctl -q --user is-active graphical.target; then
 
-	systemctl --user import-environment XDG_VTNR
+	systemctl --user import-environment PATH XDG_VTNR CM_LAUNCHER NIX_PATH NIX_SSL_CERT_FILE NIX_REMOTE
 	systemctl --user start xorg@0.socket
 	systemctl --user start xorg@0.service
 	systemctl --user start graphical.target
