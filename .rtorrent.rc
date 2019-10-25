@@ -1,15 +1,13 @@
-# file: ~/.rtorrent.rc
+# ~/.rtorrent.rc
 #
-# See https://github.com/rakshasa/rtorrent/wiki/CONFIG-Template
-# for an up-to-date version.
-#
+# <url:https://github.com/rakshasa/rtorrent/wiki/CONFIG-Template>
 
 ## Instance layout (base paths)
-method.insert = cfg.basedir,  private|const|string, (cat,(system.env,HOME), "/rtorrent/")
-method.insert = cfg.download, private|const|string, (cat,(cfg.basedir),"download/")
+method.insert = cfg.basedir,  private|const|string, (cat,(system.env,HOME), "/.local/share/rtorrent/")
+method.insert = cfg.download, private|const|string, (cat,(system.env,HOME),"/Downloads/")
 method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
 method.insert = cfg.logfile,  private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
-method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),".session/")
+method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),"session/")
 method.insert = cfg.watch,    private|const|string, (cat,(cfg.basedir),"watch/")
 
 ## Create instance directories
@@ -21,12 +19,13 @@ execute.throw = sh, -c, (cat,\
     "\"",(cfg.watch),"/start\" ")
 
 ## Operational settings
-session.path.set = (cat, (cfg.session))
+session.path.set      = (cat, (cfg.session))
 directory.default.set = (cat, (cfg.download))
-log.execute = (cat, (cfg.logs), "execute.log")
-log.xmlrpc = (cat, (cfg.logs), "xmlrpc.log")
-execute.nothrow = sh, -c, (cat, "echo >", (session.path), "rtorrent.pid", " ",(system.pid))
-system.cwd.set = (directory.default)
+log.execute           = (cat, (cfg.logs), "execute.log")
+log.xmlrpc            = (cat, (cfg.logs), "xmlrpc.log")
+execute.nothrow       = sh, -c, (cat, "echo >", (session.path), "rtorrent.pid", " ",(system.pid))
+system.cwd.set        = (directory.default)
+
 network.http.dns_cache_timeout.set = 25
 
 ## Listening port for incoming peer traffic (fixed; you can also randomize it)
@@ -43,6 +42,8 @@ protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
 dht.mode.set = auto
 dht.port.set = 6881
 protocol.pex.set = yes
+
+trackers.use_udp.set = yes
 
 ## Watch directories (add more as you like, but use unique schedule names)
 ## Add torrent
