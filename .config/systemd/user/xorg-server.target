@@ -1,0 +1,7 @@
+# ~/.config/systemd/user/xorg-server.target
+[Unit]
+Description=per-session Xorg server instance
+Requires=basic.target
+After=basic.target
+RefuseManualStart=yes
+StopWhenUnneeded=yes

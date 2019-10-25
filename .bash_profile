@@ -3,20 +3,7 @@
 # shellcheck disable=SC1090
 [ ! -r ~/.bashrc ] || . ~/.bashrc
 
-systemctl --user import-environment PATH
-
-# Start X (maybe)
-if [ ! -v DISPLAY ] && [ "${XDG_VTNR:-}" = 1 ]; then
-	systemctl --user import-environment XDG_VTNR
-
-	systemctl --user reset-failed
-	systemctl --user start xorg@0.socket
-	systemd-run ~/.xinitrc
-
-	#exec xinit ~/.xinitrc -- /usr/lib/Xorg :0 -keeptty -nolisten tcp -noreset -verbose 2 "vt${XDG_VTNR}"
-
-	# TODO and then what?
-fi
+systemctl --user import-environment PATH SSH_ASKPASS CM_LAUNCHER NIX_PATH NIX_SSL_CERT_FILE NIX_REMOTE
 
 my_motd () {
 	[ -t 1 ] || return
@@ -26,6 +13,14 @@ my_motd () {
 	paste <(printf "\e[1;33m%s\e[0m" tty) <(stty) <(tty)
 	paste <(printf "\e[1;33m%s\e[0m" last) <(last -w -n5)
 }
+
+if [ -z "${DISPLAY-}" ] && [ "${XDG_VTNR-}" = 1 ] && ! systemctl -q --user is-active graphical.target; then
+
+	systemctl --user import-environment XDG_VTNR
+	systemctl --user start xorg@0.socket
+	systemctl --user start xorg@0.service
+	systemctl --user start graphical.target
+fi
 
 case $- in
 	*i*) my_motd 2>/dev/null ;;

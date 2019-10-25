@@ -1,6 +1,6 @@
 # ~/.config/systemd/user/xorg@.socket
 [Unit]
-Description=X11 socket DISPLAY=:%i
+Description=X11 socket (DISPLAY=:%i)
 
 [Socket]
 ListenStream=/tmp/.X11-unix/X%i

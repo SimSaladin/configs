@@ -1,48 +1,21 @@
 # file: ~/.gitignore
 
-# Ignore top-level files and directories except dotfiles and "/bin"
 /*
-!/.*
-!/bin
-
-# Repositories
-/.password-store
-
-# Common
 /.*_history
 /.Xauthority
-/.cache
-/.gem/
-/.icons
-/.lesshst
-/.local
-/.nv/
-/.snapshots/
-/.ssh/id_rsa*
-/.terminfo/
-
-# Other
-/.cabal/
-/.ghc/ghci_history
-/.bitcoin/
-/.steam/
-/.mozilla/
+/.cache/
 /.ecr/
-/.packer.d/
-/.terraform.d/
-/.vagrant.d/
-/.nix-defexpr/
-/.nix-profile
-
-# todo
-/.rnd
-/.gnupg/*~
-/.gnupg/random_seed
-/.pki/
-/.abook/*~
-/.lbdb/m_inmail*
+/.ghc/ghci_history
 /.hplip/
-/.task/
-/.cups/
-/.java/
-
+/.lbdb/m_inmail*
+/.lesshst
+/.local/
+/.mozilla
+/.nix-defexpr
+/.nix-profile
+/.nv/
+/.password-store
+/.pki/
+/.rnd
+/.snapshots/
+/.terminfo/

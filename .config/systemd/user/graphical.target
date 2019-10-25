@@ -2,5 +2,5 @@
 [Unit]
 Description=Graphical Desktop
 AllowIsolate=true
-Requires=basic.target
-After=basic.target
+Requires=xorg-server.target
+After=xorg-server.target

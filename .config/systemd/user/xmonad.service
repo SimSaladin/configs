@@ -1,18 +1,14 @@
 # file: ~/.config/systemd/user/xmonad.service
 [Unit]
 Description=XMonad tiling window manager (xinit)
-#After=xorg@0.service
-#Requires=xorg@0.service
 PartOf=graphical.target
 
 [Service]
 ExecStartPre=-%E/xmonad/build
 ExecStart=%h/.local/bin/xmonad-my
-#KillMode=process
 Restart=always
 SyslogIdentifier=%P
 StandardError=journal
-#Slice=xorg.slice
 
 [Install]
 WantedBy=graphical.target

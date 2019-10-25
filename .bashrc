@@ -3,6 +3,7 @@
 # shellcheck disable=SC1090,SC1091
 # shellcheck disable=SC2139
 # shellcheck disable=SC2015
+# shellcheck disable=SC2155
 #
 # -l -i : .bash_profile | .bashrc | $BASH_ENV |
 #  X  X :    X          |   X*    |           | * .bash_profile sources .bashrc
@@ -55,56 +56,48 @@ sets () {
 }
 
 export PATH
+
 sets -v PATH -a ~/bin/lennartcl-gitl -a ~/.local/bin -a ~/bin
 
 export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_RUNTIME_DIR XDG_DATA_DIRS XDG_MUSIC_DIR
+
 : "${XDG_CONFIG_HOME:=$HOME/.config}"
 : "${XDG_CACHE_HOME:=$HOME/.cache}"
 : "${XDG_DATA_HOME:=$HOME/.local/share}"
 : "${XDG_RUNTIME_DIR:=/run/user/$UID}"
 : "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}"
 : "${XDG_MUSIC_DIR:=$HOME/music}"
+
 sets -v XDG_DATA_DIRS -a ~/.nix-profile/share
 
-export SSH_AUTH_SOCK
-: "${SSH_AUTH_SOCK:="$XDG_RUNTIME_DIR"/gnupg/S.gpg-agent.ssh}"
-
-export VAGRANT_DEFAULT_PROVIDER
-: "${VAGRANT_DEFAULT_PROVIDER:=libvirt}"
-
-export FZF_DEFAULT_OPTS
-FZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
-
-#export ANSIBLE_SSH_EXECUTABLE
-
-export EDITOR PAGER MANPAGER GPG_TTY SSH_ASKPASS CM_LAUNCHER
-
-[ -n "${LS_COLORS+y}" ] || eval "$(dircolors -b ~/.dircolors || dircolors)" 2>/dev/null || :
-#[ -v LS_COLORS ] || eval "$(dircolors -b ~/.dircolors || dircolors)" 2>/dev/null || :
-
-[ -t 1 ] && GPG_TTY=$(tty) || :
-
-if command -v vim >/dev/null; then
-	EDITOR=vim
-	PAGER=vimpager
-	MANPAGER=manpager
+export GPG_TTY=$(tty)
+unset SSH_AGENT_PID
+if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+	export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 fi
 
-case ${PAGER:-} in
-	*vimpager) alias less="$PAGER" ;;
-esac
+export VAGRANT_DEFAULT_PROVIDER=${VAGRANT_DEFAULT_PROVIDER-libvirt}
+export FFZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
 
-if [ -n "${DISPLAY+y}" ] && test -x /usr/lib/ssh/x11-ssh-askpass; then
-	SSH_ASKPASS=$_
-elif test -x "$(command -v systemd-ask-password)"; then
-	SSH_ASKPASS=$_
+if [ -z "${LS_COLORS-}"	]; then
+	eval "$(dircolors -b ~/.dircolors 2>/dev/null || dircolors)"
 fi
 
-if command -v rofi >/dev/null; then
-	CM_LAUNCHER=rofi
-elif command -v dmenu >/dev/null; then
-	CM_LAUNCHER=dmenu
+
+if [ -n "${DISPLAY-}" ] && [ -z "${SSH_CONNECTION-}" ] && test -x /usr/lib/ssh/x11-ssh-askpass; then
+	export SSH_ASKPASS=$_
+else
+	export SSH_ASKPASS=/usr/bin/systemd-ask-password
 fi
+
+if [ -z "${RANDFILE-}" ] && mkdir -p "$XDG_DATA_HOME/openssl" 2>&-; then
+	export RANDFILE=$_/rnd
+fi
+
+if EDITOR=$(command -v vim);		then export EDITOR; fi
+if PAGER=$(command -v vimpager);	then export PAGER; fi
+if MANPAGER=$(command -v manpager); then export MANPAGER; fi
+if CM_LAUNCHER=$(command -v rofi || command -v dmenu); then export CM_LAUNCHER; fi
 
 alias path='sets -v PATH'
 
@@ -121,6 +114,9 @@ alias llt='ll -t'
 alias ll.='ll -d .*'
 if id -Z >/dev/null 2>&1; then
 	alias ll='ls -li --author -Z'
+fi
+if [[ $PAGER == *vimpager ]]; then
+	alias less=vimpager
 fi
 
 alias mkdir='mkdir -p'
@@ -206,9 +202,9 @@ _prompt_hostcolor(){
 		| cksum | cut -f1 -d ' ' | { read -r X; printf '%s' "${@:$(((X%$#)+1)):1}"; }
 }
 
-tput_ps(){ printf '%s' '\[' "$(tput "$@")" '\]'; }
-
 _prompt(){
+
+	tput_ps(){ printf '%s' '\[' "$(tput "$@")" '\]'; }
 
 	local C R B Cw Ch C2 C3
 
@@ -242,7 +238,6 @@ _prompt(){
 case $- in
 	*i*)
 		export PS1 PS2 PROMPT_COMMAND
-
 		export GIT_PS1_DESCRIBE_STYLE=branch
 		export GIT_PS1_HIDE_IF_PWD_IGNORED=1
 		export GIT_PS1_SHOWCOLORHINTS=1
@@ -250,9 +245,7 @@ case $- in
 		export GIT_PS1_SHOWSTASHSTATE=1
 		export GIT_PS1_SHOWUNTRACKEDFILES=1
 		export GIT_PS1_SHOWUPSTREAM="auto verbose name"
-
 		type -t __git_ps1 >&2 || . /usr/share/git/completion/git-prompt.sh
-
 		_prompt 2>/dev/null
 		;;
 esac

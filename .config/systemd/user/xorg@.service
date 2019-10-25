@@ -1,34 +1,24 @@
 # ~/.config/systemd/user/xorg@.service
-[Unit]
-Description=Xorg @ DISPLAY=:%I
-Documentation=man:Xorg(1) man:Xserver(1) man:xorg.conf(5)
-Requires=xorg@%i.socket
-After=xorg@%i.socket
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/Xorg :%i -keeptty -novtswitch -ardelay 150 -arinterval 50 -nolisten tcp -nolisten local -noreset -verbose 2 "vt${XDG_VTNR}"
-#ExecStart=/usr/bin/startx -- -keeptty -nolisten tcp -noreset -verbose 2 "vt${XDG_VTNR}"
-Restart=no
-StandardError=journal
-SuccessExitStatus=0 1
-
+#
 # NOTE: Needs a modified <url:file:/etc/X11/Xwrapper.config> with contents:
 #	allowed_users=anybody
 #	needs_root_rights=yes
-#
-# NOTE: -nolisten local: https://tstarling.com/blog/2016/06/x11-security-isolation/
-#
-# XXX ExecStart=/usr/bin/Xorg :%i -nolisten tcp -noreset -verbose 2 "vt${XDG_VTNR}"
-#
-# XXX
+[Unit]
+Description=Xorg server at display %i
+Requires=xorg@%i.socket xorg-server.target
+After=xorg@%i.socket
+Before=xorg-server.target
+
+[Service]
+ExecStartPre=-/usr/bin/systemctl --user set-environment DISPLAY=:%i XAUTHORITY=%h/.Xauthority
+ExecStart=/usr/bin/Xorg :%i -noreset -keeptty -novtswitch -ardelay 150 -arinterval 50 -nolisten tcp -nolisten local -verbose 2 vt${XDG_VTNR}
+ExecStopPost=-/usr/bin/systemctl --user unset-environment DISPLAY XAUTHORITY
+Restart=no
+StandardError=journal
+
+#SuccessExitStatus=0 1
 #StandardInput=tty
 #TTYPath=
 #TTYReset=yes
 #TTYVHangup=
 #TTYVTDisallocate=?yes?
-
-[Install]
-WantedBy=default.target
-# XXX
-#Also=xorg@%i.socket

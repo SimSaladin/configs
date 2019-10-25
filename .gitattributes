@@ -16,5 +16,6 @@
 /.gnupg/*.conf                       !crypt
 /.gnupg/.git*                        !crypt
 /.gnupg/*/*                           crypt
+/.gnupg/sshcontrol                    crypt
 /.secrets                             crypt
 /.ssh/known_hosts*                    crypt

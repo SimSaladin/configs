@@ -8,10 +8,12 @@ tmux_ () { exec "$tmux" "${tmux_opts[@]}" "$@"; }
 
 tmux () { command "$tmux" "${tmux_opts[@]}" "$@"; }
 
+# $0 [-AEd] [-c directory] [-s session] [-x width] [-y height] [-n window-name] [sh-command]
 new-session () {
-	local OPTIND opt arg_c=$PWD arg_E='' arg_d='' arg_s='' arg_x arg_y arg_n
-	while getopts Edc:s:x:y:n: opt; do
+	local OPTIND opt arg_c=$PWD arg_d='' arg_E='' arg_s='' arg_x arg_y arg_n
+	while getopts AEdc:s:x:y:n: opt; do
 		case $opt in
+			A) : ;; # Like attach-session if session exists
 			E) arg_E=1 ;;
 			d) arg_d=1 ;;
 			c) arg_c=$OPTARG ;;
@@ -26,8 +28,11 @@ new-session () {
 	until [ -n "$arg_s" ]; do
 		read -r -e -p "Session name: " arg_s
 	done
-	session_id=$(tmux 'new-session' -d -P -c "$arg_c" -F '#{session_id}' -s "$arg_s" ${arg_x:+-x "$arg_x"} ${arg_y:+-y "$arg_y"} ${arg_n:+-n "$arg_n"} )
-	attach-session ${arg_d:+-d} ${arg_E:+-E} -t "$session_id" "$@"
+	local sid=$arg_s
+	if ! tmux has-session -t "$arg_s"; then
+		sid=$(tmux 'new-session' -d -P -c "$arg_c" -F '#{session_id}' -s "$arg_s" ${arg_x:+-x "$arg_x"} ${arg_y:+-y "$arg_y"} ${arg_n:+-n "$arg_n"})
+	fi
+	[ -n "$arg_d" ] || attach-session ${arg_E:+-E} -t "$sid" "$@"
 }
 
 # $0 [-dEr] [-c PWD] [-t SESSION]

@@ -1,22 +1,25 @@
 #!/bin/sh
+
 repo=${XDG_CACHE_HOME:-$HOME/.cache}/vim/dein/repos/github.com/rkitover/vimpager
-mode=$(basename -- "$0")
-case $mode in
-	vimcat)
-		exec "$repo/vimcat" "$@"
+
+case "$(basename -- "$0")" in
+	vimcat )
+		[ -x "$repo/vimcat" ] && exec "$repo/vimcat" "$@"
 		exec cat "$@"
 		;;
-	vimpager)
-		exec "$repo/vimpager" "$@"
+	vimpager )
+		[ -x "$repo/vimpager" ] && exec "$repo/vimpager" "$@"
 		exec less "$@"
 		;;
-	manpager)
-		exec "$repo/vimpager" -c "setl nomodifiable" -c +MANPAGER "$@"
+	manpager )
+		[ -x "$repo/vimpager" ]   && exec "$repo/vimpager" -c "setl nomodifiable" -c +MANPAGER "$@"
+		command -v vim >/dev/null && exec vim -M +MANPAGER -
+		exec less "$@"
 		;;
 esac || exit $?
 
-case $1 in
-	-v|--version)
+case ${1:--h} in
+	-v|--version )
 		"$repo/vimpager" --version 2>&1
 		"$repo/vimcat" --version 2>&1
 		cat <<-END
@@ -79,7 +82,7 @@ case $1 in
 		USAGE
 		;;
 	* )
-		echo "Unrecognized argument: $1" >&2
+		printf "Unrecognized argument: %s\n" "$1" >&2
 		exit 2
 		;;
 esac
