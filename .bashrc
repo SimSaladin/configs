@@ -102,6 +102,8 @@ if CM_LAUNCHER=$(command -v rofi || command -v dmenu); then export CM_LAUNCHER; 
 alias path='sets -v PATH'
 
 alias -- -='cd -'
+alias cd..='cd ..'
+alias cd...='cd ../..'
 
 alias _='<&- &>/dev/null'  # NOTE: "_ cmd... >&255" can restore shell sockets!
 alias r='fc -s'
