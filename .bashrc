@@ -70,7 +70,10 @@ export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_RUNTIME_DIR XDG_DATA_DIR
 
 sets -v XDG_DATA_DIRS -a ~/.nix-profile/share
 
-#export GPG_TTY=$(tty)
+if [ -t 0 ]; then
+	export GPG_TTY=$(tty)
+fi
+
 if [ -z "${SSH_AUTH_SOCK-}" ] && command -v gpgconf >/dev/null; then
 	export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 fi
@@ -78,6 +81,7 @@ fi
 export VAGRANT_DEFAULT_PROVIDER=${VAGRANT_DEFAULT_PROVIDER-libvirt}
 
 export FFZF_DEFAULT_OPTS="--no-bold --color=16,hl:7,fg+:4,bg+:-1,gutter:0,hl+:14,info:11,border:6,prompt:-1,pointer:6,marker:5,spinner:4,header:12 --prompt=' '"
+
 if [ -z "${LS_COLORS-}"	]; then
 	eval "$(dircolors -b ~/.dircolors 2>/dev/null || dircolors)"
 fi
