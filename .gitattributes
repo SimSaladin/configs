@@ -19,3 +19,4 @@
 /.gnupg/sshcontrol                    crypt
 /.secrets                             crypt
 /.ssh/known_hosts*                    crypt
+/.task/*.key.pem                      crypt
