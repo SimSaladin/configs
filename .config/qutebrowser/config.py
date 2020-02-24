@@ -232,7 +232,7 @@ c.downloads.location.directory = '~/Downloads'
 c.downloads.location.suggestion = 'both'
 
 # c.fonts.                                                               {{{1
-c.fonts.monospace = '"TerminessTTF Nerd Font", monospace'
+#c.fonts.monospace = '"TerminessTTF Nerd Font", monospace'
 c.fonts.keyhint = '12pt monospace'
 c.fonts.messages.error = '12pt monospace'
 c.fonts.messages.info = '12pt monospace'
