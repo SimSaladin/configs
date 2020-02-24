@@ -6,7 +6,11 @@ systems.
 
 ```sh
 git clone --bare git@gitlab.com:funaali/dotfiles.git ~/.dotfiles
+
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+config crypt init
+config crypt unlock
 ```
 
 ## git worktrees and git-crypt
