@@ -5,27 +5,6 @@
 
 packages:
 - completed:
-    cabal-file:
-      size: 15940
-      sha256: 9799c3ab3c279ca126718f33e0119eb59ac9d51afc06e49758d1ac36173f45e3
-    name: xmonad-contrib
-    version: '0.15'
-    git: git@applicative.funktionaali.com:github.com/xmonad/xmonad-contrib
-    pantry-tree:
-      size: 20228
-      sha256: 11424f69d266d2b878ce98e35909b6443421b7e2a5e5a6793b52f8f4df85141a
-    commit: 98cca69faab663d989636cbea10fc30ee267f0c0
-  original:
-    git: git@applicative.funktionaali.com:github.com/xmonad/xmonad-contrib
-    commit: 98cca69faab663d989636cbea10fc30ee267f0c0
-- completed:
-    hackage: xmobar-0.30@sha256:252de90a11a98dbb3df1b0f17e42f26c2eb2e00e703190bb7abcf97e1e0234ba,10783
-    pantry-tree:
-      size: 6129
-      sha256: 557b5e3c54987f3e76da05387e1fc309bcc7fd366943c5f06c49cad8c6ddd441
-  original:
-    hackage: xmobar-0.30@sha256:252de90a11a98dbb3df1b0f17e42f26c2eb2e00e703190bb7abcf97e1e0234ba,10783
-- completed:
     hackage: iwlib-0.1.0@sha256:226e4582d6878166a172ff98c868e25c4ed478ab28ab493498e464b1fe19d39a,921
     pantry-tree:
       size: 259
@@ -34,7 +13,7 @@ packages:
     hackage: iwlib-0.1.0@sha256:226e4582d6878166a172ff98c868e25c4ed478ab28ab493498e464b1fe19d39a,921
 snapshots:
 - completed:
-    size: 524127
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/6.yaml
-    sha256: dc70dfb45e2c32f54719819bd055f46855dd4b3bd2e58b9f3f38729a2d553fbb
-  original: lts-14.6
+    size: 434661
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2019/11/29.yaml
+    sha256: 9edba401b588c0b8359262043b51f0bd33e2334802f0a1467eb660a23601eaf6
+  original: nightly-2019-11-29

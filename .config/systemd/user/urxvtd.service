@@ -1,13 +1,17 @@
 # ~/.config/systemd/user/urxvtd.service
 [Unit]
 Description=urxvtd - terminal emulator daemon service
+Documentation=man:urxvtd(1) man:urxvt(1)
 PartOf=graphical.target
 
 [Service]
-Restart=on-failure
-ExecStart=/usr/bin/urxvtd -o
+Slice=urxvtd.slice
+Restart=always
+RestartSec=15s
+ExecStart=/usr/bin/urxvtd
 StandardError=journal
-Slice=shell-urxvtd.slice
+RuntimeDirectory=urxvt
+#Environment=RXVT_SOCKET=%t/urxvt/native
 
 [Install]
 WantedBy=graphical.target

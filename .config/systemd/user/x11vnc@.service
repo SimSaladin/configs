@@ -2,19 +2,28 @@
 [Unit]
 Description=x11vnc per-connection daemon
 Documentation=man:x11vnc(1) man:vncviewer(1)
+Requisite=xorg-server.target
+PartOf=xorg-server.target
+After=xorg-server.target
 
 [Service]
-ExecStart=/usr/bin/x11vnc -inetd -norc -forever -shared -nopw -rfbport 0 -rfbportv6 0
+ExecStart=/usr/bin/x11vnc -display "$DISPLAY" -auth "$XAUTHORITY" \
+	-quiet -inetd -norc -threads \
+	-nobell -nosel -noprimary -nosetprimary -noclipboard -nosetclipboard \
+	-multiptr \
+	-nopw \
+	-clip xinerama0 \
+	-rfbport   0 \
+	-rfbportv6 0 \
+	-unixsock "%t/%P/$DISPLAY" \
+	-shared -alwaysshared -forever
+IgnoreSIGPIPE=no
+Environment=X11VNC_AVAHI_NAME=%P@%H:%I
 StandardInput=socket
 StandardError=journal
 #Slice=xorg.slice
 
-# XXX
-# -display :0
 # -rfbauth path/to/vnc-pass
-# -unixsock %t/%P/%i -nolookup
+# -unixsock %t/%P/%i
+# -nolookup
 
-# XXX
-#Environment=DISPLAY=
-#Environment=XAUTHORITY=
-#Environment=X11VNC_AVAHI_NAME=x11vnc@%H

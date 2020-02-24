@@ -1,8 +1,31 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -e
+: "${STACK_EXE:=stack}"
+: "${STACK_YAML:=stack.yaml}"
 
-cd "$(dirname "$0")"
+VERBOSITY=error  # silent, error, warn, info, debug
+if [ -t 1 ]; then
+	VERBOSITY=warn
+fi
 
-stack --verbosity error --no-terminal setup
-stack --verbosity error --no-terminal install
+if [[ "${1---}" != --* ]]; then
+	bin=$(dirname "$(realpath -ms "$1")")
+	exe=$(basename "$1")
+	shift
+else
+	bin=${XDG_DATA_HOME:-~/.local/share}/xmonad
+	exe=xmonad-$(uname -m)-linux
+fi
+
+cd "$(dirname "$0")" || exit 1
+
+if ! [ -e "$STACK_YAML" ]; then
+	STACK_YAML=$(find . -maxdepth 1 -type f -name stack-\*.yaml -print -quit)
+fi
+
+set -x
+
+"$STACK_EXE" --no-terminal --verbosity "$VERBOSITY" --install-ghc --local-bin-path "$bin" \
+	build --copy-bins --no-haddock \
+	--flag xmonad-configuration:optimize \
+	xmonad-configuration:exe:"$exe" "$@"

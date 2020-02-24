@@ -1,0 +1,14 @@
+[Unit]
+Description=Load nvidia settings on xorg startup
+PartOf=graphical.target
+After=xorg-server.target
+ConditionFileIsExecutable=/usr/bin/nvidia-settings
+ConditionPathExists=%h/.nvidia-settings-rc
+
+[Service]
+Type=oneshot
+Restart=no
+ExecStart=/usr/bin/nvidia-settings -V all --config=%h/.nvidia-settings-rc --load-config-only
+
+[Install]
+WantedBy=graphical.target

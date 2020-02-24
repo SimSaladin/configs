@@ -1,0 +1,19 @@
+# ~/.config/systemd/user/tmux-server@.service
+[Unit]
+Description=tmux server (%t/tmux-%U/%i)
+Documentation=man:tmux(1)
+
+[Service]
+Type=notify
+NotifyAccess=all
+Slice=tmux-%i.slice
+StandardError=journal
+Environment=TMUX_TMPDIR=%t
+Environment=TMUX_PLUGIN_MANAGER_PATH=%C/tmux/plugins
+CacheDirectory=tmux/plugins
+ExecStart=/usr/bin/tmux -L %i start-server \; run-shell "systemd-notify --ready --pid=#{pid}"
+
+[Install]
+Alias=tmux-server.service
+WantedBy=basic.target
+DefaultInstance=default

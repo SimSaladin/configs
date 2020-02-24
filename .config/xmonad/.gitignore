@@ -1,0 +1,4 @@
+/stack.yaml*
+/xmonad-contrib
+/xmobar
+/*.cabal

@@ -1,4 +1,15 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE UndecidableInstances          #-}
+{-# LANGUAGE PolyKinds          #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
+{-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 ------------------------------------------------------------------------------
 -- |
 -- Module      : MyRun
@@ -9,338 +20,270 @@
 -- Stability   : unstable
 -- Portability : non-portable
 --
+-- "XMonad.Util.Run"
 ------------------------------------------------------------------------------
 
 module MyRun (
-  -- * System.IO
+  -- * Spawn
+  RunException(..),
+  Run(..),
+  Spawn(..),
+  HasCmd(..),
+  Terminal,
+  readProcess,
+  readProcessWithInput,
+  runProcess_,
+  shell,
+  program,
+  term,
+  inTerm,
+  exec,
+  spawnPipeIO,
+  -- * Terminal
+  tCWD, tName, tSize, tHold,
+  topt,
+  -- * Systemd
+  sdEscape,
+  sdRun,
+
+  -- * Re-exports
+  Posix.ProcessID,
+  IO.Handle,
+  IO.BufferMode(..),
   IO.hClose,
   IO.hPutStrLn,
+  IO.hSetBuffering,
   IO.stdout,
   IO.stderr,
-  IO.Handle,
-
-  -- * System.Process
-  spawnCP,
-  cleanupCP,
-  P.showCommandForUser,
-  P.CreateProcess(..),
-  P.ProcessHandle,
-
-  -- * System.Posix
-  forkP,
-  statusP,
-  Posix.getProcessStatus,
-  Posix.signalProcess,
-  Posix.sigTERM,
-  Posix.ProcessID,
-  Posix.ProcessGroupID,
-  Posix.Signal,
-  Posix.ProcessStatus(..),
-
-  -- * System.Exit
-  Exit.exitSuccess,
-  Exit.ExitCode(..),
-
-  -- * Logging
-  logInfo,
-  logError,
-  logErrorShow,
-
-  -- * Run (sync)
-  runWithInput,
-
-  -- * Spawn (async)
-  spawn,
-  spawnS,
-  spawnT,
-  spawnTS,
-  spawnT_,
-  spawnSP,
-
-  -- * Systemd
-  service,
-  systemdEscape,
-
-  -- * Terminal
-  Terminal(windowName, windowGeometry),
-  terminalHold,
-  dialog,
-
-  -- * Tmux
-  tmux,
-  tmuxp,
-  tmuxpComplFun,
-  tmuxPrompt,
-
-  -- * Browser
-  chromeApp,
-  qutebrowser,
-  qutebrowserP,
-  qutebrowserCompl,
-
-  -- * Misc
-  mpv_clipboard,
-  mpc,
-  volume,
-  mic,
-  backlight,
-  actionPrompt,
-  inputPromptProg,
-  inputPromptWithHistCompl,
   ) where
 
+import           XMonad                   hiding (spawn)
+import           XMonad.Util.Run          (seconds)
+
 import           Prelude
+
+import           Control.Applicative
 import qualified Control.Exception        as E
-import           Control.Monad            (forM)
-import qualified Data.Char                as Char
-import           Data.Functor             (($>))
-import qualified Data.List                as List
+import           Control.Monad
+import qualified Data.Map                 as M
 import           Data.Maybe               (maybeToList)
-import qualified System.Directory         as Directory
-import qualified System.Exit              as Exit
 import qualified System.IO                as IO
 import qualified System.Posix             as Posix
+import           System.Posix             (ProcessID)
 import qualified System.Process           as P
+import           System.Timeout           (timeout)
+import           Text.Printf              (printf)
+import Data.Void
 
-import           XMonad                   hiding (spawn)
-import qualified XMonad.Prompt            as XP
-import qualified XMonad.Prompt.FuzzyMatch as XP.FuzzyMatch
-import qualified XMonad.Prompt.Input      as XP.Input
-import qualified XMonad.Prompt.Shell      as XP.Shell
-import qualified XMonad.Util.Run          as XRun
+import           Codec.Binary.UTF8.String (encodeString)
 
-import           Util
+-- X.Core.spawn          - void (spawnPID ...)
+-- X.Core.spawnPID       - xfork (executeFile ...)
+-- X.Core.xfork          - forkProcess w/ signal handler handling
+-- X.U.Run.safeSpawn     - exec
+-- X.U.Run.safeSpawnProg - exec (no arguments)
+-- X.U.Run.unsafeSpawn   - exec /bin/sh -c
+-- X.U.Run.spawnPipe     - exec /bin/sh -c (return handle for pipe for stdin)
 
--- * Run (sync)
+{-
+type family Runnable a where
+  Runnable P.CmdSpec = SdRun_ `WithFallback` P.CmdSpec
 
-runWithInput :: MonadIO m => FilePath -> [String] -> String -> m String
-runWithInput prog args input = do
-  logInfo ("run(in+read): " ++ P.showCommandForUser prog args)
-  XRun.runProcessWithInput prog args input
+data WithFallback main fallback = WithFallback main fallback
+-}
 
-systemdEscape :: MonadIO m => String -> m String
-systemdEscape s = takeWhile (not . Char.isSpace) <$> runWithInput "systemd-escape" ["--", s] ""
+newtype ShellCmd    = ShellCmd String
+newtype ProcSpec    = Proc (FilePath, [String])
+newtype SystemdUnit = SystemdUnit String
+newtype WithPipe a = WithPipe a
 
--- * Spawn (async)
+type family SystemdRunInfo a b where
+  SystemdRunInfo a (IO.Handle, ProcessID) = WithPipe (SystemdRunInfo a ProcessID)
+  SystemdRunInfo (IO ()) ProcessID        = () -- fork exec
+  SystemdRunInfo ProcSpec ProcessID       = () -- named
+  SystemdRunInfo ShellCmd ProcessID       = SystemdRunInfo ProcSpec ProcessID -- transient
+  SystemdRunInfo SystemdUnit b            = () -- SystemdRunNamedUnit
 
--- | Execute program (no shell interpolation).
-spawn :: FilePath -> [String] -> X ()
-spawn prog args = logInfo ("spawn: " ++ P.showCommandForUser prog args) >> XRun.safeSpawn prog args
+tryRunViaSystemd :: a -> SystemdRunInfo a b -> IO (Maybe b)
+tryRunViaSystemd _ _ = undefined
 
--- | Run shell command.
-spawnS :: String -> X ()
-spawnS cmd = logInfo ("spawnS: " ++ cmd) >> XRun.unsafeSpawn cmd
+runNormal :: a -> IO b
+runNormal _ = undefined
 
--- | Execute program in terminal.
-spawnT :: Terminal -> FilePath -> [String] -> X ()
-spawnT Terminal{..} prog args = do
-  t <- asks (terminal . config)
-  spawn t $ concat $
-    [["-name",     windowName      ] | windowName       /= ""] ++
-    [["-geometry", windowGeometry  ] | windowGeometry   /= ""] ++
-    [["-cd",       workingDirectory] | workingDirectory /= ""] ++
-    [["-hold"                      ] | hold                  ] ++
-    [options] ++
-    ["-e" : prog : args | prog /= ""]
+data Run a where
+  RunProgram :: FilePath -> [String] -> Run ()
+  Shell      :: String -> Run ()
 
--- | Open terminal (default command, usually shell interpreter).
-spawnT_ :: Terminal -> X ()
-spawnT_ t = spawnT t "" []
+  -- | systemd-run [cmd...]
+  SdRun :: { unitName       :: !String -- ^ The foo in foo.service
+           , unitScope      :: !Bool
+           , unitSlice      :: !(Maybe String)
+           , unitInstance   :: !String -- ^ bar in foo@bar.service
+           , unitIsTemplate :: !Bool   -- ^ Is template unit
+           , unitCmd        :: a
+           } -> Run a
 
--- | Run shell command in a terminal window.
-spawnTS :: Terminal -> String -> X ()
-spawnTS t cmd = spawnT t "/bin/bash" ["-c", cmd]
+  -- | systemd-run ... [terminal] [-e ...]
+  Term :: Terminal -> Maybe a -> Run a
 
--- | Run shell command with output to pipe.
-spawnSP :: MonadIO m => String -> m IO.Handle
-spawnSP cmd = logInfo ("spawn(sh+pipe): " ++ cmd) >> XRun.spawnPipe cmd
+-- EXCEPTION
 
-spawnCP :: MonadIO m => P.CreateProcess -> m (Maybe IO.Handle, Maybe IO.Handle, Maybe IO.Handle, P.ProcessHandle)
-spawnCP cp = logInfo ("spawn:CreateProcess:" ++ show cp) >> io (P.createProcess cp)
+data RunException = RunProcessTimeout deriving (Eq, Show)
+instance E.Exception RunException
 
-cleanupCP :: MonadIO m => (Maybe IO.Handle, Maybe IO.Handle, Maybe IO.Handle, P.ProcessHandle) -> m ()
-cleanupCP = io . P.cleanupProcess
+-- CLASS
 
-forkP :: MonadIO m => IO () -> m (IO.Handle, Posix.ProcessID)
-forkP child = do
-  (pread, pwrite) <- io Posix.createPipe
-  pID <- io . Posix.forkProcess $ do
-      uninstallSignalHandlers
-      Posix.createSession
-      Posix.dupTo pread Posix.stdInput
-      child
-  h <- io $ Posix.fdToHandle pwrite
-  io $ IO.hSetBuffering h IO.LineBuffering
-  return (h, pID)
+class HasCmd f a where
+  cmdSpec :: a -> f P.CmdSpec
 
-statusP :: MonadIO m => Posix.ProcessID -> m (Maybe Posix.ProcessStatus)
-statusP = io . Posix.getProcessStatus False False
+instance Applicative f => HasCmd f P.CmdSpec            where cmdSpec = pure
+instance Applicative f => HasCmd f FilePath             where cmdSpec = pure . (`P.RawCommand` [])
+instance Applicative f => HasCmd f (FilePath, [String]) where cmdSpec = pure . uncurry P.RawCommand
 
--- | @service name prog args@
-service :: MonadIO m => Maybe String -> Maybe String -> FilePath -> [String] -> m ()
-service name i prog args = do
-  logInfo ("service: " ++ show name ++ "@" ++ show i ++ ": " ++ P.showCommandForUser prog args)
-  i' <- forM i systemdEscape
-  let munit = ["--unit=" ++ nm ++ maybe "" ("@"++) i' | nm <- maybeToList name]
-  XRun.safeSpawn "systemd-run" $ ["--user", "--collect"] ++ munit ++ (prog : args)
+class Spawn a where
+  spawn :: a
 
--- | Note: google-chrome as single process is really single process (without
--- sandboxing). So if starting with that unit name fails, we just launch chrome
--- directly and it'll open a new window in existing session.
---
--- Some wrapper and systemd-socket solution could perhaps be better.
---
--- Also, chrome likes to stay in the background even after you close
--- all its windows. For that, uncheck the "Continue running background apps when
--- Chrome is closed" flag in chrome://settings.
-chromeApp :: String -> X ()
-chromeApp url = service (Just "google-chrome") (Just url) "google-chrome-stable" ["--app=" ++ url]
+instance (MonadIO m, HasCmd m a        ) => Spawn (a -> m Posix.ProcessID) where spawn = cmdSpec >=> \cs -> logCmdInfo "spawn" cs >> xfork (exec cs)
+instance (MonadIO m, HasCmd m a        ) => Spawn (a -> m ())              where spawn = spawn >=> \(_::Posix.ProcessID) -> return ()
+instance (MonadIO m, HasCmd m (a,b)    ) => Spawn (a -> b -> m ())         where spawn = curry spawn
+instance (MonadIO m, HasCmd m (a,(b,c))) => Spawn (a -> b -> c -> m ())    where spawn = flip $ flip . curry (flip (curry spawn))
 
--- | --qt-arg name app_name etc. https://peter.sh/experiments/chromium-command-line-switches/
--- $XDG_RUNTIME_DIR/qutebrowser/$session/runtime/ipc-*
--- /usr/share/qutebrowser/scripts/open_url_in_instance.sh
-qutebrowser :: String -> X ()
-qutebrowser "" = return ()
-qutebrowser p  = service (Just "qutebrowser") (Just p) "qutebrowser" ["-r", p]
+-- DATA
 
--- * quteb
+-- deriving (Eq, Show, Read)
 
-qutebrowserP :: XP.XPConfig -> String -> X (Maybe String)
-qutebrowserP xpc nm = io qutebrowserCompl >>= XP.Input.inputPromptWithCompl xpc nm
-
-qutebrowserCompl :: IO (String -> IO [String])
-qutebrowserCompl =
-  Directory.getXdgDirectory Directory.XdgData "qutebrowser" >>=
-    E.try . Directory.listDirectory >>=
-      either @IOError (\e -> logErrorShow e $> []) (pure . f) >>=
-        pure . XP.mkComplFunFromList'
-  where
-    f = filter $ \x -> not
-      $ ("-qutebrowser" `List.isSuffixOf` x)
-      || ("." `List.isPrefixOf` x)
-      || (x `elem` ["null", "userscripts", "qtwebengine_dictionaries", "blocked-hosts"])
-
--- * Terminal
-
--- | Use the "Default" instance to construct 'Terminal' values.
 data Terminal = Terminal
-  { windowName       :: String -- ^ @-name name@
-  , windowGeometry   :: String  -- ^ e.g. 130x40
-  , workingDirectory :: String -- ^ Set @-cd directory@
-  , hold             :: Bool -- ^ Don't automatically destroy the terminal window. @-hold@
-  , options          :: [String] -- ^ Arbitrary arguments for the terminal program
-  } deriving (Eq, Show)
+  { terminalExec :: !(Maybe FilePath) -- ^ Use some other terminal than XConfig.terminal
+  , terminalOpts :: !(M.Map String (Maybe String))
+  } deriving (Eq, Show, Read)
 
-instance Default Terminal where
-  def = Terminal "" "" "" False []
+instance Default   Terminal where def    = mempty
+instance Monoid    Terminal where mempty = Terminal mempty mempty
+instance Semigroup Terminal where a <> b = Terminal { terminalExec = terminalExec a <|> terminalExec b
+                                                    , terminalOpts = terminalOpts a <> terminalOpts b }
 
-terminalHold :: Terminal -> Terminal
-terminalHold t = t { hold = True }
+instance forall m a. (m ~ X, HasCmd m a) => HasCmd m (Run a) where
+  cmdSpec (RunProgram a xs) = pure (P.RawCommand a xs)
+  cmdSpec (Shell a)         = pure (P.RawCommand "/bin/sh" ["-c", a])
 
-terminalOpts :: [String] -> Terminal -> Terminal
-terminalOpts xs t = t { options = options t ++ xs }
-
-dialog :: Terminal
-dialog = def
-  { windowName = "dialog"
-  , windowGeometry = "130x40"
-  }
-
--- * Tmux
-
-tmux, tmuxp :: Terminal -> String -> X ()
-tmuxp t session = spawnT (terminalOpts ["-sl","0"] t) "tmuxp" ["load", "-y", session]
-tmux  t session = spawnT (terminalOpts ["-sl","0"] t) "tmux"  ["new-session", "-A", "-s", session]
-
-data TmuxPrompt = TmuxPrompt
-
-instance XP.XPrompt TmuxPrompt where
-  showXPrompt TmuxPrompt = "TMUX: "
-  nextCompletion _ x xs = XP.getNextCompletion x (map (takeWhile (/='\x1F')) xs)
-  commandToComplete   _ = filter (/='\x1F')
-  completionToCommand _ = takeWhile (/='\x1F')
-
--- | Prompt for a known tmuxp session or a tmux session.
-tmuxPrompt :: XP.XPConfig -> X ()
-tmuxPrompt xpc = do
-  comp <- io tmuxpComplFun
-  XP.mkXPromptWithReturn TmuxPrompt xpc (pure . comp) return XP.Input.?+ (\is -> (if null (comp is) then tmux def else tmuxp def) is)
-
--- | tmux display-message -p '#{S:#{?session_attached,#{session_name} ,}}'
-tmuxpComplFun :: IO (String -> [String])
-tmuxpComplFun = do
-  sessions <- getAll
-  return $ \case
-    []  -> sessions
-    str -> filter (XP.FuzzyMatch.fuzzyMatch str . filter (/= sep)) sessions
-  where
-    getAll = do
-      known <- getKnown
-      attached <- getAttached
-      let attachedKnown = map (takeWhile (/= sep)) attached
-      return $ attached ++ filter (`notElem` attachedKnown) known
-
-    getKnown =
-      Directory.getXdgDirectory Directory.XdgConfig "tmuxp" >>=
-        E.try . Directory.listDirectory >>=
-          either @IOError (\e -> logErrorShow e $> []) (pure . f)
+  cmdSpec (Term Terminal{..} mcs) = do
+    bin <- maybe (asks (terminal . config)) return terminalExec
+    cmd <- maybe (pure []) (cmdSpec >=> \cs -> pure ("-e" : uncurry (:) (showCmdSpec cs))) mcs
+    cmdSpec . sdRun "" "" $ program bin (opts <> cmd)
       where
-        f = List.filter (not . null) . map (takeWhile (/= '.')) . List.filter (List.isSuffixOf ".yaml")
+        opts = [x | (o,v) <- M.toList terminalOpts, x <- o : maybeToList v]
 
-    getAttached :: IO [String]
-    getAttached = lines <$> runWithInput "tmux"
-      [ "list-sessions", "-F", "#S" ++ [sep] ++ " [#{W:#{E:window-status-format} ,#{E:window-status-current-format} }] #{?session_attached,(attached),}" ]
-      ""
+  cmdSpec SdRun{..} = do
+    cspec <- cmdSpec unitCmd
+    -- TODO avoid IO somehow; foreign import systemd-escape instead?
+    sdUnit <-
+      case unitName of
+        ""                 -> pure []
+        _ | unitIsTemplate -> sdEscape ["--template", unitName <> "@.service"] [unitInstance]
+          | otherwise      -> pure [unitName <> ".service"]
 
-    sep  = '\x1F'
+    return . program "systemd-run" $
+      ["--quiet","--user","--no-block","--no-ask-password", "--collect", "--send-sighup"] <>
+      ["--scope" | unitScope] <>
+      [x         | u      <- take 1 sdUnit, x <- ["--unit",  u]] <>
+      [x         | Just s <- [unitSlice],  x <- ["--slice", s]] <>
+      ["--"] <> uncurry (:) (showCmdSpec cspec)
 
--- * Random
+-- Functions
 
-mpv_clipboard :: X ()
-mpv_clipboard = spawnS "exec mpv --really-quiet --profile=preview \"$(xclip -o)\" &>/dev/null"
+showCmdSpec :: P.CmdSpec -> (String, [String])
+showCmdSpec (P.RawCommand prog args) = (prog, args)
+showCmdSpec (P.ShellCommand cmd)     = ("/bin/sh", ["-c", cmd])
 
-mpc :: String -> X ()
-mpc cmd = spawn "mpc" [cmd]
+-- | System.Posix.executeFile
+exec :: HasCmd IO cmd => cmd -> IO ()
+exec cmd = cmdSpec cmd >>= exec' where
+  exec' (P.ShellCommand script)  = Posix.executeFile "/bin/sh" False ["-c", encodeString script] Nothing
+  exec' (P.RawCommand prog args) = Posix.executeFile (encodeString prog) True (map encodeString args) Nothing
 
-volume :: Int -> X ()
-volume d = spawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", s]
-  where s | d >= 0    = "+" ++ show d ++ "%"
-          | otherwise = show d ++ "%"
+program :: FilePath -> [String] -> P.CmdSpec
+program = P.RawCommand
 
-mic :: String -> X ()
-mic s = spawn "pactl" ["set-source-volume", "@DEFAULT_SOURCE@", s]
+shell :: String -> P.CmdSpec
+shell = P.ShellCommand
 
-backlight :: Int -> X ()
-backlight d = spawn "xbacklight" $ if d >= 0 then ["-inc", show d] else ["-dec", show (-d)]
+term :: Terminal -> Run P.CmdSpec
+term tc = Term tc Nothing
 
--- * XP
+inTerm :: Terminal -> cmd -> Run cmd
+inTerm tc cmd = Term tc (Just cmd)
 
-inputPromptWithHistCompl :: XP.XPConfig -> String -> X (Maybe String)
-inputPromptWithHistCompl xpc name = XP.Input.inputPromptWithCompl xpc name (XP.historyCompletionP (== name ++ ": "))
+-- | Like spawnPipe but not interpreting as shell
+spawnPipeIO :: MonadIO m => IO () -> m (IO.Handle, Posix.ProcessID)
+spawnPipeIO x = io $ do
+    (rd, wd) <- Posix.createPipe
+    Posix.setFdOption wd Posix.CloseOnExec True
+    wh <- Posix.fdToHandle wd
+    IO.hSetBuffering wh IO.LineBuffering
+    cpid <- xfork $ Posix.dupTo rd Posix.stdInput >> x
+    Posix.closeFd rd
+    return (wh, cpid)
 
-inputPromptProg :: XP.XPConfig -> String -> X (Maybe String)
-inputPromptProg xpc name = do
-  cmds <- io XP.Shell.getCommands
-  let cfun = XP.Shell.getShellCompl cmds (XP.searchPredicate xpc)
-  XP.Input.inputPromptWithCompl xpc name cfun
+-- RUN
 
-actionPrompt :: XP.XPConfig -> String -> [(String, X ())] -> X ()
-actionPrompt xpc t as = actionPrompt' xpc t as
+-- | Run external command and read its stdout.
+readProcess :: MonadIO m => FilePath -> [String] -> m String
+readProcess prog args = runProcess_ (P.RawCommand prog args) Nothing
 
-actionPrompt' :: XP.XPConfig -> String -> [(String, X ())] -> X ()
-actionPrompt' xpc t as = XP.mkXPrompt p xpc cfun go
-  where
-    p = ActionsXP t as
-    go x = maybe (pure ()) id ( lookup x as )
-    cfun = \x -> return $ filter (XP.searchPredicate xpc x) (map fst as)
+readProcessWithInput :: MonadIO m => FilePath -> [String] -> String -> m String
+readProcessWithInput prog args = runProcess_ (P.RawCommand prog args) . Just
 
-data ActionsXP = ActionsXP
-  { axpTitle   :: String
-  , axpActions :: [(String, X ())]
+runProcess_ :: (HasCmd m cmd, MonadIO m) => cmd -> Maybe String -> m String
+runProcess_ cmd minput = do
+  cspec <- cmdSpec cmd
+  logCmdInfo "run" cspec
+
+  let (prog, args) = showCmdSpec cspec
+  let cp = (P.proc prog args) { P.std_in  = maybe P.NoStream (const P.CreatePipe) minput
+                              , P.std_out = P.CreatePipe
+                              , P.std_err = P.Inherit
+                              }
+
+  result <- io $ timeout (seconds 2) $ P.withCreateProcess cp $ \hin hout _ _ -> do
+      whenJust minput $ \input ->
+        whenJust hin $ \h ->
+          IO.hPutStr h input >> IO.hClose h
+      output <- maybe undefined IO.hGetContents hout
+      length output `seq` return output
+
+  io $ maybe (E.throwIO RunProcessTimeout) return result
+
+-- LOGGING
+
+logCmdInfo :: MonadIO m => String -> P.CmdSpec -> m ()
+logCmdInfo s cmd = trace $ printf "%s: %s" s (uncurry P.showCommandForUser (showCmdSpec cmd))
+
+-- SYSTEMD
+
+sdRun :: String -> String -> a -> Run a
+sdRun u i x = SdRun
+  { unitName       = u
+  , unitScope      = False
+  , unitSlice      = Nothing
+  , unitInstance   = i
+  , unitIsTemplate = not (null i)
+  , unitCmd        = x
   }
 
-instance XP.XPrompt ActionsXP where
-  showXPrompt ActionsXP{..}        = axpTitle <> ": "
-  -- nextCompletion ActionsXP{..}     = XP.getNextCompletion
-  -- commandToComplete _              = id
-  -- completionFunction ActionsXP{..} = \x -> if null x then return (map fst axpActions) else XP.mkComplFunFromList (map fst axpActions) x
+-- | systemd-escape
+-- @ sdEscape ["--template=foo@.service"] ["bar/"] == ["foo@bar-.service"] @
+sdEscape :: MonadIO m => [String] -> [String] -> m [String]
+sdEscape opts args = lines <$> readProcess "systemd-escape" (opts ++ ("--":args))
+
+-- Terminal options
+
+topt :: String -> Maybe String -> Terminal
+topt o v = def { terminalOpts = M.fromList [(o,v)] }
+
+tCWD, tName, tSize :: String -> Terminal
+tCWD  = topt "-cd"       . Just
+tName = topt "-name"     . Just
+tSize = topt "-geometry" . Just
+
+tHold :: Terminal
+tHold = topt "-hold" Nothing

@@ -3,7 +3,7 @@
 Description=Dunst notification daemon
 Documentation=man:dunst(1)
 Requires=dbus.socket
-After=dbus.socket
+After=dbus.socket xorg-server.target
 
 [Service]
 # systemd.service

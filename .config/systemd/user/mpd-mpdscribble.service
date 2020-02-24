@@ -1,5 +1,8 @@
 [Unit]
-Description=Last.fm updater for MPD
+Description=Last.fm updater for MPD - mpdscribble
+Documentation=man:mpdscribble(1) https://mpd.wikia.com/wiki/Client:mpdscribble
+Requisite=mpd.service
+Wants=network.target
 After=mpd.service network.target
 AssertPathExists=%E/mpd/mpdscribble.conf
 
@@ -11,7 +14,7 @@ ExecStart=/usr/bin/mpdscribble --no-daemon --conf '%E/mpd/mpdscribble.conf'
 Slice=mpd.slice
 # systemd.exec
 NoNewPrivileges=yes
-Nice=10
+Nice=15
 ProtectSystem=strict
 MemoryDenyWriteExecute=yes
 RestrictNamespaces=yes
@@ -20,3 +23,4 @@ StandardError=journal
 
 [Install]
 WantedBy=basic.target
+Also=mpd.service

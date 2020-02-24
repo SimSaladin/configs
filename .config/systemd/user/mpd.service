@@ -2,7 +2,8 @@
 [Unit]
 Description=Music Player Daemon
 Documentation=man:mpd(1) man:mpd.conf(5)
-After=network.target sound.target
+Requires=sound.target local-fs.target
+After=sound.target local-fs.target remote-fs.target
 
 [Service]
 # systemd.service
@@ -29,3 +30,4 @@ StandardError=journal
 
 [Install]
 WantedBy=basic.target
+Also=mpdscribble.service mpd-notification.service

@@ -1,11 +1,13 @@
 [Unit]
 Description=Load X resources ~/.Xresources
 PartOf=graphical.target
-ConditionPathExists=%h/.Xresources
+After=xorg-server.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/xrdb -merge %h/.Xresources
+Restart=on-failure
+TimeoutSec=5s
+ExecStart=/usr/bin/xrdb -display "$DISPLAY" -all -override -I "%E/xrdb" "%h/.Xresources"
 
 [Install]
 WantedBy=graphical.target

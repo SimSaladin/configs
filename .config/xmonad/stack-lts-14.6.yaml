@@ -1,0 +1,14 @@
+---
+resolver: lts-14.6
+
+extra-deps:
+  - git: git@applicative.funktionaali.com:github.com/xmonad/xmonad-contrib
+    commit: f27d209707c7cec9cdba00cc4f8fd1df780f6e38
+  # xmobar
+  - xmobar-0.31@sha256:a86757f82e35ef15113af01b79747a21385013c14e4752bac75773ccaa3f2f8f,10784
+  - iwlib-0.1.0@sha256:226e4582d6878166a172ff98c868e25c4ed478ab28ab493498e464b1fe19d39a,921
+  - libmpd-0.9.0.10@sha256:5a2ff5795085425db11e76332833f2596c5512c861c41272489ed29b725e5538,4011
+
+flags:
+  xmobar:
+    all_extensions: true

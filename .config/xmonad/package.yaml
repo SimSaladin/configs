@@ -1,0 +1,49 @@
+name: xmonad-configuration
+version: 0.16
+synopsis: XMonad custumization
+
+flags:
+  optimize:
+    description: Enabled optimizations and LLVM
+    default: false
+    manual: true
+
+dependencies:
+  - base
+  - containers
+  - dbus
+  - directory
+  - free
+  - process
+  - text
+  - unix
+  - utf8-string
+  - X11
+  - filepath
+  - xmobar         >= 0.31
+  - xmonad         >= 0.15
+  - xmonad-contrib >= 0.16
+
+when:
+  - condition: flag(optimize)
+    ghc-options:
+      - -dynamic
+      - -pie
+      - -fPIC
+      - -fllvm
+      - -O2
+      - -fexpose-all-unfoldings
+      - -fspecialise-aggressively
+      - -fstatic-argument-transformation
+      - -funbox-strict-fields
+
+library:
+  source-dirs: lib
+
+executables:
+  xmonad-x86_64-linux:
+    main: xmonad.hs
+    dependencies: xmonad-configuration
+    ghc-options: >
+      -threaded -rtsopts
+      "-with-rtsopts=-N2 -G3 -c -qg1 -qn2 -M500M -A16M -K200M -kc8K -I0 -V0"

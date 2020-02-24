@@ -1,12 +1,11 @@
 [Unit]
 Description=Synchronize cutbuffer from CLIPBOARD and PRIMARY
 Documentation=http://www.nongnu.org/autocutsel/
-After=graphical.target
 PartOf=graphical.target
 
 [Service]
-ExecStart=/bin/sh -c "autocutsel -selection CLIPBOARD & autocutsel -selection PRIMARY"
 Restart=on-failure
+ExecStart=/bin/sh -c "autocutsel -selection CLIPBOARD & autocutsel -selection PRIMARY"
 StandardError=journal
 
 [Install]

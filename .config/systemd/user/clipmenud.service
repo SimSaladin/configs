@@ -7,13 +7,16 @@ PartOf=graphical.target
 [Service]
 StandardError=journal
 Restart=always
-RestartSec=5s
+RestartSec=15s
 ExecStart=/usr/bin/clipmenud
+
 # NOTE: autocutsel manages primary selection
 Environment=CM_SELECTIONS=clipboard
 Environment=CM_MAX_CLIPS=5000
 Environment=CM_DEBUG=0
-Environment=CM_IGNORE_WINDOW=
+# This uses bash [[ =~ ]] to do the comparison. Get window name with: xdotool getactivewindow getwindowname
+# This matches pinentry-qt windows, just in case (it usually grabs the kbd anyways).
+Environment="CM_IGNORE_WINDOW=\\[[[:digit:]]\\]@%H"
 Environment=CM_DIR=%t
 Environment=CM_OWN_CLIPBOARD=1
 Environment=CM_ONESHOT=0

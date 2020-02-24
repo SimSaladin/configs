@@ -1,99 +1,259 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2162
+#
+# FORMAT
+#  '#'       := '##'
+#  ','       := '#,'
+#  '}'       := '#}'
+#  SHELL     := '#(' FORMAT ')'
+# Control:
+#  COND      := '#{?' FORMAT ',' FORMAT ',' FORMAT '}'
+#  SESSIONS  := '#{S:' FORMAT '}'
+#  WINDOWS   := '#{W:' FORMAT '}'
+#  PANES     := '#{P:' FORMAT '}'
+# Boolean:
+#  EQ        := '#{==:' FORMAT ',' FORMAT '}'
+#  NOT-EQ    := '#{!=:' FORMAT ',' FORMAT '}'
+#  OR        := '#{||:' FORMAT ',' FORMAT '}'
+#  AND       := '#{&&:' FORMAT ',' FORMAT '}'
+#  MATCH     := '#{m:' PATTERN ',' FORMAT '}'
+#  MATCH-CTX := '#{C:' PATTERN '}'
+# Variable:
+#  MAX-LEN   := '#{=' INT ':' IDENTIFIER '}'
+#  BASENAME  := '#{b:' IDENTIFIER '}'
+#  DIRNAME   := '#{d:' IDENTIFIER '}'
+#  QUOTE-SH  := '#{q:' IDENTIFIER '}'
+#  TIME-STR  := '#{t:' IDENTIFIER '}'
+#  SUB       := '#{s/' FORMAT '/' FORMAT '/:' IDENTIFIER '}'
+#  EXPAND    := '#{E:' IDENTIFIER '}'
+#  EXPAND-T  := '#{T:' IDENTIFIER '}'
+#
+# Options
+# - destroy-unattached
+# - @working-directory
+# - @master-session
 
-tmux=/usr/bin/tmux
-tmux_opts=()
+set -eu # -x
 
-tmux_ () { exec "$tmux" "${tmux_opts[@]}" "$@"; }
+TMUX_BIN=(/usr/bin/tmux)
+IS_LAST_COMMAND=
 
-tmux () { command "$tmux" "${tmux_opts[@]}" "$@"; }
+DEFAULT_COMMAND=attach-session # tmux default is new-session
+DEFAULT_FMT_LIST_SESSIONS='#{session_id} #S: #{session_windows} windows (created #{t:session_created})#{?session_group, (group #{session_group}),}#{?session_attached, (attached),}'
+DEFAULT_LIST_SESSIONS_FILTER='#{!=:#{destroy-unattached},1}'
 
-# $0 [-AEd] [-c directory] [-s session] [-x width] [-y height] [-n window-name] [sh-command]
-new-session () {
-	local OPTIND opt arg_c=$PWD arg_d='' arg_E='' arg_s='' arg_x arg_y arg_n
-	while getopts AEdc:s:x:y:n: opt; do
-		case $opt in
-			A) : ;; # Like attach-session if session exists
-			E) arg_E=1 ;;
-			d) arg_d=1 ;;
-			c) arg_c=$OPTARG ;;
-			s) arg_s=$OPTARG ;;
-			x) arg_x=$OPTARG ;;
-			y) arg_y=$OPTARG ;;
-			n) arg_n=$OPTARG ;;
-			?) tmux_ new-session --help ;;
-		esac
-	done
-	shift $((OPTIND - 1))
-	until [ -n "$arg_s" ]; do
-		read -r -e -p "Session name: " arg_s
-	done
-	local sid=$arg_s
-	if ! tmux has-session -t "$arg_s"; then
-		sid=$(tmux 'new-session' -d -P -c "$arg_c" -F '#{session_id}' -s "$arg_s" ${arg_x:+-x "$arg_x"} ${arg_y:+-y "$arg_y"} ${arg_n:+-n "$arg_n"})
+tmux () { "${TMUX_BIN[@]}" "$@"; }
+
+tmux-exec () {
+	if [ -n "$IS_LAST_COMMAND" ]; then
+		exec "${TMUX_BIN[@]}" "$@"
+		exit 1
 	fi
-	[ -n "$arg_d" ] || attach-session ${arg_E:+-E} -t "$sid" "$@"
+	tmux "$@"
 }
 
-# $0 [-dEr] [-c PWD] [-t SESSION]
-attach-session () {
-	local arg_t='' arg_c='' args=() session=''
-	local OPTIND opt
-	while getopts dErc:t: opt; do
-		case $opt in
-			d) args+=( -d ) ;;
-			r) args+=( -r ) ;;
-			E) args+=( -E ) ;;
-			c) arg_c=$OPTARG ;;
-			t) arg_t=$OPTARG ;;
-			?) tmux_ attach-session --help || exit 1 ;;
+# Common options
+unset OPTIND
+while getopts :2CluvVc:f:L:S: OPT; do
+	case $OPT in
+		v ) set -x ;;&
+		[2CuvfLS] )
+			TMUX_BIN+=( "-$OPT" ${OPTARG+"$OPTARG"} )
+			;;
+		[clV]|? )
+			IS_LAST_COMMAND=1
+			tmux-exec "$@"
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+# A default command
+if [ $# -eq 0 ]; then
+	set -- "$DEFAULT_COMMAND"
+fi
+
+print-message () {
+	local usage="usage: print-message [-p] [-t target-session] message"
+	# Like 'display-message -p', but works also when the server doesn't have any sessions.
+	local target
+	unset OPTIND
+	while getopts pt: OPT; do
+		case $OPT in
+			p) : ;;
+			t) target=$OPTARG ;;
+			?) printf "%s\n" "$usage" >&2; exit 1 ;;
 		esac
 	done
-	shift $(( OPTIND - 1 ))
-	# Find target session (group) id
-	choose-session_id arg_t
-	# Find session (group) name
-	group_q=$(tmux display-message -p -F '#{?:#{==:#{session_group},},#{q:session_name},#{q:session_group}}' -t "$arg_t")
-	session_q=$(tmux display-message -p -F '#{q:session_name}' -t "$arg_t")
-	# Name temporary session
-	local c=1
-	until ! tmux has-session -t "$session_q ($c)" 2>&-; do (( c++ )); done
-	session=$(tmux display-message -p -F "#S" -t "$arg_t")" ($c)"
-	session_q+=" ($c)"
-	# Create new temporary session
-	tmux_ new-session -d -s "$session" -t "$group_q" \; set-option destroy-unattached \; attach-session -t "$session_q"
-	#tmux_ new-session -d -c "$arg_c" -t "=$sid" -s "$sid-$cid" \; attach-session -c "$arg_c" -t "=$sid-$cid"
+	shift $((OPTIND-1))
+	local message=${1?$usage}
+	if [ -v target ]; then
+		tmux display-message -p -t "${target}" "${message}"
+	else
+		sep="EOF-$RANDOM$RANDOM"
+		tmux run-shell "$(printf "exec cat <<'%s'\n%s\n%s" "$sep" "$message" "$sep")"
+	fi
 }
 
-# Prompt for a session in case none was given.
-# $1 reference to variable to write the chosen name to
-choose-session_id () {
-	local -n t=$1
-	local input=''
-	until [[ $t == \$+([0-9]) ]]; do
-		tmux list-sessions
-		read -r -e -p 'Select session: ' input
-		t=$(tmux display-message -p "#{S:#{?#{&&:#{==:#{destroy-unattached},0},#{m:*${input}*,#S}},#{session_id},}}")
+select-session () {
+	local usage="usage: select-session [-t target-session]"
+	local target='' id=''
+	unset OPTIND
+	while getopts t: OPT; do
+		case $OPT in
+			t) target=$OPTARG ;;
+			?) printf "%s\n" "$usage" >&2; exit 1 ;;
+		esac
 	done
-	printf "Selected session id '%s'\n" "$t"
+	until [ -n "$target" ]; do
+		read -rep "$(list-sessions)"$'\nSelect session: ' target
+	done
+	id=$(print-message "#{S:#{?#{&&:#{==:#{destroy-unattached},0},#{m:*${target}*,#S}},#{session_id},}}")
+	if [[ $id == \$+([0-9]) ]]; then
+		printf '%s\n' "$id"
+		return 0
+	else
+		printf '%s\n' "$target"
+		return 1
+	fi
 }
 
-main () {
-	local OPTIND opt
-	while getopts 2CluvVc:f:L:S: opt; do
-		case $opt in
-			2|C|l|u|v|V)	tmux_opts+=( "-$opt" ) ;;
-			c|f|L|S)	tmux_opts+=( "-$opt" "$OPTARG" ) ;;
-			?)		tmux_ --help >&2 ;;
-		esac || return 1
+list-sessions () {
+	local usage='list-sessions [-naA] [-f pattern] [-F format]'
+	# new: -a: list all
+	# new: -A: reverse default filter
+	# new: -n: no newline between sessions
+	# new: -f: list only sessions whose name match pattern
+	local newline=1
+	local format=$DEFAULT_FMT_LIST_SESSIONS
+	local -a filters=( "$DEFAULT_LIST_SESSIONS_FILTER" )
+	unset OPTIND
+	while getopts aAnf:F: OPT; do
+		case $OPT in
+			a) unset 'filters[0]' ;;
+			A) filters[0]="#{!=:$DEFAULT_LIST_SESSIONS_FILTER,1}" ;;
+			n) unset newline ;;
+			f) filters+=( "$OPTARG" ) ;;
+			F) format=$OPTARG ;;
+			?) printf "%s\n" "$usage" >&2; exit 1 ;;
+		esac
 	done
-	shift $(( OPTIND - 1 ))
-	[ -t 1 ] || tmux_ "$@" || exit $?
-	case $1 in
-		attach|attach-session|''|a ) attach-session "${@:2}" ;;
-		new|new-session ) new-session "${@:2}" ;;
-		* ) tmux_ "$@" ;;
+	local cond=''
+	for x in "${filters[@]}"; do
+		[[ $x == '#{'*'}' ]] || x="#{m:*$x*,#S}" # TODO quote $x
+		cond=${cond:+'#{&&:'}$x${cond:+",$cond}"}
+	done
+	format+=${newline+$'\n'}
+	if [ -n "$cond" ]; then
+		format="#{?$cond,$format,}"
+	fi
+	print-message "#{S:$format}"
+}
+
+attach-session () {
+	#local usage='usage: attach-session [-dEr] [-t target-session]'
+	local usage='usage: attach-session [-dE] [-t target-session]'
+	# -d: detach other
+	# -E: don't apply update-environment
+	local target detach_other no_env=''
+
+	unset OPTIND
+	while getopts dE:t: OPT; do
+		case $OPT in
+			d) detach_other=1 ;;
+			E) no_env=1 ;;
+			t) target=$OPTARG ;;
+			?) printf "%s\n" "$usage" >&2; exit 1 ;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	# Create new persistent session if one does not exist
+	if ! target=$(select-session -t "${target-}"); then
+		[ -n "$target" ]
+		read -N1 -t10 -rep "Session not found: '$target'. Create (yes/NO)? "
+		[[ $REPLY == [yY] ]]
+		target=$(tmux new-session -d -s "$target" -P -F '#{session_id}')
+	fi
+
+	# Copy options from target session
+	local -a opts_set
+	opts_set+=( set-option destroy-unattached \; set-option @master-session "$target")
+	if directory=$(tmux show-options -v -t "$target" @working-directory 2>/dev/null); then
+		opts_set+=( ';' 'set-option' @working-directory "$directory" )
+	fi
+	directory=${directory:+$(cd ~ && realpath -es "$directory")}
+
+	# Detach other
+	if [ -v detach_other ]; then
+		local group
+		group=$(print-message -t "$target" '#{session_group}')
+		list-sessions -F '#{session_id}' -A -f "#{==:#{session_group},${group}}"
+	fi
+
+	local session_q session c=1
+
+	session_q=$(tmux display-message -p -t "$target" '#{q:session_name}')
+
+	# Temporary session name
+	while tmux has-session -t "$session_q ($c)" 2>&-; do (( c++ )); done
+	session=$(tmux display-message -p -t "$target" "#S ($c)")
+
+	# Create (temporary) session + set options + attach it
+	tmux-exec new-session ${no_env:+-E} ${directory:+-c "$directory"} -s "$session" -t "$target" \; "${opts_set[@]}"
+}
+
+set-cwd(){
+	local usage="usage: set-cwd [-t target-session] [filepath]"
+	local target=''
+	unset OPTIND
+	while getopts ht: OPT; do
+		case $OPT in
+			t) target=$OPTARG ;;
+			?) printf "%s\n" "$usage" >&2; exit 1 ;;
+		esac
+	done
+	shift $((OPTIND-1))
+	local newpath=${1-.}
+	newpath=$(realpath -es --relative-base="$HOME" "$newpath")
+	local master
+	master=$(tmux show-options -v ${target:+-t "$target"} '@master-session' 2>/dev/null) ||
+		master=$(tmux display-message -p ${target:+-t "$target"} "#{session_id}")
+	for sid in "$master" $(list-sessions -a -F '#{session_id}' -f "#{==:#{@master-session},$master}"); do
+		tmux set-option -t "$sid" '@working-directory' "$newpath"
+	done
+}
+
+# Run a command from this script or interpret as tmux command.
+run-command () {
+	local cmd=${1:?no command}
+	shift
+	case $cmd in
+		print-message  ) print-message  "$@" ;;
+		select-session ) select-session "$@" ;;
+		attach-session ) attach-session "$@" ;;
+		list-sessions  ) list-sessions  "$@" ;;
+		set-cwd        ) set-cwd        "$@" ;;
+		# aliases
+		attach | a ) run-command attach-session "$@" ;;
+		ls         ) run-command list-sessions  "$@" ;;
+		# default
+		* ) tmux-exec "$cmd" "$@" ;;
 	esac
 }
 
-main "$@"
+# Run commands
+while [ $# -gt 0 ]; do
+	args=()
+	while [ $# -gt 0 ]; do
+		arg1=$1
+		shift
+		case $arg1 in
+			\; ) break ;;
+			*  ) args+=("${arg1%;}") ;;&
+			*\;) break ;;
+		esac
+	done
+	[ $# -gt 0 ] || IS_LAST_COMMAND=1
+	run-command "${args[@]}"
+done
