@@ -11,7 +11,7 @@ RestartSec=15s
 ExecStart=/usr/bin/urxvtd
 StandardError=journal
 RuntimeDirectory=urxvt
-#Environment=RXVT_SOCKET=%t/urxvt/native
+#Environment=RXVT_SOCKET=${RXVT_SOCKET:-%t/urxvt/native}
 
 [Install]
 WantedBy=graphical.target

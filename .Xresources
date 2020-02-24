@@ -1,17 +1,106 @@
-! ----------------------------------------------------------------------------
-! File:          ~/.Xdefaults
-! Last Modified: Apr 03 2012 [20:43:36]
-! Creation Date: Jun 16 2011
-! Created by:    Simsaladin
-!
-! vim:ft=xdefaults:
-!
-! ----- // X cursor // -------------------------------------------------------
+! ~/.Xresources  vim:et:tw=80:
+! <url:man:xrdb.1>
+
+#define URL_LAUNCHER xdg-open
+
+!!SOLARIZED HEX     16/8 TERMCOL  XTERM/HEX   L*A*B      RGB         HSB
+!!--------- ------- ---- -------  ----------- ---------- ----------- -----------
+!!base03    #002b36  8/4 brblack  234 #1c1c1c 15 -12 -12   0  43  54 193 100  21
+!!base02    #073642  0/4 black    235 #262626 20 -12 -12   7  54  66 192  90  26
+!!base01    #586e75 10/7 brgreen  240 #585858 45 -07 -07  88 110 117 194  25  46
+!!base00    #657b83 11/7 bryellow 241 #626262 50 -07 -07 101 123 131 195  23  51
+!!base0     #839496 12/6 brblue   244 #808080 60 -06 -03 131 148 150 186  13  59
+!!base1     #93a1a1 14/4 brcyan   245 #8a8a8a 65 -05 -02 147 161 161 180   9  63
+!!base2     #eee8d5  7/7 white    254 #e4e4e4 92 -00  10 238 232 213  44  11  93
+!!base3     #fdf6e3 15/7 brwhite  230 #ffffd7 97  00  10 253 246 227  44  10  99
+!!yellow    #b58900  3/3 yellow   136 #af8700 60  10  65 181 137   0  45 100  71
+!!orange    #cb4b16  9/3 brred    166 #d75f00 50  50  55 203  75  22  18  89  80
+!!red       #dc322f  1/1 red      160 #d70000 50  65  45 220  50  47   1  79  86
+!!magenta   #d33682  5/5 magenta  125 #af005f 50  65 -05 211  54 130 331  74  83
+!!violet    #6c71c4 13/5 brmagenta 61 #5f5faf 50  15 -45 108 113 196 237  45  77
+!!blue      #268bd2  4/4 blue      33 #0087ff 55 -10 -45  38 139 210 205  82  82
+!!cyan      #2aa198  6/6 cyan      37 #00afaf 60 -35 -05  42 161 152 175  74  63
+!!green     #859900  2/2 green     64 #5f8700 60 -20  65 133 153   0  68 100  60
+
+#define S_base03        #002b36
+#define S_base02        #073642
+#define S_base01        #586e75
+#define S_base00        #657b83
+#define S_base0         #839496
+#define S_base1         #93a1a1
+#define S_base2         #eee8d5
+#define S_base3         #fdf6e3
+#define S_yellow        #b58900
+#define S_orange        #cb4b16
+#define S_red           #dc322f
+#define S_magenta       #d33682
+#define S_violet        #6c71c4
+#define S_blue          #268bd2
+#define S_cyan          #2aa198
+#define S_green         #859900
+
+! Fonts
+! <url:man:xlsfonts>
+! <url:man:fc-lists(1)>
+! XXX: 12px terminus does not exist in bold
+
+#define XFT_TERMINESS      xft:xos4 Terminess Powerline
+#define XFT_NERD_TERMINESS xft:TerminessTTF Nerd Font Mono
+
+#define XLS_TERMINESS -xos4-terminesspowerline-medium-*
+
+#define XFT_DEF_1 XFT_TERMINESS
+#define XFT_DEF_2 XFT_NERD_TERMINESS
+
+! ----- // Colors - solarized // -------------------------------------------{{{1
+
+*background:            S_base03
+*foreground:            S_base1
+*cursorColor:           S_cyan
+*cursorColor2:          #FFFFFF
+*pointerColorBackground:S_base01
+*pointerColor2:         S_base01
+*pointerColorForeground:S_base1
+*pointerColor:          S_base1
+
+!! black dark/light
+*color0:                S_base02
+*color8:                S_base03
+
+!! red dark/light
+*color1:                S_red
+*color9:                S_orange
+
+!! green dark/light
+*color2:                S_green
+*color10:               S_base01
+
+!! yellow dark/light
+*color3:                S_yellow
+*color11:               S_base00
+
+!! blue dark/light
+*color4:                S_blue
+*color12:               S_base0
+
+!! magenta dark/light
+*color5:                S_magenta
+*color13:               S_violet
+
+!! cyan dark/light
+*color6:                S_cyan
+*color14:               S_base1
+
+!! white dark/light
+*color7:                S_base2
+*color15:               S_base3
+
+! ----- // X cursor // -----------------------------------------------------{{{1
 
 !Xcursor.theme: Neutral
 !Xcursor.size:  14
 
-! ----- // Xft // ------------------------------------------------------------
+! ----- // Xft // ----------------------------------------------------------{{{1
 
 ! These are for applications that ignore fontconfig settings (rxvt-unicode).
 !Xft.autohint:  0
@@ -22,42 +111,15 @@
 ! This helps fc if EDID info is not available (fc defaults to Xft.dpi)
 !Xft.dpi:			96
 
-! ----- // URxvt // ----------------------------------------------------------
-
-! Basic colors
-#include ".colors/solarized"
-! carefully tuned to look nice. -tr -tint "rgba:0200/2200/3800/ffff" -sh 108
-! XXX: buggy, not working
-!URxvt.transparent: true
-!URxvt.tintColor:   rgba:0200/2200/3800/ffff
-!URxvt.shading:     108
-! base1
-URxvt.underlineColor: #93a1a1
-URxvt.skipBuiltinGlyphs: false
-URxvt.lineSpace: 0
-URxvt.letterSpace: 0
-URxvt.scrollBar: false
-URxvt.cursorBlink: false
-URxvt.pointerBlank:true
-! Scrollback size
-URxvt.saveLines: 8192
-! Though bell is disabled, WM may catch this and act
-URxvt.urgentOnBell: true
-! By default, [<Shift>|<Ctrl>]+<PrintScreen> prints via `lpr`. Disable that
-URxvt.print-pipe: "cat > /dev/null"
-! This is the modifier passed to e.g. irssi
-URxvt.modifier: alt
-! Enabled extensions
-! <lnk:/usr/lib/urxvt/perl/resize-font>
-URxvt.perl-ext-common: default,url-select,clipboard,searchable-scrollback,keysym-list
-! plugin: url-select
-URxvt.url-select.autocopy: true
-URxvt.url-select.button: 1
-URxvt.url-select.launcher: xdg-open
-URxvt.url-select.underline: true
-! URxvt font configuration
+! ----- // URxvt // --------------------------------------------------------{{{1
 !
-! Note:
+! <url:man:urxvt.1>
+! <url:man:urxvtperl.3>
+!
+! URxvt font configuration notes:
+!
+! By default, urxvt synthesizes different styles from the main font.
+! For smaller sizes, all faces are not available, so all is explicit to make changing between font sizes possible.
 !  * Test fonts with
 !    $ printf '\e]710;%s\007' "xft:Terminess Powerline:pixelsize=12"
 !    $ terminal-font-test
@@ -78,59 +140,140 @@ URxvt.url-select.underline: true
 !  * "WenQuanYi Micro Hei" makes sense from about 22px upwards.
 !    XXX: in 12px, WQI symbols cut off by one px at bottom
 
-! Main font, Small
-#define Font_Small xft:xos4 Terminess Powerline:style=Medium
-!#define Font_Small xft:xos4 Terminus
-#define Font_SmallBold xft:xos4 Terminess Powerline:style=Bold
-#define Font_SmallItalic xft:xos4 Terminess Powerline:style=Medium
-#define Font_SmallBoldItalic xft:xos4 Terminess Powerline:style=Bold
-#define Font_SUBST1 [codeset=JISX0208]xft:WenQuanYi WenQuanYi Bitmap Song
-! Main font, Large
-#define Font_Large xft:TerminessTTF Nerd Font Mono:style=Medium
-#define Font_LargeBold xft:TerminessTTF Nerd Font Mono:style=Bold
-#define Font_LargeItalic xft:TerminessTTF Nerd Font Mono:style=Italic
-#define Font_LargeBoldItalic xft:TerminessTTF Nerd Font Mono:style=Bold Italic
-#define Font_SUBST2 [codeset=JISX0208]xft:WenQuanYi Micro Hei
-! Main font in various sizes
-#define Font_12px Font_Small:pixelsize=12,Font_SUBST1
-! XXX: 12px terminus does not exist in bold
-#define Font_14px Font_Small:pixelsize=14,Font_SUBST1
-#define Font_16px Font_Small:pixelsize=16,Font_SUBST1
-#define Font_18px Font_Small:pixelsize=18,Font_SUBST1
-#define Font_20px Font_Large:pixelsize=20,Font_SUBST2
-#define Font_22px Font_Large:pixelsize=22,Font_SUBST2
-#define Font_24px Font_Large:pixelsize=24,Font_SUBST2
-#define Font_28px Font_Large:pixelsize=28,Font_SUBST2
-#define Font_32px Font_Large:pixelsize=32,Font_SUBST2
-! By default, urxvt synthesizes different styles from the main font.
-! For smaller sizes, all faces are not available, so all is explicit to make
-! changing between font sizes possible.
-URxvt.font: Font_18px
-URxvt.boldFont: Font_SmallBold
-URxvt.italicFont: Font_SmallItalic
-URxvt.boldItalicFont: Font_SmallBoldItalic
-! key bindings
-! <M-C-a>...<M-C-i>: font selections 12px-32px
-URxvt.keysym.M-C-a: command:\033]50;Font_12px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
-URxvt.keysym.M-C-b: command:\033]50;Font_14px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
-URxvt.keysym.M-C-c: command:\033]50;Font_16px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
-URxvt.keysym.M-C-d: command:\033]50;Font_18px\007\033]711;Font_SmallBold\007\033]712;Font_SmallItalic\007\033]713;Font_SmallBoldItalic\007
-URxvt.keysym.M-C-e: command:\033]50;Font_20px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
-URxvt.keysym.M-C-f: command:\033]50;Font_22px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
-URxvt.keysym.M-C-g: command:\033]50;Font_24px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
-URxvt.keysym.M-C-h: command:\033]50;Font_28px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
-URxvt.keysym.M-C-i: command:\033]50;Font_32px\007\033]711;Font_LargeBold\007\033]712;Font_LargeItalic\007\033]713;Font_LargeBoldItalic\007
-! <C-u> perl/url-select
+!URxvt.geometry: 80x24
+!URxvt.colorBD: colour
+!URxvt.colorIT: colour
+!URxvt.colorUL: colour
+URxvt.underlineColor: #93a1a1
+!URxvt.jumpScroll: bool
+!URxvt.skipScroll: bool
+URxvt.letterSpace: 0
+
+! urxvt understands codeset
+#define XFT_SUBST1         [codeset=JISX0208]xft:WenQuanYi WenQuanYi Bitmap Song
+#define XFT_SUBST2         [codeset=JISX0208]xft:WenQuanYi Micro Hei
+#define XFT_DEF_1_SIZE(px) XFT_DEF_1:pixelsize=px,XFT_SUBST1
+#define XFT_DEF_2_SIZE(px) XFT_DEF_2:pixelsize=px,XFT_SUBST2
+
+#define U_SET_FONT(ts,font) \033]ts;font\007
+
+#define U_FONTS(sz,fn2) U_SET_FONT(50, fn2:pixelsize=sz)U_SET_FONT(711, fn2:style=Bold)U_SET_FONT(712, fn2:style=Italic)U_SET_FONT(713, fn2:style=Bold Italic)
+
+#if HEIGHT > 1080
+URxvt.font: XFT_DEF_1_SIZE(18)
+#elif HEIGHT > 720
+URxvt.font: XFT_DEF_1_SIZE(14)
+#else
+URxvt.font: XFT_DEF_1_SIZE(12)
+#endif
+URxvt.boldFont:          XFT_DEF_1:style=Bold
+URxvt.italicFont:        XFT_DEF_1:style=Italic
+URxvt.boldItalicFont:    XFT_DEF_1:style=Bold Italic
+URxvt.urgentOnBell:      true
+! action on [C-][S-]PrintScreen (default: lpr or so)
+URxvt.print-pipe:        cat >/dev/null
+URxvt.scrollBar:         false
+URxvt.scrollTtyOutput:   false
+URxvt.scrollWithBuffer:  true
+URxvt.scrollTtyKeypress: true
+URxvt.saveLines:         8192
+URxvt.skipBuiltinGlyphs: false
+URxvt.lineSpace:         0
+! Meta (Alt) + keypress sets the 8th bit instead (default Esc prefix is used).
+URxvt.meta8:             true
+! pastableTabs: store tabs as actual tab characters (true)
+URxvt.pastableTabs:      true
+URxvt.cursorBlink:       false
+URxvt.pointerBlank:      true
+!URxvt.pointerShape:
+URxvt.cutchars:          `&()*,;<=>?@[]^{|}\040\042\047\057\072\134│
+URxvt.tripleclickwords:  true
+URxvt.modifier:          alt
+
+! ISO 14755 5.1 press & hold Control + Shift, enter hex digits (separate many with Space), release modifiers
+! iSO 14755 5.2 (Keyboard symbols entry)
+URxvt.iso14755:    true
+URxvt.iso14755_52: false
+
+! mods: ISOLevel3, AppKeypad, Control, NumLock, Shift, Meta, Lock, Mod1, Mod2, Mod3, Mod4, Mod5
+! abbrev I, K, C, N, S, M, A, L, 1, 2, 3, 4, 5
+
+! OCT DEC ASCII printf other
+! 010 008 BS        \b    ^H
+! 011 009 TAB       \t
+! 012 010 NL        \n
+! 033 027 ESC       \e
+! 037 ___ ___             ^_
+! 040 032 SPACE
+! 177 127 DEL             ^?
+!
+! xterm-like modifyOtherKeys: \e[27;<mods>;<code>~
+!  1 shift
+!  2 control
+!  4 meta
+!  8 super
+! 16 hyper
+! 32 alt
+
+#define K_BS     \010
+#define K_DEL    \177
+
+! backspacekey ~ stty erase
+
+URxvt.backspacekey:       \010
+URxvt.keysym.C-BackSpace: \033[27;2;8~
+
+URxvt.deletekey:       \033[3~
+URxvt.keysym.C-Delete: \033[27;2;127~
+
+#define S_Home   \033[7~
+#define S_End    \033[8~
+URxvt.keysym.Home:    S_Home
+URxvt.keysym.End:     S_End
+URxvt.keysym.KP_Home: S_Home
+URxvt.keysym.KP_End:  S_End
+
+URxvt.keysym.C-Tab:   \033[27;2;9~
+URxvt.keysym.S-C-Tab: \033[27;3;9~
+URxvt.keysym.M-Tab:   \033[27;4;9~
+URxvt.keysym.I-Tab:   \033[27;4;9~
+
+! <M-u>  perl/url-select
+! <M-g>  shortcut for piped grep
+! <M-n>  Nullify stdout&err
+! <M-h>  shortcut for piped head
 URxvt.keysym.M-u: perl:url-select:select_next
-! <M-g>: shortcut for piped grep
 URxvt.keysym.M-g: string: | grep\040
-! <M-n>: Nullify stdout&err
 URxvt.keysym.M-n: string: >/dev/null 2>&1
-! <M-h>: shortcut for piped head
 URxvt.keysym.M-h: string: | head\040
 
-! ----- // other // ---------------------------------------
+! <M-C-a>...<M-C-i>: font selections 12px-32px
+URxvt.keysym.M-C-a: command:U_FONTS(12, XFT_DEF_1)
+URxvt.keysym.M-C-b: command:U_FONTS(14, XFT_DEF_1)
+URxvt.keysym.M-C-c: command:U_FONTS(16, XFT_DEF_1)
+URxvt.keysym.M-C-d: command:U_FONTS(18, XFT_DEF_1)
+URxvt.keysym.M-C-e: command:U_FONTS(20, XFT_DEF_2)
+URxvt.keysym.M-C-f: command:U_FONTS(22, XFT_DEF_2)
+URxvt.keysym.M-C-g: command:U_FONTS(24, XFT_DEF_2)
+URxvt.keysym.M-C-h: command:U_FONTS(28, XFT_DEF_2)
+URxvt.keysym.M-C-i: command:U_FONTS(32, XFT_DEF_2)
 
-ncmpcpp*font: Font_Small
-x11-ssh-askpass*font: Font_Small
-Xmessage*font: Font_Small
+URxvt.perl-ext-common: default,url-select,clipboard,searchable-scrollback,keysym-list,bell-command
+!URxvt.perl-eval: string
+!URxvt.perl-lib: path
+
+! selection-popup, matcher extensions use this
+URxvt.url-launcher: URL_LAUNCHER
+
+! url-select (extension)
+URxvt.url-select.autocopy:  true
+URxvt.url-select.button:    1
+URxvt.url-select.launcher:  URL_LAUNCHER
+URxvt.url-select.underline: true
+
+URxvt.bell-command: notify-send URxvt "bell!"
+
+! ----- // other // --------------------------------------------------------{{{1
+
+Xmessage*font:        XLS_TERMINESS-18-*
+x11-ssh-askpass*font: XLS_TERMINESS-18-*

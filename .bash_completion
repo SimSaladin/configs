@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+__load_completion _complete_alias

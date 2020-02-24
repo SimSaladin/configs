@@ -17,14 +17,14 @@
 repo = 'Shougo/dein.vim'
 
 [[plugins]] # (lazy)
-repo = 'roxma/nvim-yarp'
-name = 'yarp'
-on_if = ''' has('nvim') || (v:version > 800 && has('python3')) '''
+repo             = 'roxma/nvim-yarp'
+name             = 'yarp'
+on_if            = ''' has('nvim') || (v:version > 800 && has('python3')) '''
 hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
 
 [[plugins]] # (lazy)
-repo = 'roxma/vim-hug-neovim-rpc'
-on_if = '!has("nvim")'
+repo             = 'roxma/vim-hug-neovim-rpc'
+on_if            = '!has("nvim")'
 hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
 
 [[plugins]] # (lazy)
@@ -36,10 +36,9 @@ repo = 'Shougo/context_filetype.vim'
 # Plugins                                                                 {{{1
 
 [[plugins]]
-repo = 'wesQ3/vim-windowswap'
-#on_event = 'WinNew'
+repo     = 'wesQ3/vim-windowswap'
 hook_add = '''
-let g:windowswap_map_keys = 0
+  let g:windowswap_map_keys = 0
 '''
 
 [[plugins]] # TODO: plugin
@@ -47,26 +46,36 @@ repo = 'powerman/vim-plugin-AnsiEsc'
 name = 'AnsiEsc'
 
 [[plugins]] # XXX plugin/
-repo = 'tomtom/quickfixsigns_vim'
 name = 'quickfixsigns'
+repo = 'tomtom/quickfixsigns_vim'
+hook_add = '''call init#rc('options_quickfixsigns')'''
 
 [[plugins]] # XXX: plugin/
 repo = 'scrooloose/nerdtree'
+hook_add = '''call init#rc('options_nerdtree')'''
 
-[[plugins]] # TODO: plugin/
-repo = 'rkitover/vimpager'
-merged = 0 # XXX why not?
-
-[[plugins]] # XXX: plugin/
-repo = 'Konfekt/FastFold'
-augroup = 'FastFold'
-
-[[plugins]] # XXX: plugin/
-repo = 'arecarn/vim-fold-cycle'
+[[plugins]] # (lazy)
+repo = 'Xuyuanp/nerdtree-git-plugin'
 hook_add = '''
-let g:fold_cycle_default_mapping = 0
+  let g:NERDTreeShowIgnoredStatus = 1
 '''
 
+[[plugins]] # TODO: plugin/
+repo   = 'rkitover/vimpager'
+merged = 0 # XXX why not?
+hook_add = '''
+  let g:vimpager_less_mode = 1
+  let g:vimpager_scrolloff = 0
+'''
+
+[[plugins]] # XXX: plugin/
+repo    = 'Konfekt/FastFold'
+augroup = 'FastFold'
+[[plugins]] # XXX: plugin/
+repo     = 'arecarn/vim-fold-cycle'
+hook_add = '''
+  let g:fold_cycle_default_mapping = 0
+'''
 [[plugins]] # XXX: plugin
 repo = 'kshenoy/vim-origami'
 #on_event = 'VimEnter'
@@ -74,110 +83,92 @@ repo = 'kshenoy/vim-origami'
 [[plugins]] # XXX: plugin
 repo = 'mattn/calendar-vim'
 #on_event = 'VimEnter'
-
 [[plugins]] # XXX plugin/
 repo = 'tpope/vim-fugitive'
 
 [[plugins]] # TODO: plugin/
 repo = 'vim-scripts/utl.vim'
+hook_add = '''call init#rc('options_utl')'''
+hook_post_source = '''doautoall utl_highl BufWinEnter'''
 
 # motion/operator/textobject                                              {{{1
 
 [[plugins]] # (lazy)
 repo = 'kana/vim-operator-user'
-
 [[plugins]] # (lazy)
 repo = 'kana/vim-smartchr'
-
+[[plugins]] # (lazy)
+repo = 'kana/vim-textobj-user'
 [[plugins]] # (lazy)
 repo = 'vim-scripts/repeat.vim'
 
-[[plugins]] # (lazy)
-repo = 'kana/vim-textobj-user'
-
 [[plugins]] # XXX: plugin/
 repo = 'vim-scripts/camelcasemotion'
-
 [[plugins]] # XXX: plugin/
 repo = 'kana/vim-niceblock'
-
 [[plugins]] # XXX: plugin/
 repo = 'qstrahl/vim-dentures'
-
 [[plugins]] # XXX: plugin/
-repo = 'tyru/caw.vim'
-depends = 'operator-user'
+repo     = 'tyru/caw.vim'
+depends  = 'operator-user'
 hook_add = '''
-let g:caw_operator_keymappings = 1
+  let g:caw_operator_keymappings = 1
 '''
-
 [[plugins]] # XXX: plugin/
-repo = 'kana/vim-operator-replace'
+repo    = 'kana/vim-operator-replace'
 depends = 'operator-user'
-
 [[plugins]] # XXX: plugin/
-repo = 'rhysd/vim-operator-surround'
+repo    = 'rhysd/vim-operator-surround'
 depends = 'operator-user'
-
 [[plugins]] # XXX: plugin/
-repo = 'kana/vim-textobj-entire'
+repo    = 'kana/vim-textobj-entire'
 depends = 'textobj-user'
-
 [[plugins]] # XXX: plugin/
-repo = 'kana/vim-textobj-fold'
+repo    = 'kana/vim-textobj-fold'
 depends = 'textobj-user'
-
 [[plugins]] # XXX: plugin/
-repo = 'kana/vim-textobj-line'
+repo    = 'kana/vim-textobj-line'
 depends = 'textobj-user'
-
 [[plugins]] # XXX: plugin/
-repo = 'kana/vim-textobj-syntax'
+repo    = 'kana/vim-textobj-syntax'
 depends = 'textobj-user'
 
 # YankRing                                                                {{{1
-
-[[plugins]]
 # TODO: special version v20.0
+[[plugins]]
 repo     = 'RobertAudi/YankRing.vim'
 rev      = 'pr/v20.0'
 augroup  = 'YankRing'
-#on_event = 'VimEnter'
+hook_add = '''call init#rc('options_yankring')'''
 
 # Lazy                                                                    {{{1
-
-[[plugins]] # (lazy)
-repo = 'Xuyuanp/nerdtree-git-plugin'
-
 [[plugins]] # (lazy)
 repo = 'vim-airline/vim-airline-themes'
+
+# bufferline                                                             {{{1
+[[plugins]]
+repo = 'bling/vim-bufferline'
 
 # deoplete etc.                                                           {{{1
 
 [[plugins]]
-repo = 'Shougo/deoplete.nvim'
-#on_event = 'InsertEnter'
-#depends = 'yarp'
+repo     = 'Shougo/deoplete.nvim'
 hook_add = '''
-autocmd InsertEnter * ++once call vimrc#deoplete_init()
+  autocmd InsertEnter * ++once call vimrc#deoplete_init()
 '''
-
 [[plugins]] # (lazy)
-repo = 'tbodt/deoplete-tabnine'
-build = './install.sh'
-merged = 1
+repo   = 'tbodt/deoplete-tabnine'
+build  = './install.sh'
 
 [[plugins]]
-repo = 'Shougo/echodoc.vim'
-#on_event = 'CompleteDone'
+repo     = 'Shougo/echodoc.vim'
 hook_add = '''
-autocmd CompleteDone * ++once call echodoc#enable()
+  autocmd CompleteDone * ++once call echodoc#enable()
 '''
 
 [[plugins]]
-repo = 'Shougo/neco-vim'
-#depends = 'deoplete'
-#on_ft = 'vim'
+repo    = 'Shougo/neco-vim'
+depends = 'deoplete'
 
 # syntax                                                                  {{{1
 
@@ -189,8 +180,8 @@ name = 'solarized'
 repo = 'sheerun/vim-polyglot'
 
 [[plugins]] # XXX: global plugin defines a few commands
-repo = 'inkarkat/vim-SyntaxRange'
-depends = 'ingo-library'
+repo     = 'inkarkat/vim-SyntaxRange'
+depends  = 'ingo-library'
 hook_add = '''
 augroup SyntaxRange
   autocmd!
@@ -202,71 +193,57 @@ augroup END
 
 [[plugins]]
 repo = 'jamessan/vim-gnupg'
-#on_path = ['\.gpg$','\.asc$','\.pgp$']
-
 [[plugins]] # (lazy)
 repo = 'hail2u/vim-css3-syntax'
-
 [[plugins]]
 repo = 'ElmCast/elm-vim'
-
-[[plugins]]
-repo = 'aiya000/vim-ghcid-quickfix'
-
-#[[plugins]]
-#repo = 'Twinside/vim-haskellFold'
-#on_ft = 'haskell'
-
-#[[plugins]] # (lazy)
-#repo = 'vmchale/dhall-vim'
-# XXX via polyglot(?)
-
 [[plugins]]
 repo = 'LnL7/vim-nix'
-
+[[plugins]] # (lazy)
+repo = 'nfnty/vim-nftables'
 [[plugins]] # (lazy)
 repo = 'thinca/vim-ft-diff_fold'
 name = 'diff-fold'
-
 [[plugins]] # (lazy)
-repo = 'nfnty/vim-nftables'
-
+repo = 'pedrohdz/vim-yaml-folds'
+name = 'yaml-fold'
 [[plugins]] # (lazy)
-repo = 'Kuniwak/vint'
+repo = 'jceb/vim-orgmode'
+[[plugins]] # (lazy)
+repo = 'tmux-plugins/vim-tmux'
+
+# Haskell {{{1
+[[plugins]]
+repo = 'aiya000/vim-ghcid-quickfix'
+#[[plugins]]
+#repo = 'Twinside/vim-haskellFold'
+
+# Vim help {{{1
+[[plugins]] # (lazy)
+repo  = 'Kuniwak/vint'
 on_if = 'executable("vint")'
-
 [[plugins]] # (lazy)
 repo = 'thinca/vim-ft-help_fold'
 name = 'help-fold'
-
 [[plugins]] # (lazy)
 repo = 'machakann/vim-vimhelplint'
 name = 'help-lint'
 
-[[plugins]] # (lazy)
-repo = 'pedrohdz/vim-yaml-folds'
-name = 'yaml-fold'
-
-[[plugins]] # (lazy)
-repo = 'jceb/vim-orgmode'
-
-[[plugins]] # (lazy)
-repo = 'tmux-plugins/vim-tmux'
-
-[[plugins]] # (lazy)
-repo = 'aklt/plantuml-syntax'
-
 # UML/slumlord {{{1
 
 [[plugins]] # (lazy)
-repo = 'scrooloose/vim-slumlord'
-depends = 'plantuml-syntax'
+repo = 'aklt/plantuml-syntax'
+[[plugins]] # (lazy)
 # XXX: conflicting files ftplugin/plantuml.vim with plantuml-syntax.
 # patched locally.
-frozen = 1
-# merged = 0
+repo    = 'scrooloose/vim-slumlord'
+depends = 'plantuml-syntax'
+frozen  = 1
 
 # vimwiki, taskwiki, taskwarrior                                          {{{1
+
+[[plugins]] # XXX: plugin/
+repo = 'vimwiki/vimwiki'
 
 [[plugins]] # (lazy)
 repo = 'vimwiki/utils'
@@ -274,26 +251,23 @@ name = 'vimwiki-utils'
 
 [[plugins]] # (lazy)
 repo   = 'tbabej/taskwiki'
-merged = 1
 on_if  = ''' (!empty(init#py3module('tasklib'))) '''
 hook_post_update = ''' call init#pip3installupgrade('tasklib') '''
-
-[[plugins]] # XXX: plugin/
-repo = 'vimwiki/vimwiki'
+merged = 0
 
 [[plugins]]
 repo = 'xarthurx/taskwarrior.vim'
 # includes airline integration, unite integration, ...
 
 # vim-pandoc                                                              {{{1
-
 [[plugins]]
-repo = 'vim-pandoc/vim-pandoc-syntax'
-
+repo   = 'vim-pandoc/vim-pandoc-syntax'
 [[plugins]]
-repo = 'vim-pandoc/vim-pandoc'
-#on_event = 'VimEnter'
-
+repo   = 'vim-pandoc/vim-pandoc'
 [[plugins]]
-repo = 'vim-pandoc/vim-pandoc-after'
+repo   = 'vim-pandoc/vim-pandoc-after'
 merged = 0  # XXX conflicts.. plugin/pandoc.vim should go before pandoc-after.vim
+
+# Deol {{{1
+[[plugins]]
+repo = 'Shougo/deol.nvim'

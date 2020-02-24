@@ -20,33 +20,18 @@ endif
 
 " Load the cache script. Returns 1 if cache script is old/invalid/not found.
 if dein#load_state(s:dein_base)
-
   call dein#begin(s:dein_base, [$MYVIMRC, expand('<sfile>'), s:toml, s:toml_ft, s:toml_lazy])
-
   call dein#load_toml(s:toml, {'lazy': 0})
   call dein#load_toml(s:toml_ft, {'lazy': 0})
   call dein#load_toml(s:toml_lazy, {'lazy': 1})
-
-  " Changes runtimepath
-  call dein#end()
-
-  " Write the cache script
-  call dein#save_state()
-
-  " Install plugins (async)
+  call dein#end() " Changes runtimepath
+  call dein#save_state() " Write the cache script
   if !has('vim_starting') && dein#check_install()
-    call dein#install()
+    call dein#install() " Install plugins (async)
   endif
 endif
 
-"call dein#call_hook('source')
-
 " The post_source hooks are not called automatically when vim is starting
 if has('vim_starting')
-  autocmd VimEnter * ++once call dein#call_hook('post_source')
-endif
-
-if !has('vim_starting') && exists('#myvimrc#VimEnter')
-  doautocmd myvimrc VimEnter
-  " XXX: ftplugins not applied?
+  autocmd VimEnter * ++nested call dein#call_hook('post_source')
 endif

@@ -231,28 +231,48 @@ newline: native
 #
 # No language extensions are enabled by default.
 language_extensions:
-  - LambdaCase
-  - MultiWayIf
-  - NamedFieldPuns
-  - RecordWildCards
-  - TupleSections
-  - QuasiQuotes
-  - ViewPatterns
+  - ParallelListComp  # comprehension via zipWith. Since 6.8.1
+  - TransformListComp  # SQL-like queries. Wew keywords: group, by, using. Since 6.10.1
+  - MonadComprehensions  # generalize list comprehensions for any monad. Since 7.2.1
+  - PostfixOperators  # one argument postfix sections. Since 7.10.1
+  - TupleSections  # Since 6.12
+  - LambdaCase  # Since 8.6.1
+  - EmptyCase  # \case { }. Since 7.8.1
+  - MultiWayIf  # Since 7.6.1
+  - PackageImports  # Since 6.10.1
+  - TrustWorth  # Enable safe import keyword. Since 7.2.1 (Safe/TrustWorthy) 7.4.1 (Unsafe)
+  - ExplicitNamespaces  # Enable type keyword in import&export lists. Implied by TypeOperators. Since 7.6.1
+  - BlockArguments  # when foo do …. Since 8.6.1
+  - BangPatterns  # Since 6.8.1
+  - PatternSynonyms  # pattern keyword. Since 7.8.1
+  - StaticPointers  # static e. Since 7.10.1
+  - Arrows  # proc x -> f -< …. Since 6.8.1
+  - BinaryLiterals  # 0b11001 literals. Since 7.10.1
+  - HexFloatLiterals  # 0x0.1 == 1/16. Since 8.4.1
+  - NumericUnderscores  # 1_000_000. Since 8.6.1
+  - ViewPatterns  # Since 6.10.1
+  - RecursiveDo  # mdo. Since 6.8.1
+  - ApplicativeDo  # Since 8.0.1
+
   - ConstraintKinds
   - DataKinds
+  - DefaultSignatures
+  - DeriveDataTypeable
+  - DeriveGeneric
+  - DeriveTraversable
   - FlexibleContexts
   - FlexibleInstances
   - FunctionalDependencies
   - GADTs
-  - PolyKinds
-  - RankNTypes
-  - TypeFamilies
-  - TypeApplications
-  - TypeOperators
-  - DefaultSignatures
   - InstanceSigs
-  - DeriveDataTypeable
-  - DeriveTraversable
-  - DeriveGeneric
-  - StandaloneDeriving
   - MultiParamTypeClasses
+  - NamedFieldPuns
+  - PolyKinds
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - UnicodeSyntax  # Since 6.8.1

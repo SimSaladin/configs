@@ -7,15 +7,6 @@
 # Note: 'b:undo_ftplugin' variable is automatically initialized here.
 
 [ftplugin]
-
-# The special '_' key script is loaded after all others.
-_ = '''
-  if empty(&l:buftype) && &l:shiftwidth == 0
-    Findent --no-messages
-  endif
-'''
-
-# These ftplugins are loaded as <dein_dir>/after/ftplugin/{filetype}...
 vim     = 'setl sw=2 et'
 toml    = 'setl sw=2 et'
 ruby    = 'setl sw=4 et'
@@ -23,7 +14,24 @@ python  = 'setl sw=4 et'
 elm     = 'setl sw=4 et'
 java    = 'setl sw=4 et'
 groovy  = 'setl sw=4 et'
-vimwiki = 'setl sw=2 tw=120'
+
+vimwiki = '''
+  setl sw=2
+  setl tw=120
+  let b:undo_ftplugin .= 'setl sw< tw<'
+'''
+
+config  = '''
+  setl fdm=expr
+  setl fde=getline(v:lnum)=~'^$\\\|^#'?-1:(getline(v:lnum)[0]=='['?'>1':1)
+  let b:undo_ftplugin .= 'setl fdm< fde<'
+'''
+
+gitconfig = '''
+  setl vts=2,8
+  setl fdm=indent
+  let b:undo_ftplugin .= 'setl vts< fdm<'
+'
 
 #text = ''' '''
 
@@ -33,7 +41,9 @@ mail = '''
 '''
 
 help = '''
-  setl fo-=c ma noro
+  setl fo-=c
+  setl ma
+  setl noro
   let b:undo_ftplugin .= "setl fo< ma< ro<"
 '''
 
@@ -43,24 +53,55 @@ json = '''
 '''
 
 sh = '''
-  setl fdm=syntax comments=:# cms=#\ %s
+  setl fdm=syntax
+  setl comments=:#
+  setl cms=#\ %s
   let b:undo_ftplugin .= "setl fdm< com< cms<"
 '''
 
 systemd = '''
-  setl com=:#,:; cms=#\ %s fo-=t
+  setl comments=:#,:;
+  setl cms=#\ %s
+  setl fo-=t
   let b:undo_ftplugin .= 'setl com< cms< fo<'
 '''
 
+man = '''
+  setl nonu nornu so=0 siso=0 fdc=0 scl=no
+  setl fdm=expr
+  setl fde=v:lnum==1?0:(getline(v:lnum)=~'^\\\u'?'>1':'=')
+  setl kp=:PageMan
+  setl isk+=(,)
+  nnoremap <buffer> <silent> q :q<CR>
+  let b:undo_ftplugin .= 'setl nu< rnu< so< siso< fdc< scl< fdm< fde< kp< isk< | nunmap <buffer> q'
+'''
+
 make = '''
-  setl noet ts=2 vts=2,8 vsts=2,8 fo-=t fo+=croql
+  setl noet
+  setl ts=2
+  setl vts=2,8 vsts=2,8
+  setl fo-=t fo+=croql
   let b:undo_ftplugin .= 'setl et< ts< vts< vsts< fo<'
 '''
 
 haskell = '''
-  setl sw=2 et tw=120
+  setl et
+  setl sw=2
+  setl tw=120
   setl fp=stylish-haskell
-  setl fdm=expr fde=haskell#foldexpr(v:lnum) fdt=haskell#foldtext()
-  let b:undo_ftplugin .= 'setl fdm< fde< fdt<'
+  setl fdm=expr
+  setl fde=haskell#foldexpr(v:lnum)
+  setl fdt=haskell#foldtext()
+  let b:undo_ftplugin .= 'setl et< sw< tw< fp< fdm< fde< fdt<'
 '''
 
+_ = '''
+if exists(':Findent')
+    \ && &l:modifiable
+    \ && empty(&l:buftype)
+    \ && empty(&l:shiftwidth)
+    \ && empty(&l:vartabstop)
+    \ && getfsize(expand('<afile>')) > 0
+  Findent
+endif
+'''

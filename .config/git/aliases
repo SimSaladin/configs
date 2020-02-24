@@ -1,0 +1,63 @@
+# ~/.config/git/aliases  vim:ft=gitconfig
+
+# Notes:
+# - shell commands are executed from the top-level directory of the repository.
+# - GIT_PREFIX refers to the active directory.
+# - Aliases that hide existing git commands are ignored.
+# - Arguments are split by spaces.
+# - Usual shell quoting and escaping (quote pair or backslash).
+# - Any expansion prefixed with ! is treated as a shell command.
+# - shell commands execute from the repository top-level directory!
+
+# TODO: create new branch and track it
+# TODO: delete current checked out branch
+
+[alias]
+  co      = checkout
+  cm      = commit
+  cam     = commit --amend --no-edit
+  cfix    = commit --fixup            ; usage: cfix <commit-ref> [<commit-options>]
+  cmf     = "!f(){ git add -v -- \"$@\" && git commit -m \"$(printf -- '* %s\\n' \"$@\")\";};f"
+  b       = pp-branches
+  bd      = branch --delete
+  bdd     = branch --delete --force
+  ba      = branch --all
+  br      = branch --remotes
+  bm      = branch --move
+  lg      = log --color --graph --abbrev-commit --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset'
+  lgg     = lg --boundary @{u}..
+  p       = push
+  pa      = push --all --tags
+  po      = push origin
+  st      = pp-status
+  sm      = submodule
+  smst    = submodule status
+  ls      = ls-files
+  pdiff   = "!git --no-pager diff --no-color"
+  up      = "!git remote update -p; git merge --ff-only @{u}"
+  up-all  = "!git remote update -p; eval \"$(git for-each-ref refs/heads --shell --format='[ -z %(upstream) ] || git fff %(refname:lstrip=2) %(upstream)')\""
+  bdelete = "!f(){ git branch -D \"$@\" && git push --delete $(git remote) \"$@\";};f"
+
+  ; push-matching <push-args> <remote> <branch-pattern>
+  push-matching = !f(){\n\
+    args=' '\n\
+    while [[ $1 = -* ]]\n do args+='$1'\n shift\n done\n\
+    branches=$(git branch --list --format='%(refname:short)' '$2' | tr '\\n' ' ')\n\
+    cmd='git push${args}$1 $branches'\n\
+    echo -ne 'About to execute: $cmd\\n(press any to continue, Ctrl-C to abort)'\n\
+    read\neval '$cmd'\n}\nf
+
+  pp-status = status --short --branch
+
+  ; Formats documented in <url:man:git-for-each-ref>
+  pp-branches = branch --format='\
+%(color:red)%(objectname:short)%(color:reset)\
+ %(color:nobold green)~ %(align:20)%(creatordate:relative)%(end)\
+ %(align:42,right)%(color:nobold yellow)%(if)%(upstream:remotename)%(then)%(upstream:remotename)/%(upstream:lstrip=3) %(end)%(end)\
+%(if)%(HEAD)%(then)%(color:magenta bold)%(else)%(color:cyan bold)%(end)%(refname:lstrip=2)\
+ %(color:nobold magenta)%(upstream:track)\
+%(color:reset)'
+
+  ; $0 <merge-request-id>
+  ; Fetch and checkout a Gitlab Merge Request. The head will be named "mr-${merge-request-id}"
+  gitlab-mr-co = "!f(){ git fetch origin merge-requests/\"$1\"/head:mr-\"$1\" && git checkout mr-\"$1\";};f"

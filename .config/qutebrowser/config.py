@@ -13,20 +13,20 @@ from qutebrowser.config.config import ConfigContainer  # noqa: F401
 config = config  # type: ConfigAPI # noqa: F821 pylint: disable=E0602,C0103
 c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
 
-# config.bind                                                            {{{1
+TOR_PROXY = 'socks5://localhost:9050'
 
-# :bind --mode [mode] --default [key] [command]
-#   [mode]: normal insert command caret hint passthrough prompt register yesno
-#   Defaults: see ":help :bindings.default"
-
+# command: pass                                                          {{{1
+c.aliases['pass'] = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-pass ' + '-d dmenu -m -U secret -u "username: (.+)" -P "password: (.+)"'
 config.bind('zl', 'pass')
 config.bind('zul', 'pass --username-only')
 config.bind('zpl', 'pass --password-only')
 config.bind('zol', 'pass --otp-only')
+
+# command: open-mpv                                                      {{{1
+c.aliases['open-mpv'] = 'spawn mpv "{url}"'
 config.bind('zv', 'open-mpv')
 
-# commands                                                               {{{1
-
+# command: set-log-capacity                                              {{{1
 if 'set-log-capacity' not in objects.commands.keys():
     @cmdutils.register(name='set-log-capacity')
     def set_log_capacity(capacity=300):
@@ -38,23 +38,21 @@ if 'set-log-capacity' not in objects.commands.keys():
     set_log_capacity(0)
     utilcmds.debug_log_level('error')
 
+# command: pyeval                                                        {{{1
 if 'pyeval' not in objects.commands.keys():
     @cmdutils.register(name='pyeval', maxsplit=0, no_cmd_split=True)
-    def my_pyeval(s, file=False, quiet=True):
+    def pyeval(string, file=False, quiet=True):
         """Evaluate a python string and display the results as a web page.
 
         Args:
-            s: The string to evaluate.
+            string: The string to evaluate.
             file: Interpret s as a path to file, also implies --quiet.
             quiet: Don't show the output in a new tab.
         """
-        utilcmds.debug_pyeval(s, file, quiet)
+        utilcmds.debug_pyeval(string, file, quiet)
 
-# c.aliases                                                              {{{1
-
+# command: dictcli                                                       {{{1
 c.aliases['dictcli'] = 'spawn --output /usr/share/qutebrowser/scripts/dictcli.py'
-c.aliases['open-mpv'] = 'spawn mpv "{url}"'
-c.aliases['pass'] = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-pass ' + '-d dmenu -m -U secret -u "username: (.+)" -P "password: (.+)"'
 
 # c.                                                                     {{{1
 
@@ -139,9 +137,9 @@ config.set('content.mute', False, 'https://*.flowdock.com/*')
 config.set('content.notifications', True, 'https://*.flowdock.com/*')
 
 # c.content.headers.                                                     {{{1
-c.content.headers.accept_language = 'en-US,en;q=0.5'
-c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
-c.content.headers.custom = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
+#c.content.headers.accept_language = 'en-US,en;q=0.5'
+#c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+#c.content.headers.custom = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
 
 # c.content.javascript.                                                  {{{1
 c.content.javascript.enabled = True
@@ -195,14 +193,15 @@ c.url.searchengines = {
     'mal': 'https://myanimelist.net/search/all?q={}',
 }
 
-url = 'https://translate.google.com'
-languages = ['fi', 'en', 'de']
-for f in languages:
-    for t in languages:
-        c.url.searchengines[f+t] = url+'/#'+f+'/'+t+'/{}'
+GOOGLE_TRANSLATE_URL = 'https://translate.google.com'
+TRANSLATE_LANGUAGES = ['fi', 'en', 'de']
+
+for f in TRANSLATE_LANGUAGES:
+    for t in TRANSLATE_LANGUAGES:
+        c.url.searchengines[f+t] = GOOGLE_TRANSLATE_URL + '/#'+f+'/'+t+'/{}'
 
 # c.tabs.                                                                {{{1
-c.tabs.position = 'right'
+c.tabs.position = 'left'
 c.tabs.show = 'multiple'  # 'always' / 'never' / 'multiple' / 'switching'
 c.tabs.show_switching_delay = 4500
 c.tabs.width = '15%'
@@ -217,9 +216,9 @@ c.tabs.background = True
 c.tabs.new_position.stacking = True
 c.tabs.new_position.related = 'next'  # first / last / next / prev
 c.tabs.new_position.unrelated = 'last'
-c.tabs.title.alignment = 'center'  # left / right / center
-c.tabs.title.format = '{index}:{current_title}'
-c.tabs.title.format_pinned = '{index}:{current_title}'
+c.tabs.title.alignment = 'left'  # left / right / center
+c.tabs.title.format = '{audio:^4}{index:>2}:{current_title}'
+c.tabs.title.format_pinned = '{audio:^4}{index:>2}:{current_title}'
 c.tabs.favicons.scale = 1.0
 c.tabs.favicons.show = 'always'  # always / never / pinned
 

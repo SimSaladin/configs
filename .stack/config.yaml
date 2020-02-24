@@ -43,7 +43,8 @@ nix: {}
 configure-options: {}
 
 # Like configue-options but for GHC options.
-ghc-options: {}
+ghc-options:
+  $everything: -msse2
 #  $targets: -Weverything -Werror
 
 # rebuild-ghc-options: Set true to rebuild when package GHC options change. (default: false)
@@ -76,9 +77,9 @@ build:
   # https://github.com/haskell/haddock/issues/928
 
   haddock: true
-  haddock-deps: false
+  haddock-deps: true
   haddock-internal: true
-  haddock-hyperlink-source: false
+  haddock-hyperlink-source: true
   #  haddock-arguments:
   #    haddock-args: ["--css=path/to/custom/css"]
 

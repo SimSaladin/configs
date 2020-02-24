@@ -1,182 +1,237 @@
 # ~/.vim/deinlazy.toml                                    vim:tw=80:et:
 # See <url:./dein.toml>
 
-# airline - on_event = VimEnter                                          {{{1
+# undotree                                                          {{{1
+[[plugins]]
+repo     = 'mbbill/undotree'
+on_cmd   = ['UndotreeShow', 'UndotreeToggle']
 
+# airline - on_event = VimEnter                                     {{{1
 [[plugins]]
 repo     = 'vim-airline/vim-airline'
-on_event = 'VimEnter'
-on_if    = '&g:laststatus > 0 && empty(&g:statusline) && (winnr("$") + &g:laststatus > 2)'
 augroup  = 'airline'
+on_event = 'VimEnter'
+on_if    = '''&g:laststatus > 0 && empty(&g:statusline) && (winnr("$") + &g:laststatus > 2)'''
+hook_add = '''call init#rc('options_airline')'''
 
-# better-whitespace - on_event = BufRead(Pre)                            {{{1
+# better-whitespace - on_event = BufRead(Pre)                       {{{1
 [[plugins]]
-repo = 'ntpeters/vim-better-whitespace'
+repo     = 'ntpeters/vim-better-whitespace'
 on_event = 'BufReadPre'
 
-# autoformat                                                             {{{1
+# autoformat                                                        {{{1
+[[plugins]]
+repo   = 'Chiel92/vim-autoformat'
+on_cmd = 'Autoformat'
 # XXX: au BufWrite * :AutoFormat
 
+# syntastic - on_event = BufWrite                                   {{{1
 [[plugins]]
-repo = 'Chiel92/vim-autoformat'
-on_cmd = 'Autoformat'
-
-# syntastic - on_event = BufWrite                                        {{{1
-[[plugins]]
-repo = 'scrooloose/syntastic'
+repo     = 'scrooloose/syntastic'
 on_event = 'BufWrite'
-augroup = 'syntastic'
+augroup  = 'syntastic'
+hook_add = '''call init#rc('options_syntastic')'''
 
-# ultisnips - on_event = InsertEnter/BufNewFile                          {{{1
-
+# ultisnips - on_event = InsertEnter/BufNewFile                     {{{1
 [[plugins]]
-repo = 'SirVer/ultisnips'
-on_event = ['InsertEnter', 'BufNewFile']
+repo     = 'SirVer/ultisnips'
+on_event = ['InsertEnter','BufNewFile']
 
-# Align AutoAlign tabular - on_cmd/on_map                                {{{1
+# Align AutoAlign tabular - on_cmd/on_map                           {{{1
 
+# Align                                                                  {{{2
 [[plugins]]
-repo = 'vim-scripts/Align'
+repo   = 'vim-scripts/Align'
 on_cmd = 'Align'
-on_map = ['<Plug>AM_', ',t']
+on_map = ['<Plug>AM_',',t']
 
+# AutoAlign                                                              {{{2
 [[plugins]]
-repo = 'vim-scripts/AutoAlign'
-on_cmd = 'AA'
+repo    = 'vim-scripts/AutoAlign'
+on_cmd  = 'AA'
 depends = 'Align'
 
+# tabular                                                                {{{2
 [[plugins]]
-repo = 'godlygeek/tabular'
+repo   = 'godlygeek/tabular'
 on_cmd = ['AddTabularPattern','AddTabularPipeline','Tabularize','GTabularize']
 
-# LanguageClient                                                         {{{1
-
+# LanguageClient                                                    {{{1
 [[plugins]]
-repo        = 'autozimu/LanguageClient-neovim'
-name        = 'LanguageClient'
-on_func     = 'LanguageClient'
-build       = 'bash install.sh'
+repo    = 'autozimu/LanguageClient-neovim'
+name    = 'LanguageClient'
+on_func = 'LanguageClient'
+build   = 'bash install.sh'
+hook_add = '''
+let g:LanguageClient_autoStart      = 0
+let g:LanguageClient_loggingFile    = g:myvimrc#runtimedir.'/'.getpid().'-LanguageClient.log'
+let g:LanguageClient_serverCommands = { 'haskell': ['hie-wrapper'] }
+let g:LanguageClient_rootMarkers    = ['stack.yaml']
 
-# speeddating - on_map                                                   {{{1
+" hi link ALEError Error
+" hi      Warning term=underline cterm=underline ctermfg=Yellow gui=undercurl guisp=Gold
+" hi link ALEWarning Warning
+" hi link ALEInfo SpellCap
+'''
+
+# speeddating - on_map                                              {{{1
 [[plugins]]
-repo = 'tpope/vim-speeddating'
-on_map = {n='<Plug>SpeedDating'}
+repo     = 'tpope/vim-speeddating'
+on_map   = { n = '<Plug>SpeedDating' }
 hook_add = '''
 let g:speeddating_no_mappings = 1
 '''
 
-# colorizer - on_map                                                     {{{1
+# colorizer - on_map                                                {{{1
 [[plugins]]
-repo = 'lilydjwg/colorizer'
-on_map = {n='<Plug>Colorizer'}
+repo     = 'lilydjwg/colorizer'
+on_map   = { n = '<Plug>Colorizer' }
 hook_add = '''
-let g:colorizer_startup = 0
+  let g:colorizer_startup = 0
 '''
 
-# Tagbar - on_cmd                                                        {{{1
+# Tagbar - on_cmd                                                   {{{1
 [[plugins]]
 repo = 'majutsushi/tagbar'
 on_cmd = 'TagbarToggle'
+hook_add = '''call init#rc('options_tagbar')'''
 
-# NrrwRgn - on_cmd                                                       {{{1
+# NrrwRgn - on_cmd                                                  {{{1
 [[plugins]]
-repo = 'chrisbra/NrrwRgn'
+repo   = 'chrisbra/NrrwRgn'
 on_cmd = ['NR','NW','NUD','NRP']
 
-# Goyo - on_cmd                                                          {{{1
+# Goyo - on_cmd                                                     {{{1
 [[plugins]]
-repo = 'junegunn/goyo.vim'
+repo   = 'junegunn/goyo.vim'
 on_cmd = 'Goyo'
-
-# GNU Info - on_cmd                                                      {{{1
-[[plugins]] # Note: features some lazy load built-in
-repo = 'https://gitlab.com/HiPhish/info.vim'
-on_cmd = 'Info'
-
-# Obsession - on_cmd                                                     {{{1
-[[plugins]]
-repo = 'tpope/vim-obsession'
-on_cmd = 'Obsession'
-
-# anyfold - on_cmd                                                       {{{1
-[[plugins]]
-repo = 'pseewald/vim-anyfold'
-on_cmd = 'AnyFoldActivate'
-
-# Findent - on_cmd                                                       {{{1
-[[plugins]]
-repo = 'lambdalisue/vim-findent'
-on_cmd = 'Findent'
 hook_add = '''
-let g:findent#samples = [2, 4, 8]
+  let g:goyo_width  = 120
+  let g:goyo_height = '100%'
 '''
 
-# Defx - on_cmd                                                          {{{1
+# GNU Info - on_cmd                                                 {{{1
+[[plugins]] # Note: features some lazy load built-in
+repo   = 'https://gitlab.com/HiPhish/info.vim'
+on_cmd = 'Info'
+
+# Obsession - on_cmd                                                {{{1
+[[plugins]]
+repo   = 'tpope/vim-obsession'
+on_cmd = 'Obsession'
+
+# anyfold - on_cmd                                                  {{{1
+[[plugins]]
+repo   = 'pseewald/vim-anyfold'
+on_cmd = 'AnyFoldActivate'
+
+# Findent - on_cmd                                                  {{{1
+[[plugins]]
+repo     = 'lambdalisue/vim-findent'
+on_cmd   = 'Findent'
+hook_add = '''
+  let g:findent#samples = [2, 4, 8]
+  let g:findent#enable_messages = 0
+  let g:findent#enable_warnings = 0
+'''
+
+# Defx - on_cmd                                                     {{{1
 
 [[plugins]]
 repo        = 'Shougo/defx.nvim'
 on_cmd      = 'Defx'
-depends     = ['yarp', 'hug-neovim-rpc']
+depends     = ['yarp','hug-neovim-rpc']
 hook_source = '''
 call defx#custom#column('mark', {
         \ 'readonly_icon': '✗',
         \ 'selected_icon': '✓',
         \ })
 call defx#custom#column('icon', {
-        \ 'directory_icon': '▸',
-        \ 'opened_icon': '▾',
-        \ 'root_icon': ' ',
+        \ 'directory_icon':'▸',
+        \ 'opened_icon':   '▾',
+        \ 'root_icon':     ' ',
         \ })
 '''
 
-# Denite - on_cmd                                                        {{{1
+# Denite / Unite                                                    {{{1
 
 [[plugins]]
-repo = 'Shougo/denite.nvim'
-on_cmd = 'Denite'
-depends = 'yarp'
+# <url:https://github.com/Shougo/denite.nvim/wiki/External-Sources>
+repo        = 'Shougo/denite.nvim'
+on_cmd      = 'Denite'
+depends     = 'yarp'
 hook_source = '''
-call denite#custom#option('_', 'statusline', v:false)
+  " Options
+  call denite#custom#option('_', 'statusline', v:false)
+
+  " source(source, {args,converters}, value)
+
+  " Source file/old
+  call denite#custom#source('file/old','converters',['converter/relative_word'])
+
+  " Denite unite:vim_bookmarks
+  call denite#custom#alias('source', 'bmarks', 'unite')
+  call denite#custom#source('bmarks', 'args', 'vim_bookmarks')
 '''
 
-[[plugins]]
-repo = 'Shougo/junkfile.vim'
-on_source = 'denite'
-
-[[plugins]]
-repo = 'Shougo/neomru.vim'
-on_source = 'denite'
-
-# TODO configure
 [[plugins]]
 repo = 'raghur/fruzzy'
 on_source = 'denite'
-hook_post_update = ''' call fruzzy#install() '''
-hook_source = ''' let g:fruzzy#sortonempty = 0 '''
-
-
-# on_ft ...                                                              {{{1
-
-[[plugins]]
-repo = 'mattn/emmet-vim'
-on_ft = ['html', 'haml', 'xsl', 'css']
-hook_source = '''
-let g:user_emmet_mode = 'iv'
-'''
-
-[[plugins]]
-repo   = 'chrisbra/csv.vim'
-on_ft  = 'csv'
-merged = 0
-hook_post_source = '''
-if exists('#CSV_Edit#BufRead')
-  doautocmd CSV_Edit BufRead
-endif
-'''
 hook_add = '''
-let g:csv_autocmd_arrange = 1
+  let g:fruzzy#sortonempty = 0
 '''
+hook_source = '''
+  call denite#custom#source('_','matchers',['matcher/fruzzy'])
+'''
+hook_post_update = '''call fruzzy#install()'''
+
+[[plugins]] # just to use some unite plugins with denite
+repo      = 'Shougo/unite.vim'
+on_cmd    = 'Unite'
+on_source = 'denite'
 
 [[plugins]]
-repo = 'editorconfig/editorconfig-vim'
+repo        = 'Shougo/junkfile.vim'
+on_source   = 'denite'
+
+[[plugins]]
+repo        = 'Shougo/neomru.vim'
+on_source   = 'denite'
+hook_add = ''' let g:neomru#follow_links = 0 '''
+
+# on_ft ...                                                         {{{1
+
+# emmet-vim                                                              {{{2
+[[plugins]]
+repo                  = 'mattn/emmet-vim'
+on_ft                 = ['html', 'haml', 'xsl', 'css']
+hook_source           = '''
+  let g:user_emmet_mode = 'iv'
+'''
+
+# csv.vim                                                                {{{2
+[[plugins]]
+repo     = 'chrisbra/csv.vim'
+on_ft    = 'csv'
+merged   = 0
+hook_add = '''
+  let g:csv_autocmd_arrange = 1
+'''
+hook_post_source = '''
+  if exists('#CSV_Edit#BufRead')
+    doautocmd CSV_Edit BufRead
+  endif
+'''
+
+# editorconfig                                                      {{{1
+[[plugins]]
+repo   = 'editorconfig/editorconfig-vim'
 on_cmd = 'EditorConfigReload'
+
+# <url:vim:bookmarks.txt>                                           {{{1
+[[plugins]]
+repo = 'MattesGroeger/vim-bookmarks'
+on_if = '''has('signs')'''
+on_cmd = ['Bookmark','Unite','Denite']
+on_source = ['unite','denite']
+hook_add = '''call init#rc('options_vim-bookmarks')'''

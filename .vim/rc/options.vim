@@ -46,6 +46,13 @@ setg ssop-=folds
 setg ssop-=curdir
 setg ssop-=options
 setg ssop+=sesdir,localoptions
+setg directory=$XDG_CACHE_HOME/vim/swap//
+if has('mksession')
+  setg viewdir=$XDG_CACHE_HOME/vim/view
+endif
+if has('viminfo')
+  setg viminfofile=$XDG_CACHE_HOME/vim/viminfo
+endif
 
 " GUI                                                                     {{{1
 setg guioptions&         " "global" guioptions ("egmrLT")
@@ -79,7 +86,7 @@ setg ww-=b,s
 setg ww+=<,>,[,]
 setg timeoutlen=5000    " "global" ms, timeout to complete mappings (1000)
 setg ttimeoutlen=500    " "global" ms timeout to complete keycodes, if different than timeoutlen for maps (-1)
-setg noesckeys          " "global" (off) do <Esc> escapes in insert mode
+setg esckeys            " "global" (on) do <Esc> escapes in insert mode
 setg digraph<           " "global" digraph (off)
 
 " formatting                                                              {{{1
@@ -177,11 +184,14 @@ setg undoreload=15000   " "global" undoreload (10000)
 setg undolevels=500     " "global-local (buffer)" undolevels (1000)
 setl ul<
 if has('persistent_undo')
+  setg undodir=$XDG_CACHE_HOME/vim/undo//
+                        " "global" undodir
   setg undofile         " "local (buffer)" undofile (off)
   setl udf<
 endif
 
 " backup                                                                  {{{1
+setg backupdir=$XDG_CACHE_HOME/vim/backup//,.
 setg backup             " "global" backup (off)
 setg writebackup        " "global" writebackup (off)
 setg backupskip&        " "global" backupskip (/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*)

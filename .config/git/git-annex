@@ -1,0 +1,6 @@
+# ~/.config/git/git-annex  vim:ft=gitconfig
+
+[annex]
+  jobs       = 4 ; --jobs=N, defaults to 1.
+  queuesize  = 50000 ; git command queue, default 10240. May be increased with more memory.
+  cachecreds = false ; git-annex defaults caching unencrypted creds on disk (.git/annex/creds), so tell it not to

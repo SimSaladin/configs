@@ -1,0 +1,7 @@
+bellStyle: VisualBell
+maxHistorySize: Just 1000
+editMode: Emacs
+completionType: ListCompletion
+completionPaging: True
+listCompletionsImmediately: True
+historyDuplicates: IgnoreConsecutive

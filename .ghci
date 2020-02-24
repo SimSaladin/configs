@@ -1,34 +1,275 @@
-:set prompt "λ "
+-- ~/.ghci  vim:syntax=haskell:et:ts=4:cms=--\ %s:com=s1fl\:{-,mb\:-,ex\:-},\:--
+--
+-- See also <url:file:~/.haskeline> / repline
+-- https://github.com/judah/haskeline/wiki/UserPreferences
+--
+-- Pattern Synonyms:
+-- pattern HeadL x <- x:xs
+--    -- unidirectional: HeadL 1 = [1..10]
+--
+-- pattern P{x,y} <- (Just x, Just y) where
+--    P x y = (Just x, Just y)
+--    -- bidirectional (explicit)
+--    -- x :: (Maybe a,Maybe b) -> a
+--    -- y :: (Maybe a,Maybe b) -> b
+--    --   (P 0 1) == (Just 0,Just 1)
+--    -- x (P 0 1) == 0
 
-:set +t
+-- GHC_COLORS=header=:message=1:warning=1;35:error=1;31:fatal=1;31:margin=1;34
 
-:seti -XConstraintKinds
-:seti -XDataKinds
-:seti -XDefaultSignatures
-:seti -XDeriveDataTypeable
-:seti -XDeriveGeneric
-:seti -XDeriveTraversable
-:seti -XFlexibleContexts
-:seti -XFlexibleInstances
-:seti -XFunctionalDependencies
-:seti -XGADTs
-:seti -XInstanceSigs
-:seti -XLambdaCase
-:seti -XMultiWayIf
-:seti -XNamedFieldPuns
-:seti -XPolyKinds
-:seti -XRankNTypes
-:seti -XRecordWildCards
-:seti -XStandaloneDeriving
-:seti -XTupleSections
-:seti -XTypeApplications
-:seti -XTypeFamilies
-:seti -XTypeOperators
-:seti -XViewPatterns
+-- Turn on multi-line input
+:set +m
+-- Don't print type after evaluation
+:unset +t
+-- Enable type/loc info collection after module loading
+:set +c
+-- Set ARGV0
+:set prog "-ghci"
 
+-- -fbyte-code (default), -fno-code (just type-check)
+-- note: if on in non-interactive, must use ":load *" in order to get all
+-- identifiers in scope
+-- :set -fobject-code
+
+-- compile haddocks
+:set -haddock
+-- use unicode characters in output
+:set -fprint-unicode-syntax
+-- expand type synonyms in error messages
+:set -fprint-expanded-synonyms
+-- error messages contain full source span
+:set -ferror-spans
+
+-- warning settings
 :seti -Weverything
+:seti -Wno-name-shadowing
+:seti -Wno-incomplete-uni-patterns
 :seti -Wno-missing-import-lists
 :seti -Wno-partial-type-signatures
 :seti -Wno-missing-local-signatures
 :seti -Wno-type-defaults
-:seti -Wunused-imports
+
+-- language modifiers
+:seti -XNoImplicitPrelude
+
+:seti -XNondecreasingIndentation
+
+:seti -XApplicativeDo
+:seti -XArrows
+:seti -XBangPatterns
+:seti -XBinaryLiterals
+:seti -XBlockArguments
+:seti -XConstraintKinds
+:seti -XDataKinds
+:seti -XDefaultSignatures
+:seti -XDeriveAnyClass
+:seti -XDeriveDataTypeable
+:seti -XDeriveGeneric
+:seti -XDeriveLift
+:seti -XDeriveTraversable
+-- TODO to stylish-haskell configuration
+:seti -XDerivingStrategies
+:seti -XDerivingVia
+--
+:seti -XEmptyCase
+:seti -XExistentialQuantification
+:seti -XExplicitNamespaces
+:seti -XExtendedDefaultRules
+:seti -XFlexibleContexts
+:seti -XFlexibleInstances
+-- TODO to stylish-haskell configuration
+:seti -XForeignFunctionInterface
+--
+:seti -XFunctionalDependencies
+:seti -XGADTs
+:seti -XGeneralizedNewtypeDeriving
+:seti -XHexFloatLiterals
+-- TODO to stylish-haskell configuration
+:seti -XImplicitParams
+--
+:seti -XInstanceSigs
+:seti -XLambdaCase
+-- TODO to stylish-haskell configuration
+:seti -XMagicHash
+--
+:seti -XMonadComprehensions
+-- TODO to stylish-haskell configuration
+:seti -XMultiParamTypeClasses
+--
+:seti -XMultiWayIf
+:seti -XNamedFieldPuns
+-- TODO to stylish-haskell configuration
+:seti -XNamedWildCards
+:seti -XNegativeLiterals
+:seti -XNumDecimals
+--
+:seti -XNumericUnderscores
+-- TODO to stylish-haskell configuration
+:seti -XOverloadedLabels
+:seti -XOverloadedLists
+-- :seti OverloadedStrings
+--
+:seti -XPackageImports
+:seti -XParallelListComp
+-- TODO to stylish-haskell configuration
+:seti -XPartialTypeSignatures
+:seti -XPatternGuards
+--
+:seti -XPatternSynonyms
+:seti -XPolyKinds
+:seti -XPostfixOperators
+-- TODO to stylish-haskell configuration
+:seti -XQuantifiedConstraints
+:seti -XQuasiQuotes
+--
+:seti -XRankNTypes
+:seti -XRecordWildCards
+:seti -XRecursiveDo
+-- TODO to stylish-haskell configuration
+:seti -XRoleAnnotations
+--
+:seti -XScopedTypeVariables
+:seti -XStandaloneDeriving
+-- TODO to stylish-haskell configuration
+:seti -XTemplateHaskellQuotes
+--
+:seti -XTransformListComp
+:seti -XTupleSections
+:seti -XTypeApplications
+:seti -XTypeFamilies
+-- TODO to stylish-haskell configuration
+:seti -XTypeFamilyDependencies
+---
+:seti -XTypeOperators
+-- TODO to stylish-haskell configuration
+:seti -XUnboxedSums
+:seti -XUnboxedTuples
+--
+:seti -XUnicodeSyntax
+:seti -XViewPatterns
+
+import           "base" Control.Applicative        as BASE (Applicative(..))
+import           "base" Control.Arrow              as BASE (Arrow(..))
+import           "base" Control.Category           as BASE
+import           "base" Control.Concurrent         as BASE (ThreadId, forkIO)
+import           "base" Control.Exception          as BASE (Exception(..), IOException)
+import           "base" Control.Monad              as BASE (Monad(return,(>>),(>>=)),MonadPlus(..),join,when)
+import           "base" Data.Bits                  as BASE (Bits(xor, (.&.), (.|.)))
+import           "base" Data.Bool                  as BASE
+import           "base" Data.Char                  as BASE (Char,isUpper)
+import           "base" Data.Coerce                as BASE (Coercible, coerce)
+import           "base" Data.Data                  as BASE (Data)
+import           "base" Data.Dynamic               as BASE (Dynamic, fromDynamic, toDyn)
+import           "base" Data.Either                as BASE
+import           "base" Data.Eq                    as BASE
+import           "base" Data.Foldable              as BASE
+import           "base" Data.Function              as BASE (const, flip, on, ($), (&))
+import           "base" Data.Functor               as BASE (Functor(..), void, ($>), (<$>), (<&>))
+import           "base" Data.Functor.Compose       as BASE (Compose(..))
+import           "base" Data.Functor.Const         as BASE (Const(..))
+import           "base" Data.Functor.Contravariant as BASE (Comparison(..), Contravariant(..), Equivalence(..), Op(..), Predicate(..))
+import           "base" Data.Int                   as BASE (Int, Int16, Int32, Int64, Int8)
+import           "base" Data.IORef                 as BASE
+import           "base" Data.Kind                  as BASE
+import           "base" Data.Maybe                 as BASE
+import           "base" Data.Monoid                as BASE
+import           "base" Data.Ord                   as BASE
+import           "base" Data.Proxy                 as BASE
+import           "base" Data.Ratio                 as BASE
+import           "base" Data.Semigroup             as BASE
+import           "base" Data.String                as BASE (IsString(fromString), String)
+import           "base" Data.Traversable           as BASE
+import           "base" Data.Tuple                 as BASE
+import           "base" Data.Type.Bool             as BASE (type (&&), If, Not, type (||))
+import           "base" Data.Type.Coercion         as BASE (Coercion(..), TestCoercion(..))
+import           "base" Data.Type.Equality         as BASE ((:~:)(Refl), (:~~:)(HRefl), type (==), TestEquality(..), type (~~))
+import           "base" Data.Typeable              as BASE (TypeRep, Typeable, cast, eqT, typeOf)
+import           "base" Data.Unique                as BASE
+import           "base" Data.Void                  as BASE (Void)
+import           "base" Data.Word                  as BASE (Word, Word16, Word32, Word64, Word8)
+import           "base" GHC.Enum                   as BASE (Bounded(..), Enum(..))
+import           "base" GHC.Err                    as BASE (error, undefined)
+import           "base" GHC.Float                  as BASE (Double, Float, Floating(..), RealFloat(..))
+import           "base" GHC.Num                    as BASE (Integer, Num(..), subtract)
+import           "base" GHC.Real                   as BASE (Fractional(..), Integral(..), Real(..), RealFrac(..), (^), (^^))
+import           "base" GHC.Stack                  as BASE (HasCallStack)
+import           "base" GHC.Exts                   as BASE (IsList(Item,fromList))
+import           "base" System.IO                  as BASE (IO)
+import           "base" Text.Printf                as BASE (printf)
+import           "base" Text.Read                  as BASE (Read, read, readEither, readMaybe)
+import           "base" Text.Show                  as BASE (Show(show))
+
+import qualified "base" Data.List                    as L
+import qualified "base" System.IO                    as IO
+import qualified "base" Text.ParserCombinators.ReadP as ReadP
+
+--import qualified "containers" Data.Tree as Tree
+
+-- prompts  λΠΣ
+:{
+:set prompt-function \ms ln ->
+    let color fg x = concat ["\ESC[", show fg, "m\STX", x, "\ESC[m\STX"]
+        colorMod m = case L.span (/='.') m of
+            (a:_,d:bs) -> color 93 (a:d:[]) <> colorMod bs
+            _          -> color 36 m
+        mods = L.unwords [colorMod m|m<-L.nub (L.sort ms),m /= "BASE"]
+    in pure $ mods <> "\n" <> color 33 "λ" <> " "
+:}
+:set prompt-cont-function \ms ln -> return "\ESC[1;35m\STXΠ\ESC[m\STX "
+
+-- -interactive-print
+import qualified System.Process as Proc
+let mySprint a = Proc.withCreateProcess (Proc.proc "vimcat" ["-f","haskell"]) { Proc.std_in = Proc.CreatePipe } $ \(Just hin) _ _ ph -> IO.hPutStrLn hin (show a) >> IO.hClose hin >> Proc.waitForProcess ph >> return ()
+
+:set -interactive-print=mySprint
+
+-- Control verbosity
+:def! verbose \_ -> return ":set -v1 -fshow-loaded-modules"
+:def! silent  \_ -> return ":set -v0 -fno-show-loaded-modules"
+
+-- reload GHCi
+:def! rr \_ -> return "::script ~/.ghci"
+
+-- kind
+:def! k  (\x -> return ("::kind "  <> x))
+:def! k! (\x -> return ("::kind! " <> x))
+
+-- pwd, ls etc. shell shortcuts
+:def! pwd \_ -> return (":! dirs +0")
+:def! ls  \s -> return (":! ls " <> s)
+
+-- environ
+import qualified "base" System.Environment as Environ
+:{
+:def! env \case
+    "" -> Environ.getEnvironment >>= mapM_ (\(k,v) -> IO.putStrLn (k <> "=" <> v)) >> pure ""
+    s | (k,_:v) <- L.span (/='=') s -> Environ.setEnv k v $> ""
+      | otherwise                   -> Environ.lookupEnv s >>= IO.putStrLn . maybe "Not set!" (printf "%s=%s" s) >> pure ""
+:}
+
+-- stack hoogle
+:def! hoogle  \s -> return (":! stack hoogle -- '" <> s <> "' | vimcat -f haskell")
+:def! hoogle! \s -> return (":! stack hoogle --rebuild; stack hoogle -- '" <> s <> "' | vimcat -f haskell")
+-- stack build
+:def! build   \s -> return (":! stack build " <> s)
+
+-- ghc-pkg
+:def! ghc-pkg  \s -> return (":! ghc-pkg " <> s)
+:def! describe \s -> return (":! ghc-pkg describe " <> s)
+:def! packages \s -> return (":! " <> concat [printf "ghc-pkg --simple-output list '%s'|tr ' ' '\\n';" p | p <- L.words (if null s then "*" else s)])
+
+__findmodule  s    = printf "ghc-pkg --simple-output find-module --ignore-case '%s'" s
+__listmodules s s' = printf "ghc-pkg --simple-output field %s exposed-modules" s <> " | while read -r -a ms; do for m in \"${ms[@]}\"; do case $m in " <> s' <> " ) printf '  %s\\n' $m ;; esac;done;done"
+
+:def! package  \m -> return (":! " <> concat [__findmodule x <> " | while read -r -a pkgs; do for pkg in \"${pkgs[@]}\";do printf '%s:\\n' \"$pkg\";" <> __listmodules "$pkg" x <> ";done;done;" | x <- L.words m])
+
+-- open url
+:def! open \u -> return (printf ":! xdg-open \"%s\"" u)
+
+-- open haddocks
+:{
+:def! haddock \s -> case s of
+    ""              -> return $ printf ":open $(stack path --local-doc-root)/index.html"
+    c:_ | isUpper c -> return $ printf ":open $(ghc-pkg --simple-output field \"$(ghc-pkg --simple-output find-module %s)\" haddock-html)/%s.html" s [if c == '.' then '-' else c|c<-s]
+        | otherwise -> return $ printf ":open $(ghc-pkg --simple-output field '%s' haddock-html)/index.html" s
+:}

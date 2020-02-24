@@ -25,8 +25,8 @@ x-scheme-handler/http=org.qutebrowser.gutebrowser.desktop
 x-scheme-handler/https=org.qutebrowser.qutebrowser.desktop
 x-scheme-handler/magnet=rtorrent.desktop
 
-text/html=vim.desktop;gvim.desktop
-text/xml=vim.desktop;gvim.desktop
+text/html=org.qutebrowser.qutebrowser.desktop;vim.desktop;gvim.desktop
+text/xml=org.qutebrowser.qutebrowser.desktop;vim.desktop;gvim.desktop
 text/plain=vim.desktop;gvim.desktop
 text/x-c=vim.desktop;gvim.desktop
 text/x-c++=vim.desktop;gvim.desktop

@@ -1,88 +1,141 @@
 #!/bin/sh
+#
+# vimpager: <url:https://github.com/rkitover/vimpager>
 
-repo=${XDG_CACHE_HOME:-$HOME/.cache}/vim/dein/repos/github.com/rkitover/vimpager
+# VIM
+# * Initialization
+#   I   The environment variable $VIMINIT (see also |compatible-default|) (*)
+#       The value of $VIMINIT is used as an Ex command line.
+#   II  The user vimrc file(s)
+# * The $MYVIMRC environment variable is set to the file that was first found,
+#   unless $MYVIMRC was already set and when using VIMINIT.
+#
+# plugin/vimpager.vim		Use the plugin inside vim $VIMPAGER
+#     g:less.enabled		Use or don't use less-like keys.	(<leader>v)
+#     g:less.hlsearch		Set hls in less mode.			(ESC-u)
+#     g:less.number		Set number in less mode.		-N
+#     g:less.scrolloff		Set 'scrolloff' in less mode.
+#     g:less.statusfunc		See autoload/vimpager_utils.vim
+#     g:vimpager.X11		Disabling X11 connection can make startup faster
+#     g:vimpager.ansiesc		Whether to use AnsiEsc
+#     g:vimpager.enabled		Switch on vimpager in VIMRC
+#     g:vimpager.gvim		Open in gvim instead
+#     g:vimpager.passthrough	Pass through highlight only if output fits terminal
+#     g:vimpager.ptree		Process tree. Example: if g:vimpager.ptree[-2] == 'wman' | set ft=man | endif
+#
+# macros/less.vim			Either standard from $VIMRUNTIME, or vimpager's alternate version
+# macros/less.sh			for less (option), sets g:no_plugin_maps=1
+#     :Page[!]			Toggle (bang! turn) less mode for current flie
+#     :Page[!] [-tvwb] [arg]	Open file [arg] in less mode. [!]: open output of command [arg]
+#	-t			new tab
+#	-v			vertical split
+#	-w			new window
+#	-b			new buffer (default)
+#
+# ftplugin/man.vim		Define :Man (standard $VIMRUNTIME)
+# plugin/manpager.vim		???
+#     :Man :MANPAGER
+#     g:ft_man_folding_enable = 1	Enable folding in man view
 
-case "$(basename -- "$0")" in
-	vimcat )
-		[ -x "$repo/vimcat" ] && exec "$repo/vimcat" "$@"
-		exec cat "$@"
-		;;
-	vimpager )
-		[ -x "$repo/vimpager" ] && exec "$repo/vimpager" "$@"
-		exec less "$@"
-		;;
-	manpager )
-		[ -x "$repo/vimpager" ]   && exec "$repo/vimpager" -c "setl nomodifiable" -c +MANPAGER "$@"
-		command -v vim >/dev/null && exec vim -M +MANPAGER -
-		exec less "$@"
-		;;
-esac || exit $?
+vimpager_repo=${XDG_CACHE_HOME:-$HOME/.cache}/vim/dein/repos/github.com/rkitover/vimpager
 
-case ${1:--h} in
-	-v|--version )
-		"$repo/vimpager" --version 2>&1
-		"$repo/vimcat" --version 2>&1
-		cat <<-END
-		This wrapper: $(realpath -- "$0")
-		vimpager:     $repo/vimpager
-		vimcat:       $repo/vimcat
-		Vimpagerrepo  $repo
+PAGER_MODE=${PAGER_MODE:-$(basename -- "$0")}
+PAGER_VIM=$(command -v vim)
+PAGER_LESS=$(command -v less)
+PAGER_CAT=$(command -v cat)
+VIMPAGER=$vimpager_repo/vimpager
+VIMCAT=$vimpager_repo/vimcat
 
-		PAGER=$PAGER
-		MANPAGER=$MANPAGER
-		END
-		;;
-	-h|--help|--usage )
-		cat <<-"USAGE"
-		Usage: vimpager [option]...	(Matched $0) See `vimpager --help`
-		Usage: vimcat   [option]...	(Matched $0) See `vimcat --help`
-		Usage: $0 [option]...
+# vimpager/vimcat looks up these
+export VIMPAGER_VIM=${VIMPAGER_VIM:-vim}
+export VIMPAGER_RC=${VIMPAGER_RC:-}
+export VIMPAGER_DEBUG=${VIMPAGER_DEBUG:+1}
+export VIMCAT_DEBUG=${VIMCAT_DEBUG:+1}
 
-		    vimpager, vimcat		longer form of [vimpager | vimcat] [option]...
-		    -h, --help, --usage
-		    -v, --version
-		    -x				Debugging to stderr
+usage() {
+	cat <<-'EOF'
+	Usage: ln -s MODE mypager
+	Modes: vimpager | vimcat
+	EOF
+	command "$VIMCAT"   --usage; echo
+	command "$VIMPAGER" --usage; echo
+	printf "%s (%s)\n\nVIMPAGER=%s\nVIMCAT=%s\nPAGER=%s\nMANPAGER=%s\n" \
+		"$0" "$(realpath -- "$0")" "$VIMPAGER" "$VIMCAT" "$PAGER" "$MANPAGER"
+}
 
-		    $0 [opts]			(where $0 is vimpager or vimcat)
-		    $0 vimpager			for PAGER, aliases less, zless
-		    vim -u ... -M +MANPAGER	for MANPAGER
+version() {
+	command "$VIMCAT"   --version 2>&1
+	command "$VIMPAGER" --version 2>&1
+}
 
-		    VIMPAGER_VIM		The vim executable to use
-		    VIMPAGER_RC			The vimrc to use
-		    VIMPAGER_DEBUG=yes		If non-zero, vim errors are not suppressed
+main() {
+	out=     # vimcat: -o
+	trace=   # vimcat/pager: -x
+	number=  # vimcat/cat: -n  vimpager/less: -N --LINE-NUMBERS
+	squeeze= # vimcat/cat: -s
+	vimrc=   # vim/-cat/-pager: -u FILE
+	vimcmd=  # vimcat/pager: -c COMMAND
+	seconds= # vimcat: -t SECONDS
+	end=     # vimpager: +G/+ vim: + less: +G
+	noma=    # vim: -M vimpager: -c 'setl noma'
+	pass=    # vimpager: --passthrough | --no-passthrough | --force-passthrough
+	ft=      # vimpager/vimcat: -c 'setfiletype FILETYPE'
 
-		plugin/vimpager.vim		Use the plugin inside vim $VIMPAGER
-		    g:less.enabled		Use or don't use less-like keys.	(<leader>v)
-		    g:less.hlsearch		Set hls in less mode.			(ESC-u)
-		    g:less.number		Set number in less mode.		-N
-		    g:less.scrolloff		Set 'scrolloff' in less mode.
-		    g:less.statusfunc		See autoload/vimpager_utils.vim
-		    g:vimpager.X11		Disabling X11 connection can make startup faster
-		    g:vimpager.ansiesc		Whether to use AnsiEsc
-		    g:vimpager.enabled		Switch on vimpager in VIMRC
-		    g:vimpager.gvim		Open in gvim instead
-		    g:vimpager.passthrough	Pass through highlight only if output fits terminal
-		    g:vimpager.ptree		Process tree. Example: if g:vimpager.ptree[-2] == 'wman' | set ft=man | endif
+	while [ $# -gt 0 ]; do
+		case $1 in
+			-h | --help | --usage    ) usage   "$PAGER_MODE"; return ;;
+			-v | --version           ) version "$PAGER_MODE"; return ;;
+			-n | -N | --LINE-NUMBERS ) number=1; shift ;;
+			-x                       ) trace=1; shift ;;
+			-s                       ) squeeze=1; shift ;;
+			+G | +                   ) end=1; shift ;;
+			-M                       ) noma=1; shift ;;
+			-o                       ) out=${2?$1: argument required}; shift 2 ;;
+			-u                       ) vimrc=${2?$1: argument required}; shift 2 ;;
+			-t                       ) seconds=${2?$1: argument required}; shift 2 ;;
+			-f | --filetype          ) ft=${2?$1: argument required}; shift 2 ;;
+			-c | --cmd               ) vimcmd="${vimcmd:+$vimcmd|}${2?$1: argument required}"; shift 2 ;;
+			--*passthrough           ) pass=$1; shift ;;
+			--                       ) break ;;
+			-*                       ) usage; return 1 ;;
+			*                        ) break ;;
+		esac || {
+			usage "$PAGER_MODE"
+			return $?
+		}
+	done
 
-		macros/less.vim			Either standard from $VIMRUNTIME, or vimpager's alternate version
-		macros/less.sh			for less (option), sets g:no_plugin_maps=1
-		    :Page[!]			Toggle (bang! turn) less mode for current flie
-		    :Page[!] [-tvwb] [arg]	Open file [arg] in less mode. [!]: open output of command [arg]
-			-t			new tab
-			-v			vertical split
-			-w			new window
-			-b			new buffer (default)
+	case $PAGER_MODE in
+		vimcat   ) exec_vimcat   "$@" || exec_cat "$@" ;;
+		vimpager ) exec_vimpager "$@" || exec_less "$@" || exec_cat "$@" ;;
+		*        ) usage "$PAGER_MODE" >&2 ;;
+	esac
+}
 
-		ftplugin/man.vim		Define :Man (standard $VIMRUNTIME)
-		plugin/manpager.vim		???
-		    :Man :MANPAGER
-		    g:ft_man_folding_enable = 1	Enable folding in man view
+exec_vimcat () {
+	[ -x "$VIMCAT" ] || return 1
+	exec "$VIMCAT" ${trace:+-x} ${number:+-n} ${squeeze:+-s} ${out:+-o "$out"} ${seconds:+-t "$seconds"} ${vimrc:+-u "$vimrc"} ${vimcmd:+-c "$vimcmd"} ${ft:+-c "setfiletype $ft"} "$@"
+}
 
-		Website	http://github.com/rkitover/vimpager
-		USAGE
-		;;
-	* )
-		printf "Unrecognized argument: %s\n" "$1" >&2
-		exit 2
-		;;
-esac
+exec_vimpager () {
+	[ -x "$VIMPAGER" ] || return 1
+	exec "$VIMPAGER" ${trace:+-x} ${number:+-N} ${end:++G} ${pass:+"$pass"} ${vimrc:+-u "$vimrc"} ${noma:+-c 'setl noma'} ${vimcmd:+-c "$vimcmd"} ${ft:+-c "setfiletype $ft"} "$@"
+}
+
+exec_vim(){
+	[ -x "$PAGER_VIM" ] || return 1
+	exec "$PAGER_VIM" ${number:+-N} ${end:++} ${noma:+-M} ${vimrc:+'-u' "$vimrc"} ${vimcmd:+-c "$vimcmd"} ${ft:+-c "setfiletype $ft"} "$@"
+}
+
+exec_less(){
+	[ -x "$PAGER_LESS" ] || return 1
+	exec "$PAGER_LESS" ${number:+-N} ${end:++G} "$@"
+}
+
+exec_cat() {
+	[ -x "$PAGER_CAT" ] || return 1
+	[ "${out:--}" = - ] || exec >"$out"
+	exec "$PAGER_CAT" ${number:+-n} ${squeeze:+-s} "$@"
+}
+
+main "$@"

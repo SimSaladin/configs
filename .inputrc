@@ -1,4 +1,103 @@
+# ~/.inputrc
+# <url:man:bash#READLINE>
+
+# VARIABLES (bind -v)
+
+set bell-style visible
+set blink-matching-paren on
+set colored-completion-prefix on
+set colored-stats on
 set completion-ignore-case on
+set completion-map-case on
+set completion-prefix-display-length 0
+set completion-query-items 0
+set editing-mode emacs
+set emacs-mode-string \1\e[1;35m\2@
+set enable-bracketed-paste on
+set history-preserve-point on
+set keymap emacs
+set keyseq-timeout 500
+set mark-directories on
+set mark-modified-lines on
+set mark-symlinked-directories on
+set match-hidden-files off
+set menu-complete-display-prefix on
+set page-completions on
+#set print-completions-horizontally off
+#set revert-all-at-newline off
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
-set bell-style visible
+set show-mode-in-prompt on
+set skip-completed-text on
+set vi-cmd-mode-string \1\e[0;34m\2C
+set vi-ins-mode-string \1\e[0;33m\2I
+#set visible-stats off
+
+# Meta handling
+# NOTE: Meta-/\M- won't work if convert-meta=off and locale is other than C (utf8)
+set convert-meta    off
+set input-meta      on
+set output-meta     on
+set enable-meta-key on
+
+# BINDINGS (bind -P)
+
+# MOVING
+# C-a      beginning-of-line
+# C-e      end-of-line
+# C-f      forward-char
+# C-b      backward-char
+# M-f      forward-word
+# M-b      backward-word
+#
+# COMPLETING
+# C-x !    possible-command-completions
+# C-x @    possible-hostname-completions
+# C-x $    possible-variable-completions
+# C-x ~    possible-username-completions
+# C-x /    possible-filename-completions
+#
+# MACROS
+# C-x (    ..
+# C-x )    ..
+# C-x e    ..
+#
+# MISC.
+# C-x C-r  re-read-init-file (default)
+# C-x C-u  undo (default) (also: <C-_>)
+# C-x C-x  exchange-point-and-mark
+# C-x *    glob-expand-word
+# C-x g    glob-list-expansions
+# C-x C-v  display-shell-version
+
+# CUSTOM
+# TAB      menu-complete
+# S-TAB    menu-complete-backward
+# C-x &    tilde-expand
+# C-x TAB  history-and-alias-expand
+# C-x }    complete-into-braces (M-{)
+# C-x u    uppercase current or prev word (upcase-word M-u)
+# C-x d    downcase current or prev word (downcase-word M-d)
+# C-x c    capitalize current or prev word (capitalize-word M-c)
+# C-x "    Quote current or previous word ("")
+# C-x '    Quote current or previous word ('')
+
+# C-Left, C-Right (urxvt)
+"\eOc": forward-word
+"\eOd": backward-word
+
+# TAB, S-TAB
+TAB:    menu-complete
+"\e[Z": menu-complete-backward
+
+# BACKSPACE
+"\e[3~": forward-backward-delete-char
+
+"\C-x&": tilde-expand
+"\C-x\t": history-and-alias-expand-line
+"\C-x}": complete-into-braces
+"\C-xu": "\eb\eu"
+"\C-xd": "\eb\ed"
+"\C-xc": "\eb\ec"
+"\C-x\"": "\eb\"\ef\""
+"\C-x\'": "\eb\'\ef\'"

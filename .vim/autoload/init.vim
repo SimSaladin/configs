@@ -1,46 +1,36 @@
 " File: ~/.vim/autoload/init.vim
 
-if &compatible
-  set nocompatible
-endif
-
-function! init#rc(name) abort
+function! init#rc(name) abort                                        "{{{1
+  " Sources file from ~/.vim/rc/
   let l:file = resolve($HOME.'/.vim/rc/'.fnamemodify(a:name,':t').'.vim')
-  if filereadable(l:file)
-    execute 'source ' . fnameescape(l:file)
-  else
+  if !filereadable(l:file)
     echoerr 'File ' . l:file . ' not readable!'
+    return v:none
   endif
+  execute 'source' fnameescape(l:file)
 endfunction
 
-function! init#on_filetype() abort
+function! init#on_filetype() abort                                   "{{{1
   if execute('filetype') =~# 'OFF'
     silent! filetype plugin indent on
     filetype detect
   endif
 endfunction
 
-function! init#redetect_filetype() abort
+function! init#redetect_filetype() abort                             "{{{1
   if &l:filetype ==# '' || exists('b:ftdetect')
     unlet! b:ftdetect
     filetype detect
   endif
 endfunction
 
-" Re-sourcing workarounds
-function! init#on_colors() abort
-  if exists('#utl_highl#BufWinEnter')
-    doautoall utl_highl BufWinEnter
-  endif
+function! init#on_colors() abort                                     "{{{1
   if exists('#QuickFixSignsVscdiff#ColorScheme')
     doautoall QuickFixSignsVscdiff ColorScheme
   endif
-  if exists(':AirlineRefresh')
-    AirlineRefresh
-  endif
 endfunction
 
-function! init#setup_dein(to, src) abort
+function! init#setup_dein(to, src) abort                             "{{{1
   " return value:
   " 0: setup failed
   " 1: setup succeeded (rtp updated)
@@ -61,7 +51,7 @@ function! init#setup_dein(to, src) abort
 endfunction
 
 " Check for existance of a python3 module (not actually importing it).
-function! init#py3module(module) abort                                   "{{{1
+function! init#py3module(module) abort                               "{{{1
   if has('python3')
     py3 import importlib
     return py3eval('getattr(importlib.util.find_spec("'.a:module.'"),"origin",None)')
@@ -69,12 +59,11 @@ function! init#py3module(module) abort                                   "{{{1
   return v:none
 endfunction
 
-" If the python3 module a:module is not available, install it for the local
-" user if pip3 is available. If the module is installed for local user,
-" attempt to upgrade it.
-function! init#pip3installupgrade(module) abort                          "{{{1
-  let l:check = vimrc#py3module(a:module)
-  if has('python3') && (empty(l:check) || filewritable(l:check))
-    py3 import pip; pip.main(['install', '--user', '--upgrade', a:module])
+function! init#pip3installupgrade(module) abort                      "{{{1
+  " If the python3 module a:module is not available, install it for the local
+  " user if pip3 is available. If the module is installed for local user,
+  " attempt to upgrade it.
+  if has('python3') && empty(init#py3module(a:module))
+    exe 'py3' 'from pip._internal import main as pipmain; pipmain(["install","--user","--upgrade","'.a:module.'"])'
   endif
 endfunction

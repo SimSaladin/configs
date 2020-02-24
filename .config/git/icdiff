@@ -1,0 +1,14 @@
+# ~/.config/git/icdiff vim:ft=gitconfig
+# <url:/usr/share/doc/icdiff/README.md>
+
+[diff]
+	tool	= icdiff ; used by git-difftool
+	guitool	= icdiff ; used by git-difftool
+
+[difftool "icdiff"]
+	# Note: $(git config --get icdiff.options) doesn't work here, word expansion doesn't happen.
+	cmd	= icdiff --no-bold --numlines=0 --line-numbers --tabsize=4 --color-map=separator:green_bold "$LOCAL" "$REMOTE"
+
+# Used by git-icdiff
+[icdiff]
+	options	= --no-bold --numlines=0 --line-numbers --tabsize=4 --color-map=separator:green_bold

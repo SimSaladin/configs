@@ -1,30 +1,29 @@
 " ~/.vim/vimrc
 
 if has('vim_starting')
-  call init#rc('options')
   call init#rc('init')
+  call init#rc('options')
 endif
 
 call init#rc('settings')
 call init#rc('dein')
 call init#rc('solarized')
 
-if has('vim_starting')
+if !(exists('g:less.loaded') && g:less.loaded ==# 1)
+  runtime macros/less.vim
+endif
 
+if has('vim_starting')
   colorscheme solarized
 
   augroup myvimrc
-    autocmd VimEnter * ++once ++nested call init#on_filetype() | syntax enable
     au ColorScheme * ++nested call init#on_colors()
+    au VimEnter * runtime ftplugin/man.vim
+    au VimEnter * ++once ++nested call init#on_filetype() | syntax enable
   augroup END
-endif
 
-if exists('g:vimpager.enabled')
-
-  set nu& rnu& scl& fdc& so& hls
-
-  if has('vim_starting')
-    call init#on_filetype() | syntax enable
+  if !empty(argv()) || get(get(g:,'vimpager',{}),'enabled')
+    call init#on_filetype()
+    syntax enable
   endif
 endif
-

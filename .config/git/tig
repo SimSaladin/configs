@@ -1,0 +1,4 @@
+# ~/.config/git/tig vim:ft=gitconfig
+
+[tig "color"]
+  author = red default

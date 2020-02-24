@@ -51,8 +51,8 @@ mkXScratchpads inp hook = res
 scratchpadsManageHook :: [Scratchpad] -> [MaybeManageHook]
 scratchpadsManageHook xs = [spQuery sp -?> spHook sp | sp <- xs]
 
--- scratchpadCompl :: [Scratchpad] -> XP.ComplFunction
-scratchpadCompl xpc pads = XP.mkComplFunFromList' xpc (map spName pads)
+scratchpadCompl :: [Scratchpad] -> XP.ComplFunction
+scratchpadCompl pads = XP.mkComplFunFromList' (map spName pads)
 
 scratchpadsLookup :: [Scratchpad] -> Query (Maybe Scratchpad)
 scratchpadsLookup (x:xs) = spQuery x >>= \r -> if r then return (Just x) else scratchpadsLookup xs

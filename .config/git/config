@@ -1,0 +1,98 @@
+# ~/.config/git/config
+# <url:man:git-config.1>
+# <url:man:tigrc.5>
+#
+# Values:
+#   boolean (true, false)
+#   integer
+#   color: [<fg>] [<bg>] [[<attr> | no<attr>] ...] (ANSI 256-color, 24-bit RGB hex, attributes bold, dim, ul, blink, reverse, italic, strike)
+#   pathname (with tilde expansion)
+#
+# Subsections:
+#   [section "subsection"]
+#
+# Includes:
+#   [include "pathname"]
+#   [includeIf "gitdir:~/.git"]
+#   [includeIf "onbranch:foo-branch"]
+
+[core]
+  commentChar  = ";" ; Default "#". May be "auto", but vim isn't smart enough to handle that
+  quotePath    = false ; don't quote unusual characters in output pathnames.
+
+  # NOTE: core.pager is preferred over $PAGER, but not $GIT_PAGER. Also, core
+  # git commands interpret it as shell command, but some other programs do not
+  # (e.g. git-icdiff).
+  pager = diff-so-fancy | command less --tabs=4 -RFX
+  ; pager = ${PAGER:-less --tabs=4 -RFX}
+
+[user]
+  name       = Samuli Thomasson
+  email      = samuli.thomasson@relexsolutions.com
+  signingkey = F3D3AB3309F04D1CA4D851D068F82A4F3ECA091D
+
+[advice]
+  pushUpdateRejected                = false
+  statusHints                       = false
+  resolveConflict                   = false
+  implicitIdentity                  = false
+  detachedHead                      = false
+  checkoutAmbiguousRemoteBranchName = false
+
+[branch]
+  ; See git-for-earch-ref(1) for available options.
+  ; The default is refname.
+  ; Dash (-) in front reverses order.
+  ; When defined multiple times last becomes primary.
+  sort = committerdate
+
+[blame]
+  blankBoundary = true
+  coloring      = highlightRecent
+[diff]
+  renameLimit = 5000
+[difftool]
+  prompt = false ; git difftool --prompt
+[gc]
+  auto = 0 ; no auto gc: sometimes do:  git repack -d; git gc; git prune
+[gpg]
+  program = gpg2
+[help]
+  autocorrect = 1
+
+# Note: index.version takes effect in newly initialized or cloned repositories.
+# For existing repos do:
+#   git update-index --index-version=4.
+[index]
+  version = 4 ; version 4 from git 1.8.0 onwards.
+
+[log]
+  decorate = full
+
+[merge]
+  ff            = false
+  log           = 128  ; Preformatted merge commit messages include descriptions of the merged commits (up to N).
+  branchdesc    = true  ; include branch descriptions in the message
+  renameLimit   = 18654
+  conflictstyle = diff3
+  tool          = vimdiff
+  guitool       = vimdiff
+
+[mergetool]
+  keepBackup = false ; keep *.orig files after merge?
+
+[push]
+  default = upstream ; don't care if local branch name doesn't equal upstream's
+  recurseSubmodules = check
+[pull]
+  rebase = true
+[pager]
+  # Which git commands paginate when output is to a TTY, e.g. force 'git -p'. 'git -P' disables.
+  status = true ; false by default
+
+[include]
+  path = icdiff
+  path = colors
+  path = aliases
+  path = git-annex
+  path = tig

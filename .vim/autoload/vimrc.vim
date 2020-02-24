@@ -102,7 +102,7 @@ function! vimrc#windowswap_wincmd(cmd, altcmd) abort                      "{{{1
   endif
 endfunction
 
-function! vimrc#deoplete_init() abort
+function! vimrc#deoplete_init() abort                                     "{{{1
   call deoplete#custom#option({
     \ 'skip_chars':          [],
     \ 'num_processes':       4,

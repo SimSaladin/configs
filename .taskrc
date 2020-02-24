@@ -1,0 +1,127 @@
+# ~/.taskrc
+#
+# Manual: <url:man:taskrc.5> 'task' 'task-color', 'task-sync'
+# Homepage: <url:http://taskwarrior.org>
+#
+# Set $TASKRC to use alternative config file.
+# Set $TASKDATA to use alternative data.location (~/.task).
+# Use the command 'task show' to see all defaults and overrides.
+
+data.location = ~/.task
+
+weekstart = monday
+
+#default.command = next
+
+# Bugwarrior UDAs                                                        {{{1
+uda.gitlabtitle.type=string
+uda.gitlabtitle.label=Gitlab Title
+uda.gitlabdescription.type=string
+uda.gitlabdescription.label=Gitlab Description
+uda.gitlabcreatedon.type=date
+uda.gitlabcreatedon.label=Gitlab Created
+uda.gitlabupdatedat.type=date
+uda.gitlabupdatedat.label=Gitlab Updated
+uda.gitlabduedate.type=date
+uda.gitlabduedate.label=Gitlab Due Date
+uda.gitlabmilestone.type=string
+uda.gitlabmilestone.label=Gitlab Milestone
+uda.gitlaburl.type=string
+uda.gitlaburl.label=Gitlab URL
+uda.gitlabrepo.type=string
+uda.gitlabrepo.label=Gitlab Repo Slug
+uda.gitlabtype.type=string
+uda.gitlabtype.label=Gitlab Type
+uda.gitlabnumber.type=string
+uda.gitlabnumber.label=Gitlab Issue/MR #
+uda.gitlabstate.type=string
+uda.gitlabstate.label=Gitlab Issue/MR State
+uda.gitlabupvotes.type=numeric
+uda.gitlabupvotes.label=Gitlab Upvotes
+uda.gitlabdownvotes.type=numeric
+uda.gitlabdownvotes.label=Gitlab Downvotes
+uda.gitlabwip.type=numeric
+uda.gitlabwip.label=Gitlab MR Work-In-Progress Flag
+uda.gitlabauthor.type=string
+uda.gitlabauthor.label=Gitlab Author
+uda.gitlabassignee.type=string
+uda.gitlabassignee.label=Gitlab Assignee
+uda.gitlabnamespace.type=string
+uda.gitlabnamespace.label=Gitlab Namespace
+uda.gitlabweight.type=numeric
+uda.gitlabweight.label=Gitlab Weight
+# END Bugwarrior UDAs
+
+# Color theme                                                            {{{1
+include /usr/share/doc/task/rc/solarized-dark-256.theme
+# colors: status
+color.active                      = color45
+# colors: due
+color.due                         =
+color.overdue                     = on color52
+# colors: tag
+color.tagged                      =
+color.tag.doing                   = color34
+# INPUT NEEDED colored
+color.tag.discussion              = on color53
+color.tag.input_needed            = on color53
+color.tag.splitme                 = on color53
+color.tag.unclear                 = on color53
+color.tag.reviewing               = on color18
+color.tag.acceptance_testing      = on color236
+color.tag.accepted_to_be_released = on color28
+color.tag.low                     = bold green
+color.tag.medium                  = bold cyan
+color.tag.high                    = bold white
+color.tag.epic                    = color4
+# colors: keyword
+color.keyword.WIP                 = gray10
+# colors: uda.priority
+color.uda.priority.L              =
+color.uda.priority.M              =
+color.uda.priority.H              =
+
+# Urgency                                                                {{{1
+urgency.annotations.coefficient     = 0.0
+urgency.tags.coefficient            = 0.0
+urgency.user.tag.high.coefficient   = 18.0
+urgency.user.tag.medium.coefficient = 6.0
+urgency.user.tag.low.coefficient    = 3.0
+
+# Contexts                                                               {{{1
+#context.home      = ! ( project:mordor or project:morannon )
+#context.mordor    = project:mordor
+#context.mordortop = project.is:mordor
+#context.mordornew = project.is:mordor.newruntime
+#context.morannon  = project:morannon or tag.has:morannon
+#context.noprio    = project:mordor and ! ( tag.has:low or tag.has:high or tag.has:medium )
+
+# Reports                                                                {{{1
+
+# next
+report.next.description = Most urgent tasks
+report.next.labels      = ID,Active,Age,Deps,P,Project,Recur,S,Due,Until,Milestone,Assignee,Description,Tags,Urg
+report.next.columns     = id,start.age,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,gitlabmilestone,gitlabassignee,description.count,tags,urgency
+report.next.filter      = status:pending limit:page and !(description.startswith:!)
+report.next.sort        = project-,urgency-
+
+## is - gitlab issues
+#report.is.description   = Gitlab stuff
+#report.is.filter        = status:pending limit:page and !(description.startswith:!)  # taskwarrior incompetent doesn't parse escaped #
+#report.is.labels        = ID,S,Upd,Milestone,Due,Assignee,Description,Tags
+#report.is.columns       = id,status.short,gitlabupdatedat,gitlabmilestone,due.relative,gitlabassignee,description.count,tags
+#report.is.sort          = gitlabmilestone-,gitlabupdatedat-
+
+## mr - gitlab merge requests
+#report.mr.description   = Gitlab stuff
+#report.mr.filter        = status:pending limit:page /^!/
+#report.mr.labels        = ID,P,Upd,Milestone,Due,Assignee,Description,Tags
+#report.mr.columns       = id,status.short,gitlabupdatedat,gitlabmilestone,due.relative,gitlabassignee,description.count,tags
+#report.mr.sort          = gitlabupdatedat-
+
+# Below added by taskwarrior                                             {{{1
+taskd.certificate=\/home\/sim\/.task\/samuli.cert.pem
+taskd.key=\/home\/sim\/.task\/samuli.key.pem
+taskd.ca=\/home\/sim\/.task\/ca.cert.pem
+taskd.server=task.funktionaali.com:53589
+taskd.credentials=Default\/Samuli\/7d84c826-4cab-4a70-8e36-44b23b6ac3ed

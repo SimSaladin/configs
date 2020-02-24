@@ -98,9 +98,12 @@ suspend-sink rtp 1
 load-module module-rtp-recv sap_address=239.255.255.250
 
 #{{{1 sink 'voip-out': equalizer for conference calls etc. (filter combined-stereo)
+#{{{1 sink 'voip-out': equalizer for conference calls etc. (filter combined-stereo)
 .ifexists module-ladspa-sink.so
 .nofail
-load-module module-ladspa-sink sink_name=voip-out sink_master=combined-stereo sink_input_properties='media.role=phone device.description="VoIP SC4 sink"' plugin=sc4m_1916 label=sc4m control=1,1.5,401,-30,20,5,12
+# package swh-plugins
+load-module module-ladspa-sink sink_name='sc4-stereo' sink_master='combined-stereo' plugin=sc4_1882  label=sc4 control=1,1.5,401,-30,20,5,12 sink_input_properties='device.description="SC4 2ch"'
+#load-module module-ladspa-sink sink_name='sc4-mono'   sink_master='combined-stereo' plugin=sc4m_1916 label=sc4m control=1,1.5,401,-30,20,5,12 sink_input_properties='device.description="VoIP SC4 sink"'
 #load-module module-ladspa-sink sink_name=voip-out plugin=mbeq_1197 label=mbeq control=-30.0,-19.1,-18.6,-18.6,-18.6,-10.0,-8.0,-6.5,1.5,1.5,1.5,8.5,10.6,10.6,10.6
 .fail
 .endif

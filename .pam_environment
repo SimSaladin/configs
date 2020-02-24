@@ -1,7 +1,33 @@
 # ~/.pam_environment
 #
-# http://www.linux-pam.org/Linux-PAM-html/mwg-expected-by-module-item.html
-# pam_env.conf.5
+# <url:man:pam_env.conf.5>
+# <url:http://www.linux-pam.org/Linux-PAM-html/mwg-expected-by-module-item.html>
+#
+# This file is loaded by the pam_env <url:man:pam_env(8)> module:
+#   - File <url:file:/etc/security/pam_env.conf> is read first.
+#   - File <url:file:/etc/environment> is read second.
+#   - This file is read last.
+#
+#
+# Syntax: VARIABLE [DEFAULT=[value]] [OVERRIDE=[value]]
+#   - If no value is specified the empty string is assumed.
+#   - Environment variables can be used as ${string}.
+#   - PAM_ITEMs, HOME and SHELL may be used as @{string}.
+#   - To get a literal "$" (dollar sign) write "\$"
+#   - The "#" character marks a comment line, but at the beginning of a line only!
+#
+# NOTE: Don't use ${HOME} here, it probably won't be defined yet. @{HOME} is.
+#
 
-REMOTEHOST      DEFAULT=localhost OVERRIDE=@{PAM_RHOST}
-TMUX_TMPDIR     DEFAULT=${XDG_RUNTIME_DIR}
+REMOTEHOST	DEFAULT=localhost		OVERRIDE=@{PAM_RHOST}
+
+#DISPLAY		DEFAULT=${REMOTEHOST}:0.0	OVERRIDE=${DISPLAY}
+
+# NOTE: tmux is silly and will actually use like $TMUX_TMPDIR/tmux-$UID
+TMUX_TMPDIR	DEFAULT=${XDG_RUNTIME_DIR}
+
+# If unset, urxvt defaults to ~/.urxvt/urxvtd-<nodename> <url:man:urxvt(1)>
+RXVT_SOCKET	DEFAULT=${XDG_RUNTIME_DIR}/urxvt/urxvtd
+
+# Default: ~/.Xauthority
+#XAUTHORITY	DEFAULT=${XDG_RUNTIME_DIR}/X11/Xauthority:${DISPLAY}

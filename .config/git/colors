@@ -1,0 +1,43 @@
+# ~/.config/git/colors vim:ft=gitconfig
+
+[color]
+  ui = true
+  diff = auto ; use ANSI colors in git-diff, git-log and git-show
+  branch = always ; use ANSI color in git-branch
+
+[color "branch"]
+  current  = green
+  local    = 14
+  remote   = 11
+  upstream = yellow
+  plain    = blue
+
+[color "diff"]
+  meta       = blue
+  frag       = 13
+  func       = 13
+  old        = 9
+  new        = green
+  commit     = yellow bold
+  whitespace = red reverse
+  ;oldMoved
+  ;newMoved
+  ;oldMovedDimmed
+  ;oldMovedAlternative
+  ;oldMovedAlternativeDimmed
+  ;newMovedDimmed
+  ;newMovedAlternative
+  ;newMovedAlternativeDimmed
+  ;contextDimmed
+  ;oldDimmed
+  ;newDimmed
+  ;contextBold
+  ;oldBold
+  ;newBold
+
+# diff-so-fancy
+[color "diff-highlight"]
+  oldNormal    = 9 no nobold
+  oldHighlight = 9 black bold
+  newNormal    = green no bold
+  newHighlight = green black nobold

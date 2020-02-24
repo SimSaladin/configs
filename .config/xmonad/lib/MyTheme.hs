@@ -167,10 +167,8 @@ ppCopies  = fg colYellow
 
 xmobarConfig_ :: Xmobar.Config
 xmobarConfig_ = Xmobar.defaultConfig
-  -- { Xmobar.font            = show (font 16)
-  -- , Xmobar.additionalFonts = [show (wqyMicroHei 16)]
-  { Xmobar.font            = show (terminessPowerline { fontSize = Just (PixelSize 12) })
-  , Xmobar.additionalFonts = [show (terminessPowerline { fontSize = Just (PixelSize 12) })]
+  { Xmobar.font            = show (font 16)
+  , Xmobar.additionalFonts = [show (wqyMicroHei 16)]
   , Xmobar.bgColor         = colBase03
   , Xmobar.fgColor         = colBase0
   , Xmobar.template = tplLeft <> "} %xmonad% { " <> tplRight

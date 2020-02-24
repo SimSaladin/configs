@@ -24,3 +24,21 @@ snippet tmuxpw "tmuxp session file window definition" !b
   - ${2}
 ${0}
 endsnippet
+
+snippet hpack "hpack package.yaml [new package]" !b
+name: $1
+version: 0.0.0
+synopsis: Package $1
+
+dependencies:
+  - base
+
+library:
+  source-dirs: .
+
+# executables:
+#   my-exe:
+#     main: main.hs
+#     ghc-options: []
+endsnippet
+

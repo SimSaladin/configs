@@ -36,14 +36,14 @@ qutebrowser "" = qutebrowser "default"
 qutebrowser p  = spawn $ sdRun "qutebrowser" p ("qutebrowser", ["-r", p])
 
 qutebrowserP :: _ -> String -> X (Maybe String)
-qutebrowserP xpc nm = io (qutebrowserCompl xpc) >>= XP.Input.inputPromptWithCompl xpc nm
+qutebrowserP xpc nm = io qutebrowserCompl >>= XP.Input.inputPromptWithCompl xpc nm
 
--- qutebrowserCompl :: IO (String -> IO [String])
-qutebrowserCompl xpc =
+qutebrowserCompl :: IO (String -> IO [String])
+qutebrowserCompl =
   System.Directory.getXdgDirectory System.Directory.XdgData "qutebrowser" >>=
     Control.Exception.try . System.Directory.listDirectory >>=
       either @IOError (\e -> trace (show e) $> []) (pure . f) >>=
-        pure . XP.mkComplFunFromList' xpc
+        pure . XP.mkComplFunFromList'
   where
     f = filter $ \x -> not
       $ ("-qutebrowser" `List.isSuffixOf` x)

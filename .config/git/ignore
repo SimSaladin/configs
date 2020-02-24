@@ -1,0 +1,25 @@
+# ~/.gitignore_global
+
+result
+tags
+
+# *.* - filename extensions
+*.aux
+*.bbl
+*.blg
+*.dump
+*.dvi
+*.ghc.env*
+*.hi
+*.hp
+*.iml
+*.o
+*.out
+*.prof
+
+# .* - hidden files
+.stack-to-nix.cache
+.stack-work
+.*.swp
+.*~
+.~lock*

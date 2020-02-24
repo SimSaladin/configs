@@ -30,7 +30,7 @@ command! LogAutocmds
       \ call logautocmds#toggle()
 
 cnoremap w!!
-      \ silent w !test -f $'%' -a \\! -w $'%' && sudo dd status=none of=$'%'<NL>e!<cr>
+      \ silent w !test \( -f $'%' -o \\! -e $'%' \) -a \\! -w $'%' && sudo dd status=none of=$'%'<NL>e!<cr>
 
 command! -range=%
       \ Hindent call haskell#hindent()
@@ -40,3 +40,18 @@ command! DeinUpdate
 
 command! DeinCleanReCache
       \ call dein#clear_state() | call dein#recache_runtimepath()
+
+command! -nargs=+ -bang PageMan call s:PageMan(<f-args>)
+
+function! s:PageMan(...)
+  let page = ''
+  if a:0 == 0
+    let page = expand('<cword>')
+  elseif a:0 == 1
+    let page = a:1
+  elseif a:0 == 2
+    let page = a:2.'.'.a:1
+  endif
+  exe 'Page!' 'man' shellescape(page) '2>/dev/null'
+  exe 'file' 'man:'.page
+endfunction
