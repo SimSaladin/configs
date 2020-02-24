@@ -53,7 +53,7 @@ endfunction
 " Check for existance of a python3 module (not actually importing it).
 function! init#py3module(module) abort                               "{{{1
   if has('python3')
-    py3 import importlib
+    py3 import importlib.util
     return py3eval('getattr(importlib.util.find_spec("'.a:module.'"),"origin",None)')
   endif
   return v:none
@@ -63,7 +63,8 @@ function! init#pip3installupgrade(module) abort                      "{{{1
   " If the python3 module a:module is not available, install it for the local
   " user if pip3 is available. If the module is installed for local user,
   " attempt to upgrade it.
+  " package: python-pip
   if has('python3') && empty(init#py3module(a:module))
-    exe 'py3' 'from pip._internal import main as pipmain; pipmain(["install","--user","--upgrade","'.a:module.'"])'
+    exe 'py3' 'from pip._internal.main import main as pipmain; pipmain(["install","--user","--upgrade","'.a:module.'"])'
   endif
 endfunction
