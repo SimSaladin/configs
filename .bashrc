@@ -310,6 +310,9 @@ alias feh=feh\ --scale-down
 # calendar etc.                                                          {{{1
 alias birthdays="khal list -a birthdays -df '' -f '{calendar-color}{start}{reset} {title}' today 366d"
 
+# dotfiles (config) {{{1
+alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
 # pylint {{{1
 # defaults to ~/.pylint.d
 export PYLINTHOME=${XDG_DATA_HOME}/pylint
