@@ -2,8 +2,8 @@
 [Unit]
 Description=Music Player Daemon
 Documentation=man:mpd(1) man:mpd.conf(5)
-Requires=sound.target
-After=sound.target remote-fs.target
+Requires=sound.target local-fs.target
+After=sound.target local-fs.target remote-fs.target
 
 [Service]
 # systemd.service

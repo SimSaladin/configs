@@ -16,7 +16,7 @@
 	"provides": true,
 
 	"makepkgbin": "makepkg", "makepkgconf": "", "mflags": "",
-	"pacmanbin": "pacman", "pacmanconf": "/etc/pacman.d/conf/upgrade.conf",
+	"pacmanbin": "pacman",
         "gpgbin": "gpg", "gpgflags": "",
         "tarbin": "bsdtar",
         "gitbin": "git", "gitflags": "",

@@ -613,8 +613,13 @@ myCmds = CF.hinted "Commands" 1 $ \helpCmd -> do
       volume d = spawn "pactl" ["set-sink-volume",   "@DEFAULT_SINK@",   printf "%+i%%" d] ? printf "Volume %+i%%" d
 
       mic :: Int -> _
-      mic 0 = spawn "pactl" ["set-source-volume", "@DEFAULT_SOURCE@", "0"]              ? "Volume (mic) (mute)"
       mic d = spawn "pactl" ["set-source-volume", "@DEFAULT_SOURCE@", printf "%+i%%" d] ? printf "Volume (mic) %+i%%" d
+
+      toggleMuteSource :: _
+      toggleMuteSource = spawn "pactl" ["set-source-mute", "@DEFAULT_SOURCE@", "toggle"] ? "Toggle mute (default source)"
+
+      toggleMuteSink :: _
+      toggleMuteSink = spawn "pactl" ["set-sink-mute", "@DEFAULT_SINK@", "toggle"] ? "Toggle mute (default sink)"
 
       backlight :: Int -> _
       backlight d = spawn "xbacklight" [if d >= 0 then "-inc" else "-dec", printf "%i" (abs d)] ? printf "Backlight %+i%%" d
@@ -744,7 +749,7 @@ myCmds = CF.hinted "Commands" 1 $ \helpCmd -> do
     "M-!"   >+ togglePad "tmux-0"
     "M-#"   >+ togglePad "ncmpcpp"
     "M-c m" >+ togglePad "pulsemixer"
-    "M-r s" >+ inputPromptWithCompl xpConfig "scratchpad" (scratchpadCompl myScratchpads) ?+ toggleScratchpad myScratchpads ? "Prompt: pad"
+    "M-r s" >+ inputPromptWithCompl xpConfig "scratchpad" (scratchpadCompl xpConfig myScratchpads) ?+ toggleScratchpad myScratchpads ? "Prompt: pad"
 
   group "Launchers" $ do
     "M-r M-S-c"    >+ WindowKillPID
@@ -773,9 +778,12 @@ myCmds = CF.hinted "Commands" 1 $ \helpCmd -> do
     "M-c t"                   >+ mpc "toggle"
     "M-c y"                   >+ mpc "single"
     "M-c r"                   >+ mpc "random"
-    "<XF86AudioMute>"         >+ mic 0
-    "<XF86MonBrightnessUp>"   >+ backlight   5
-    "<XF86MonBrightnessDown>" >+ backlight (-5)
+    "<XF86AudioMute>"         >+ toggleMuteSink
+    "<XF86AudioMicMute>"      >+ toggleMuteSource
+    "<XF86AudioRaiseVolume>"  >+ volume 3
+    "<XF86AudioLowerVolume>"  >+ volume (-3)
+    "<XF86MonBrightnessUp>"   >+ backlight   2
+    "<XF86MonBrightnessDown>" >+ backlight (-2)
 
   where
     (>>) = (Control.Monad.>>)
