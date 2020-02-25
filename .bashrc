@@ -387,8 +387,8 @@ __prompt() {
 
 	set_reset=$(tput sgr0)
 	set_frame=$(tput setaf $_frame)
-	set_euid='\$(tput setaf $((EUID?'$_user':'$_root')))'
-	set_code='\$(tput setaf $((_RET?'$_failure':'$_success')))'
+	set_euid='$(tput setaf $((EUID?'$_user':'$_root')))'
+	set_code='$(tput setaf $((_RET?'$_failure':'$_success')))'
 
 	ps_reset="\[${set_reset}\]"
 	ps_time="\[$(tput setaf 12)\]\t$ps_reset"
