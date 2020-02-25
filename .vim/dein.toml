@@ -24,7 +24,7 @@ hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim'
 
 [[plugins]] # (lazy)
 repo             = 'roxma/vim-hug-neovim-rpc'
-on_if            = '!has("nvim")'
+on_if            = '!has("nvim") && has("python")'
 hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
 
 [[plugins]] # (lazy)
