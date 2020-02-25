@@ -17,9 +17,9 @@ if has('vim_starting')
   colorscheme solarized
 
   augroup myvimrc
-    au ColorScheme * ++nested call init#on_colors()
+    au ColorScheme * nested call init#on_colors()
     au VimEnter * runtime ftplugin/man.vim
-    au VimEnter * ++once ++nested call init#on_filetype() | syntax enable
+    au VimEnter * nested call init#on_filetype() | syntax enable
   augroup END
 
   if !empty(argv()) || get(get(g:,'vimpager',{}),'enabled')

@@ -33,5 +33,5 @@ endif
 
 " The post_source hooks are not called automatically when vim is starting
 if has('vim_starting')
-  autocmd VimEnter * ++nested call dein#call_hook('post_source')
+  autocmd VimEnter * nested call dein#call_hook('post_source')
 endif

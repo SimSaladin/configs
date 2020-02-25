@@ -8,7 +8,7 @@ let g:did_vimrc_autocmds = 1
 " Perform (again) filetype detection after a write if filetype is not yet known.
 augroup MyFtRedetect
   au!
-  au BufWritePost * ++nested call init#redetect_filetype()
+  au BufWritePost * nested call init#redetect_filetype()
 augroup END
 
 " Create missing parent directories when writing the buffer of a new file for the first time.
@@ -30,7 +30,7 @@ augroup END
 
 augroup MyQFLoc
   au!
-  autocmd QuickFixCmdPost *grep* ++nested cwindow
+  autocmd QuickFixCmdPost *grep* nested cwindow
 
   " Close quickfix window automatically when leaving window
   au WinEnter * if winnr('$') == 1 && &buftype == 'quickfix' | q | endif

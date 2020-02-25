@@ -38,7 +38,7 @@ fun! s:setup()
 endfun
 
 if has('vim_starting')
-  au VimEnter * ++once call s:setup()
+  au VimEnter * call s:setup()
 else
   call s:setup()
 endif

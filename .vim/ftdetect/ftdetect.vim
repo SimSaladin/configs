@@ -22,6 +22,4 @@ augroup filetypedetect
   autocmd BufRead,BufNewFile */systemd/*/*.d/*.conf  setfiletype systemd
 
   autocmd BufRead,BufNewFile .envrc setfiletype sh
-
-  " autocmd BufRead,BufNewFile *.template ++nested execute 'doautocmd BufRead '. expand('<afile>:r')
 augroup END
