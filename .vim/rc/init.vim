@@ -20,21 +20,21 @@ let g:maplocalleader = '\'
 " Files and directories                                              {{{1
 
 if empty($XDG_CACHE_HOME)
-  call setenv('XDG_CACHE_HOME',$HOME.'/.cache')
+  let $XDG_CACHE_HOME = $HOME.'/.cache'
 endif
 let g:myvimrc#cachedir = $XDG_CACHE_HOME . '/vim'
 
 if empty($XDG_DATA_HOME)
-  call setenv('XDG_DATA_HOME',$HOME.'/.local/share')
+  let $XDG_DATA_HOME = $HOME.'/.local/share'
 endif
 let g:myvimrc#datadir = $XDG_DATA_HOME  . '/vim'
 
 " Note: system() does not consider 'shelltemp', so we setup $TMPDIR if it doesn't exist yet.
 if empty($TMPDIR) || $TMPDIR ==# '/tmp'
   if isdirectory($XDG_RUNTIME_DIR) && filewritable($XDG_RUNTIME_DIR)
-    call setenv('TMPDIR',$XDG_RUNTIME_DIR.'/vim')
+    let $TMPDIR = $XDG_RUNTIME_DIR.'/vim'
   else
-    call setenv('TMPDIR',g:myvimrc#cachedir.'/tmp')
+    let $TMPDIR = g:myvimrc#cachedir.'/tmp'
   endif
 endif
 let g:myvimrc#tmpdir     = $TMPDIR

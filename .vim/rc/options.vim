@@ -160,7 +160,10 @@ setg relativenumber     " "local (window)" relativenumber (off)
 setg numberwidth=2      " "local (window)" numberwidth (4)
 setg cursorline         " "local (window)" cursorline (off)
 setg signcolumn=number  " "local (window)" signcolumn ("auto")
-setl wrap< lbr< bri< briopt< nu< rnu< nuw< cul< scl<
+setl wrap< lbr< bri< briopt< nu< rnu< nuw< cul<
+if v:version >= 810
+  setl scl<
+endif
 
 " conceal                                                                 {{{1
 setg conceallevel=2     " "local (window)" conceallevel (0)
