@@ -24,7 +24,7 @@ hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim'
 
 [[plugins]] # (lazy)
 repo             = 'roxma/vim-hug-neovim-rpc'
-on_if            = '!has("nvim") && has("python")'
+on_if            = '!has("nvim") && has("pythonx")'
 hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
 
 [[plugins]] # (lazy)
@@ -153,6 +153,7 @@ repo = 'bling/vim-bufferline'
 
 [[plugins]]
 repo     = 'Shougo/deoplete.nvim'
+on_if    = 'has("nvim") || !empty(init#py3module("pynvim"))'
 hook_add = '''
   augroup DeinDeopleteInit
   au! InsertEnter * call vimrc#deoplete_init() | au! DeinDeopleteInit
