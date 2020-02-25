@@ -7,10 +7,11 @@ systems.
 ```sh
 git clone --bare git@gitlab.com:funaali/dotfiles.git ~/.dotfiles
 
-config submodule update --init --recursive
-
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+config submodule update --init --recursive
+
+config config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 config config status.showUntrackedFiles no
 config crypt init
 config crypt unlock

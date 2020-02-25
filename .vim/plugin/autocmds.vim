@@ -15,17 +15,21 @@ augroup END
 " Note: should not use '<afile>' but instead '%' because the buffer name might have changed since!
 augroup MyAutoMkdir
   au!
-  au BufNewFile *? au BufWritePre <buffer=abuf> ++once call vimrc#mkdir_missing(expand('%:p:h'))
+  if v:version > 800 " uses ++once
+    au BufNewFile *? au BufWritePre <buffer=abuf> ++once call vimrc#mkdir_missing(expand('%:p:h'))
+  endif
 augroup END
 
 " Insert a skeleton (header) when a buffer of a new file is loaded.
 augroup MyAutoHeader
   au!
-  au BufNewFile *? au FileType <buffer=abuf> ++once
-    \ if (empty(&bt) && line('$') ==# 1 && getline(1) ==# '')
-    \|  startinsert!
-    \|  call vimrc#insert_header()
-    \|endif
+  if v:version > 800 " uses ++once
+    au BufNewFile *? au FileType <buffer=abuf> ++once
+      \ if (empty(&bt) && line('$') ==# 1 && getline(1) ==# '')
+      \|  startinsert!
+      \|  call vimrc#insert_header()
+      \|endif
+  endif
 augroup END
 
 augroup MyQFLoc

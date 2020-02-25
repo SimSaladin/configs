@@ -154,7 +154,9 @@ repo = 'bling/vim-bufferline'
 [[plugins]]
 repo     = 'Shougo/deoplete.nvim'
 hook_add = '''
-  autocmd InsertEnter * ++once call vimrc#deoplete_init()
+  augroup DeinDeopleteInit
+  au! InsertEnter * call vimrc#deoplete_init() | au! DeinDeopleteInit
+  augroup END
 '''
 [[plugins]] # (lazy)
 repo   = 'tbodt/deoplete-tabnine'
@@ -163,7 +165,9 @@ build  = './install.sh'
 [[plugins]]
 repo     = 'Shougo/echodoc.vim'
 hook_add = '''
-  autocmd CompleteDone * ++once call echodoc#enable()
+  augroup EchodocInit
+  au! CompleteDone * call echodoc#enable() | au! EchodocInit
+  augroup END
 '''
 
 [[plugins]]

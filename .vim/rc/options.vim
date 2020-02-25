@@ -161,7 +161,7 @@ setg numberwidth=2      " "local (window)" numberwidth (4)
 setg cursorline         " "local (window)" cursorline (off)
 setg signcolumn=number  " "local (window)" signcolumn ("auto")
 setl wrap< lbr< bri< briopt< nu< rnu< nuw< cul<
-if v:version >= 810
+if v:version > 800
   setl scl<
 endif
 
