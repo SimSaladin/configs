@@ -153,7 +153,7 @@ repo = 'bling/vim-bufferline'
 
 [[plugins]]
 repo     = 'Shougo/deoplete.nvim'
-on_if    = 'has("nvim") || !empty(init#py3module("pynvim"))'
+if       = 'has("nvim") || !empty(init#py3module("pynvim"))'
 hook_add = '''
   augroup DeinDeopleteInit
   au! InsertEnter * call vimrc#deoplete_init() | au! DeinDeopleteInit
