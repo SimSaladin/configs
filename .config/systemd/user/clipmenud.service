@@ -2,7 +2,7 @@
 [Unit]
 Description=clipmenu daemon
 Documentation=file:///usr/bin/clipmenud
-PartOf=graphical.target
+PartOf=graphical-session.target
 
 [Service]
 StandardError=journal

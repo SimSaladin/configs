@@ -1,6 +1,5 @@
 # ~/.config/systemd/user/graphical.target
 [Unit]
 Description=Graphical Desktop
-AllowIsolate=true
-Requires=xorg-server.target
-After=xorg-server.target
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target

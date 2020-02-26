@@ -1,7 +1,6 @@
 [Unit]
 Description=Load X resources ~/.Xresources
-PartOf=graphical.target
-After=xorg-server.target
+PartOf=graphical-session.target
 
 [Service]
 Type=oneshot

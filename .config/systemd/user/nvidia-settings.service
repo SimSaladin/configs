@@ -1,7 +1,6 @@
 [Unit]
-Description=Load nvidia settings on xorg startup
-PartOf=graphical.target
-After=xorg-server.target
+Description=Load Nvidia settings at xorg startup
+PartOf=graphical-session.target
 ConditionFileIsExecutable=/usr/bin/nvidia-settings
 ConditionPathExists=%h/.nvidia-settings-rc
 

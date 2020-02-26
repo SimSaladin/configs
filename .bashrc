@@ -107,7 +107,6 @@ export PATH
 
 # bash: history                                                          {{{1
 HISTCONTROL=erasedups:ignoreboth # ignoreboth = ignorespace:ignoredups
-HISTFILE=${XDG_CACHE_HOME:-~/.cache}/bash_history # ~/.bash_history
 HISTFILESIZE=25000
 HISTIGNORE='&:[ ] *:exit'
 HISTSIZE=100

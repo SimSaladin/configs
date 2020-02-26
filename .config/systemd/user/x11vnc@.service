@@ -2,9 +2,9 @@
 [Unit]
 Description=x11vnc per-connection daemon
 Documentation=man:x11vnc(1) man:vncviewer(1)
-Requisite=xorg-server.target
-PartOf=xorg-server.target
-After=xorg-server.target
+PartOf=graphical-session.target
+Requisite=xorg@%i.service
+After=xorg@%i.service
 
 [Service]
 ExecStart=/usr/bin/x11vnc -display "$DISPLAY" -auth "$XAUTHORITY" \
@@ -21,9 +21,3 @@ IgnoreSIGPIPE=no
 Environment=X11VNC_AVAHI_NAME=%P@%H:%I
 StandardInput=socket
 StandardError=journal
-#Slice=xorg.slice
-
-# -rfbauth path/to/vnc-pass
-# -unixsock %t/%P/%i
-# -nolookup
-

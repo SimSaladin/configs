@@ -14,6 +14,6 @@ CacheDirectory=tmux/plugins
 ExecStart=/usr/bin/tmux -L %i start-server \; run-shell "systemd-notify --ready --pid=#{pid}"
 
 [Install]
-Alias=tmux-server.service
 WantedBy=basic.target
+Alias=tmux-server.service
 DefaultInstance=default

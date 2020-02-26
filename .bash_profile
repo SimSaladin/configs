@@ -3,11 +3,14 @@
 # shellcheck disable=SC1090
 [ ! -r ~/.bashrc ] || . ~/.bashrc
 
-if [ -z "${DISPLAY-}" ] && [ "${XDG_VTNR-}" = 1 ] && ! systemctl -q --user is-active graphical.target; then
-	systemctl --user import-environment PATH XDG_VTNR CM_LAUNCHER NIX_PATH NIX_SSL_CERT_FILE NIX_REMOTE
-	systemctl --user start xorg@0.socket
-	systemctl --user start xorg@0.service
-	systemctl --user start graphical.target
+if [ -z "${DISPLAY-}" ] && [ "${XDG_VTNR-}" = 1 ] && ! systemctl -q --user is-active graphical-session.target; then
+	systemctl --user import-environment CM_LAUNCHER
+	systemctl --user import-environment NIX_PATH NIX_SSL_CERT_FILE NIX_REMOTE
+
+	systemctl --user import-environment PATH XDG_VTNR
+	systemctl --user set-environment DISPLAY=:0
+	systemctl --user start graphical.target xorg@0.service
+
 elif [ -t 1 ] && [ "${SHLVL-}" = 1 ] && [ -z "${TMUX-}" ]; then
 	case $- in
 		*i*)

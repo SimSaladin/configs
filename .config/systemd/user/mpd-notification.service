@@ -2,20 +2,18 @@
 [Unit]
 Description=MPD Notification daemon
 Documentation=file:/usr/share/doc/mpd-notification/README.html
+PartOf=mpd.service
 Requires=dbus.socket
 Requisite=mpd.service
 After=dbus.socket mpd.service
 
 [Service]
-# systemd.service
 Type=notify
-Restart=always
+Restart=on-abnormal
 RestartSec=60s
 Environment=MPD_HOST=localhost MPD_PORT=6600
 ExecStart=/usr/bin/mpd-notification -H "$MPD_HOST" -p "$MPD_PORT" -m "${XDG_MUSIC_DIR}" -t 15
-# systemd.resource-control
 Slice=mpd.slice
-# systemd.exec
 NoNewPrivileges=yes
 Nice=15
 ProtectSystem=strict

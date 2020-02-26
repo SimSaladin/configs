@@ -2,7 +2,7 @@
 [Unit]
 Description=urxvtd - terminal emulator daemon service
 Documentation=man:urxvtd(1) man:urxvt(1)
-PartOf=graphical.target
+PartOf=graphical-session.target
 
 [Service]
 Slice=urxvtd.slice
@@ -11,7 +11,6 @@ RestartSec=15s
 ExecStart=/usr/bin/urxvtd
 StandardError=journal
 RuntimeDirectory=urxvt
-#Environment=RXVT_SOCKET=${RXVT_SOCKET:-%t/urxvt/native}
 
 [Install]
 WantedBy=graphical.target

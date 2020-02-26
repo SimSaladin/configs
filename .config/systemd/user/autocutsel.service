@@ -1,7 +1,7 @@
 [Unit]
 Description=Synchronize cutbuffer from CLIPBOARD and PRIMARY
 Documentation=http://www.nongnu.org/autocutsel/
-PartOf=graphical.target
+PartOf=graphical-session.target
 
 [Service]
 Restart=on-failure

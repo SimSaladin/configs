@@ -1,7 +1,7 @@
 # file: ~/.config/systemd/user/xmonad.service
 [Unit]
 Description=XMonad tiling window manager (xinit)
-PartOf=graphical.target
+PartOf=graphical-session.target
 
 [Service]
 ExecStartPre=-/bin/sh -c 'exec "%E/xmonad/build" "${XDG_DATA_HOME:-%h/.local/share}/%p/xmonad-$(uname -m)-linux"'

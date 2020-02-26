@@ -3,16 +3,20 @@
 # NOTE: Needs a modified <url:file:/etc/X11/Xwrapper.config> with contents:
 #	allowed_users=anybody
 #	needs_root_rights=yes
+
 [Unit]
 Description=Xorg server at display %i
-Requires=xorg@%i.socket xorg-server.target
+Documentation=man:Xserver(1)
+Requires=xorg@%i.socket
 After=xorg@%i.socket
-Before=xorg-server.target
+PartOf=graphical-session.target
+Before=graphical-session.target
 
 [Service]
-ExecStartPre=-/usr/bin/systemctl --user set-environment DISPLAY=:%i XAUTHORITY=%h/.Xauthority
-ExecStart=/usr/bin/Xorg :%i -noreset -keeptty -novtswitch -ardelay 150 -arinterval 50 -nolisten tcp -nolisten local -verbose 2 vt${XDG_VTNR}
-ExecStopPost=-/usr/bin/systemctl --user unset-environment DISPLAY XAUTHORITY
+ExecStart=/usr/bin/Xorg :%i -audit 4 -auth ${XAUTHORITY} -nolisten tcp -nolisten local -noreset -nopn -retro -keeptty -novtswitch -ardelay 150 -arinterval 50 -verbose 2 vt${XDG_VTNR}
+ExecStartPre=-/usr/bin/systemctl --user set-environment DISPLAY
+ExecStopPost=-/usr/bin/systemctl --user unset-environment DISPLAY
+Environment=DISPLAY=:%i
 Restart=no
 StandardError=journal
 

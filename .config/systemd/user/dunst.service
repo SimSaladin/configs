@@ -1,20 +1,18 @@
 # ~/.config/systemd/user/dunst.service
+
 [Unit]
 Description=Dunst notification daemon
 Documentation=man:dunst(1)
+PartOf=graphical-session.target
 Requires=dbus.socket
-After=dbus.socket xorg-server.target
+After=dbus.socket
 
 [Service]
-# systemd.service
 Type=dbus
 BusName=org.freedesktop.Notifications
 ExecStart=/usr/bin/dunst
 IgnoreSIGPIPE=no
-TimeoutSec=5
-# systemd.resource-control
-#Slice=xorg.slice
-# system.exec
+TimeoutSec=30
 NoNewPrivileges=yes
 #LimitFSIZE=16M
 #LimitMEMLOCK=64M
