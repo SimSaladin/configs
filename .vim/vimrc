@@ -13,17 +13,22 @@ if !(exists('g:less.loaded') && g:less.loaded ==# 1)
   runtime macros/less.vim
 endif
 
-if has('vim_starting')
-  colorscheme solarized
-
-  augroup myvimrc
-    au ColorScheme * nested call init#on_colors()
-    au VimEnter * runtime ftplugin/man.vim
-    au VimEnter * nested call init#on_filetype() | syntax enable
-  augroup END
-
-  if !empty(argv()) || get(get(g:,'vimpager',{}),'enabled')
-    call init#on_filetype()
-    syntax enable
-  endif
+if !has('vim_starting')
+  finish
 endif
+
+function s:vim_enter()
+  colorscheme solarized
+  runtime ftplugin/man.vim
+  call init#on_filetype()
+  syntax enable
+endfunction
+
+augroup myvimrc
+  au ColorScheme * nested call init#on_colors()
+  if !empty(argv()) || get(get(g:,'vimpager',{}),'enabled')
+    call s:vim_enter()
+  else
+    au VimEnter * nested call s:vim_enter()
+  endif
+augroup END
