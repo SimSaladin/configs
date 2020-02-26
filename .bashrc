@@ -105,21 +105,10 @@ clean_path(){
 PATH=$(clean_path ~/bin ~/.local/bin "${PATH:-/usr/bin}" ~/bin/lennartcl-gitl)
 export PATH
 
-# Set and export XDG_* variables {{{1
-XDG_DATA_DIRS=$(clean_path ~/.nix-profile/share "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}")
-
-: "${XDG_CONFIG_HOME:=$HOME/.config}"
-: "${XDG_CACHE_HOME:=$HOME/.cache}"
-: "${XDG_DATA_HOME:=$HOME/.local/share}"
-: "${XDG_RUNTIME_DIR:=/run/user/$(id -ru)}"
-: "${XDG_MUSIC_DIR:=$HOME/music}"
-
-export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_RUNTIME_DIR XDG_DATA_DIRS XDG_MUSIC_DIR
-
 # bash: history                                                          {{{1
 HISTCONTROL=erasedups:ignoreboth # ignoreboth = ignorespace:ignoredups
-HISTFILE=${XDG_CACHE_HOME}/bash_history # ~/.bash_history
-HISTFILESIZE=-1
+HISTFILE=${XDG_CACHE_HOME:-~/.cache}/bash_history # ~/.bash_history
+HISTFILESIZE=25000
 HISTIGNORE='&:[ ] *:exit'
 HISTSIZE=100
 HISTTIMEFORMAT=%s
