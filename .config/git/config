@@ -28,7 +28,7 @@
 
 [user]
   name       = Samuli Thomasson
-  email      = samuli.thomasson@relexsolutions.com
+  email      = samuli.thomasson@paivola.fi
   signingkey = F3D3AB3309F04D1CA4D851D068F82A4F3ECA091D
 
 [advice]
@@ -70,7 +70,7 @@
   decorate = full
 
 [merge]
-  ff            = false
+  ff            = only ; XXX: if false, "git-annex sync" does a lot of merges
   log           = 128  ; Preformatted merge commit messages include descriptions of the merged commits (up to N).
   branchdesc    = true  ; include branch descriptions in the message
   renameLimit   = 18654

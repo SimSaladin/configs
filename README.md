@@ -13,17 +13,14 @@ alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 config submodule update --init --recursive
 
+config checkout -b node-$HOSTNAME
+config worktree add --track .dotfiles-work origin/master
+
 config config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 config config status.showUntrackedFiles no
 config crypt init
 config crypt unlock
-```
-
-## git worktrees and git-crypt
-
-```sh
-git config --worktree --unset filter.git-crypt.clean
-git config --worktree --unset filter.git-crypt.smudge
+config config filter.git-crypt.required false
 ```
 
 ## VIM (*`~/.vimrc`*)
@@ -47,9 +44,34 @@ xkbcomp -I ~/.config/xkb ~/.config/xkb/keymap.xkb "$DISPLAY"
 
 `rclone config`
 
-# ~/.password-store
+# `~/.password-store` (GNU pass)
 
 ```sh
 git clone git@gitlab.com:funaali/password-store.git ~/.password-store
 cat ~/.password-store/README.md
+```
+
+# Adding changes
+
+```sh
+cd .dotfiles-work
+git checkout master
+git up
+git cherry-pick $(git rev-list --reverse --ancestry-path --right-only --no-merges HEAD...node-$HOSTNAME)
+config merge master
+config push --all
+```
+
+# Media repositories
+
+```sh
+git clone sim@applicative:Music.git Music
+git clone git@applicative:Pictures.git Pictures
+git clone sim@applicative:Videos.git Videos
+
+for repo in Music Pictures Videos; do
+  git -C $repo annex init $HOSTNAME
+  git -C $repo annex sync
+done
+
 ```
