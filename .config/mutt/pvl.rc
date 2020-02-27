@@ -1,0 +1,28 @@
+# file: ~/.mutt/pvl.rc
+# vim: ft=muttrc
+
+set my_pvl_username = `pass web/paivola.fi/username`
+set my_pvl_password = `pass web/paivola.fi/password`
+set my_pvl_address  = `pass web/paivola.fi/address `
+
+# mailboxes
+set mbox_type = mbox
+set imap_user = $my_pvl_username
+set imap_pass = $my_pvl_password
+set folder    = imaps://$my_pvl_address@mail.paivola.fi/
+set spoolfile = +INBOX
+set postponed = +Drafts
+set record    = +Sent
+set trash     = +Trash
+
+# TODO use virtual mailboxes and offlineimap+notmuch?
+mailboxes +INBOX
+
+# SMTP
+set realname            = 'Samuli Thomasson'
+set from                = 'samuli.thomasson@paivola.fi'
+set smtp_url            = smtp://$my_pvl_username:$my_pvl_password@smtp.paivola.fi:587
+#set smtp_pass           = $my_pvl_password
+set smtp_authenticators = login
+set ssl_force_tls       = yes
+set ssl_starttls        = yes
