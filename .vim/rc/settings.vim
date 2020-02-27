@@ -78,12 +78,6 @@ let g:autoformat_autoindent             = 0
 let g:autoformat_retab                  = 0
 let g:autoformat_remove_trailing_spaces = 0
 
-" vimwiki/taskwiki                                                   {{{1
-
-let g:taskwiki_markup_syntax  = 'markdown'
-let g:taskwiki_sort_orders    = {'E':'end-','M':'modified-'}
-let g:taskwiki_maplocalleader = g:maplocalleader
-
 " pandoc                                                             {{{1
 " pandoc#filetypes
 let g:pandoc#filetypes#handled                 = ['pandoc', 'markdown']

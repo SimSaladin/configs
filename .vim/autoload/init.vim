@@ -64,7 +64,12 @@ function! init#pip3installupgrade(module) abort                      "{{{1
   " user if pip3 is available. If the module is installed for local user,
   " attempt to upgrade it.
   " package: python-pip
-  if has('python3') && empty(init#py3module(a:module))
-    exe 'py3' 'from pip._internal.main import main as pipmain; pipmain(["install","--user","--upgrade","'.a:module.'"])'
+  if has('python3')
+    py3 from pip._internal.main import main as pipmain
+    if filereadable('requirements.txt')
+      exe 'py3' 'pipmain(["install","--user","--upgrade","'.a:module.'","-r","requirements.txt"])'
+    else
+      exe 'py3' 'pipmain(["install","--user","--upgrade","'.a:module.'"])'
+    endif
   endif
 endfunction

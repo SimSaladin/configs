@@ -19,13 +19,15 @@ repo = 'Shougo/dein.vim'
 [[plugins]] # (lazy)
 repo             = 'roxma/nvim-yarp'
 name             = 'yarp'
-on_if            = ''' has('nvim') || (v:version > 800 && has('python3')) '''
-hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
+if               = ''' has("python3") && (has("nvim") || v:version >= 800) '''
+merged           = 1
+hook_post_update = ''' call init#pip3installupgrade("pynvim") '''
 
 [[plugins]] # (lazy)
 repo             = 'roxma/vim-hug-neovim-rpc'
-on_if            = '!has("nvim") && has("pythonx")'
-hook_post_update = ''' if (!has('nvim')) | call init#pip3installupgrade('pynvim') | endif '''
+if               = ''' has("pythonx") && (!has("nvim")) && v:version >= 800 '''
+merged           = 1
+hook_post_update = ''' call init#pip3installupgrade("pynvim") '''
 
 [[plugins]] # (lazy)
 repo = 'inkarkat/vim-ingo-library'
@@ -153,21 +155,31 @@ repo = 'bling/vim-bufferline'
 
 [[plugins]]
 repo     = 'Shougo/deoplete.nvim'
-if       = 'has("nvim") || !empty(init#py3module("pynvim"))'
+if       = ''' has("nvim") || (has("python3") && v:version >= 800) '''
+merged   = 1
 hook_add = '''
   augroup DeinDeopleteInit
-  au! InsertEnter * call vimrc#deoplete_init() | au! DeinDeopleteInit
+    au! InsertEnter * call vimrc#deoplete_init() | au! DeinDeopleteInit
   augroup END
 '''
+hook_post_update = '''
+  call init#pip3installupgrade('pynvim')
+  call init#pip3installupgrade('msgpack >= 1.0.0')
+'''
+
 [[plugins]] # (lazy)
-repo   = 'tbodt/deoplete-tabnine'
-build  = './install.sh'
+repo             = 'tbodt/deoplete-tabnine'
+if               = ''' has('python3') '''
+merged           = 1
+hook_post_update = ''' call system('./install.sh') '''
 
 [[plugins]]
 repo     = 'Shougo/echodoc.vim'
+if       = ''' exists('v:completed_item') '''
+merged   = 1
 hook_add = '''
   augroup EchodocInit
-  au! CompleteDone * call echodoc#enable() | au! EchodocInit
+    au! CompleteDone * call echodoc#enable() | au! EchodocInit
   augroup END
 '''
 
@@ -188,10 +200,9 @@ repo = 'sheerun/vim-polyglot'
 repo     = 'inkarkat/vim-SyntaxRange'
 depends  = 'ingo-library'
 hook_add = '''
-augroup SyntaxRange
-  autocmd!
-  autocmd Syntax * unlet! b:SyntaxRange_IncludedFiletypes
-augroup END
+  augroup SyntaxRange
+    au! Syntax * unlet! b:SyntaxRange_IncludedFiletypes
+  augroup END
 '''
 
 # Filetypes                                                               {{{1
@@ -249,21 +260,23 @@ frozen  = 1
 
 [[plugins]] # XXX: plugin/
 repo     = 'vimwiki/vimwiki'
-hook_add = '''call init#rc('options_vimwiki')'''
+hook_add = ''' call init#rc('options_vimwiki') '''
 
 [[plugins]] # (lazy)
 repo = 'vimwiki/utils'
 name = 'vimwiki-utils'
 
 [[plugins]] # (lazy)
-repo   = 'tbabej/taskwiki'
-if     = ''' (!empty(init#py3module('tasklib'))) '''
+repo             = 'tbabej/taskwiki'
+if               = ''' has("python3") '''
+merged           = 1
+hook_add         = ''' call init#rc('options_taskwiki') '''
 hook_post_update = ''' call init#pip3installupgrade('tasklib') '''
-merged = 0
 
 [[plugins]]
-repo = 'xarthurx/taskwarrior.vim'
-if   = '!empty(init#py3module("tasklib"))'
+repo   = 'xarthurx/taskwarrior.vim'
+if     = ''' system("task version") =~ "Taskwarrior" '''
+merged = 1
 
 # vim-pandoc                                                              {{{1
 [[plugins]]
