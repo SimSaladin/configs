@@ -70,7 +70,7 @@
   decorate = full
 
 [merge]
-  ff            = only ; XXX: if false, "git-annex sync" does a lot of merges
+  ff            = yes ; XXX: if false, "git-annex sync" does a lot of merges
   log           = 128  ; Preformatted merge commit messages include descriptions of the merged commits (up to N).
   branchdesc    = true  ; include branch descriptions in the message
   renameLimit   = 18654
