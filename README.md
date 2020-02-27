@@ -1,8 +1,10 @@
-What is all this?
-=================
+dotfiles
+========
 
 A public repo I use to track my configuration files (aka. dotfiles) among many
 systems.
+
+# Setup
 
 ```sh
 git clone --bare git@gitlab.com:funaali/dotfiles.git ~/.dotfiles
@@ -44,3 +46,10 @@ xkbcomp -I ~/.config/xkb ~/.config/xkb/keymap.xkb "$DISPLAY"
 # Rclone (Onedrive, Google Drive etc.)
 
 `rclone config`
+
+# ~/.password-store
+
+```sh
+git clone git@gitlab.com:funaali/password-store.git ~/.password-store
+cat ~/.password-store/README.md
+```
