@@ -1,8 +1,8 @@
 [Unit]
-Description=Local archlinux repo update (/opt/archlinux/packages)
-ConditionPathExists=/opt/archlinux/packages
+Description=Local archlinux repo update
+ConditionPathExists=/srv/archlinux
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/repose -f -J applicative
-WorkingDirectory=/opt/archlinux/packages
+ExecStart=/usr/bin/make db-update
+WorkingDirectory=/srv/archlinux
