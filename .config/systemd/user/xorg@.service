@@ -9,14 +9,13 @@ Description=Xorg server at display %i
 Documentation=man:Xserver(1)
 Requires=xorg@%i.socket
 After=xorg@%i.socket
-PartOf=graphical-session.target
+BindsTo=graphical-session.target
 Before=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/Xorg :%i -audit 4 -auth ${XAUTHORITY} -nolisten tcp -nolisten local -noreset -nopn -retro -keeptty -novtswitch -ardelay 150 -arinterval 50 -verbose 2 vt${XDG_VTNR}
-ExecStartPre=-/usr/bin/systemctl --user set-environment DISPLAY
-ExecStopPost=-/usr/bin/systemctl --user unset-environment DISPLAY
-Environment=DISPLAY=:%i
+ExecStartPre=/usr/bin/touch ${XAUTHORITY}
+ExecStartPre=/usr/bin/xauth generate ${DISPLAY} . trusted
+ExecStart=/usr/bin/Xorg ${DISPLAY} -audit 4 -auth ${XAUTHORITY} -nolisten tcp -nolisten local -noreset -nopn -retro -keeptty -novtswitch -ardelay 150 -arinterval 50 -verbose 2 vt${XDG_VTNR}
 Restart=no
 StandardError=journal
 

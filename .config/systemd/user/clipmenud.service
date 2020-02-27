@@ -6,8 +6,8 @@ PartOf=graphical-session.target
 
 [Service]
 StandardError=journal
-Restart=always
-RestartSec=15s
+Restart=on-failure
+RestartSec=30s
 ExecStart=/usr/bin/clipmenud
 
 # NOTE: autocutsel manages primary selection
