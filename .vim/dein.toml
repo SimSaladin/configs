@@ -248,7 +248,8 @@ frozen  = 1
 # vimwiki, taskwiki, taskwarrior                                          {{{1
 
 [[plugins]] # XXX: plugin/
-repo = 'vimwiki/vimwiki'
+repo     = 'vimwiki/vimwiki'
+hook_add = '''call init#rc('options_vimwiki')'''
 
 [[plugins]] # (lazy)
 repo = 'vimwiki/utils'
@@ -256,13 +257,13 @@ name = 'vimwiki-utils'
 
 [[plugins]] # (lazy)
 repo   = 'tbabej/taskwiki'
-on_if  = ''' (!empty(init#py3module('tasklib'))) '''
+if     = ''' (!empty(init#py3module('tasklib'))) '''
 hook_post_update = ''' call init#pip3installupgrade('tasklib') '''
 merged = 0
 
 [[plugins]]
 repo = 'xarthurx/taskwarrior.vim'
-# includes airline integration, unite integration, ...
+if   = '!empty(init#py3module("tasklib"))'
 
 # vim-pandoc                                                              {{{1
 [[plugins]]
