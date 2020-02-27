@@ -232,13 +232,32 @@ c.downloads.location.directory = '~/Downloads'
 c.downloads.location.suggestion = 'both'
 
 # c.fonts.                                                               {{{1
-#c.fonts.monospace = '"TerminessTTF Nerd Font", monospace'
-c.fonts.keyhint = '12pt monospace'
-c.fonts.messages.error = '12pt monospace'
-c.fonts.messages.info = '12pt monospace'
-c.fonts.messages.warning = '12pt monospace'
-c.fonts.hints = 'bold 16px "xos4 Terminess Powerline"'
-c.fonts.tabs = 'bold 18px "xos4 Terminess Powerline"'
+
+FT_LOW_DPI = '12px "xos4 Terminess Powerline"'
+FT_HIGH_DPI = 'bold 18px "xos4 Terminess Powerline"'
+
+# TODO different if high DPI
+c.fonts.default_family = 'xos4 Terminess Powerline'
+c.fonts.default_size = '12px'  # 10pt
+
+c.fonts.hints = FT_LOW_DPI
+c.fonts.keyhint = FT_LOW_DPI
+c.fonts.messages.error = FT_LOW_DPI
+c.fonts.messages.info = FT_LOW_DPI
+c.fonts.messages.warning = FT_LOW_DPI
+c.fonts.prompts = "default_size default_family"
+c.fonts.statusbar = "default_size default_family"
+c.fonts.tabs = FT_LOW_DPI
+
+# c.fonts.web.cursive.standard
+# c.fonts.web.fantasy.standard
+# c.fonts.web.fixed.standard
+# c.fonts.web.sans-serif.standard
+# c.fonts.web.serif.standard
+# c.fonts.web.family.standard
+
+c.fonts.web.size.default = 16  # 16 (px)
+c.fonts.web.size.default_fixed = 12  # 13 (px)
 
 # c.colors.                                                              {{{1
 
