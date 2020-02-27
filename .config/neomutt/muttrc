@@ -96,14 +96,17 @@ set pgp_good_sign            = "^\\[GNUPG:\\] GOODSIG"
 
 # Contact management                                                {{{1
 
-set alias_file    = "~/.config/mutt/alias_local.rc"
-set alias_format  = "%4n %2f %t %-10a   %r"
+set alias_file    = "~/.config/neomutt/aliases.rc"
+set alias_format  = "%4n %2f %t %-10a %r"
 set reverse_alias = yes
 
 # abook/lbdb integration
+
 source "abook --convert --infile $HOME/.abook/addressbook --outformat mutt|"
+
 set query_command = "lbdbq %s"
 set query_format  = "%4c %t %-25.40n <%a> %> %?e?(%e)?"
+
 macro index,pager A \
   "<pipe-message>abook --add-email-quiet >/dev/null<enter>" \
   "add the sender email address to abook"
@@ -113,9 +116,7 @@ message-hook ~U "set display_filter = \"bash -c '{ tee /dev/stderr | lbdb-fetcha
 
 # khard integration
 #set query_command= "khard email --parsable %s"
-#macro index,pager A \
-#  "<pipe-message>khard add-email<return>" \
-#  "add the sender email address to khard"
+#macro index,pager A "<pipe-message>khard add-email<return>" "add the sender email address to khard"
 
 # Macros                                                            {{{1
 
@@ -134,10 +135,7 @@ source ~/.config/mutt/pvl.rc
 #account-hook  $my_pm_folder    'set imap_user=
 
 #mailboxes $my_pvl_folder/INBOX
-#folder-hook $my_pvl_folder   'source ~/.config/mutt/pvl.rc'
-
-#mailboxes $my_pm_folder/INBOX
-#folder-hook $my_pm_folder    'source ~/.config/mutt/pm.rc'
+folder-hook $my_pvl_folder   'source ~/.config/mutt/pvl.rc'
 
 # Key bindings                                                      {{{1
 
@@ -181,41 +179,3 @@ bind index                      zA  collapse-all # Missing :folddisable/foldenab
 #macro index,pager <f4> "<sync-mailbox><change-folder>$my_pm_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Change to protonmail.com"
 
 # vim:fdm=marker fdl=0:
-#------------------------------------------------------------
-# Vi Key Bindings
-#------------------------------------------------------------
-
-# Moving around
-bind attach,browser,index       g   noop
-bind attach,browser,index       gg  first-entry
-bind attach,browser,index       G   last-entry
-bind pager                      g  noop
-bind pager                      gg  top
-bind pager                      G   bottom
-bind pager                      k   previous-line
-bind pager                      j   next-line
-
-# Scrolling
-bind attach,browser,pager,index \CF next-page
-bind attach,browser,pager,index \CB previous-page
-bind attach,browser,pager,index \Cu half-up
-bind attach,browser,pager,index \Cd half-down
-bind browser,pager              \Ce next-line
-bind browser,pager              \Cy previous-line
-bind index                      \Ce next-line
-bind index                      \Cy previous-line
-
-bind pager,index                d   noop
-bind pager,index                dd  delete-message
-
-# Mail & Reply
-bind index                      \Cm list-reply # Doesn't work currently
-
-# Threads
-bind browser,pager,index        N   search-opposite
-bind pager,index                dT  delete-thread
-bind pager,index                dt  delete-subthread
-bind pager,index                gt  next-thread
-bind pager,index                gT  previous-thread
-bind index                      za  collapse-thread
-bind index                      zA  collapse-all # Missing :folddisable/foldenable
