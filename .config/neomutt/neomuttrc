@@ -69,8 +69,8 @@ auto_view         text/html # auto-convert html mails to text for in-line previe
 alternative_order text/plain text/enriched text/html
 
 # https://neomutt.org/feature/sidebar
-set sidebar_visible = yes
-set sidebar_on_right = yes
+set sidebar_visible       = yes
+set sidebar_on_right      = yes
 set sidebar_folder_indent = yes
 
 # PGP (GPG)                                                         {{{1
@@ -96,7 +96,7 @@ set pgp_good_sign            = "^\\[GNUPG:\\] GOODSIG"
 
 # Contact management                                                {{{1
 
-set alias_file    = "~/.config/neomutt/aliases.rc"
+set alias_file    = "~/neomutt.aliases.TODO"
 set alias_format  = "%4n %2f %t %-10a %r"
 set reverse_alias = yes
 
@@ -104,38 +104,41 @@ set reverse_alias = yes
 
 source "abook --convert --infile $HOME/.abook/addressbook --outformat mutt|"
 
-set query_command = "lbdbq %s"
+#set query_command = "lbdbq %s"
 set query_format  = "%4c %t %-25.40n <%a> %> %?e?(%e)?"
 
 macro index,pager A \
   "<pipe-message>abook --add-email-quiet >/dev/null<enter>" \
   "add the sender email address to abook"
 
-message-hook .  "unset display_filter"
-message-hook ~U "set display_filter = \"bash -c '{ tee /dev/stderr | lbdb-fetchaddr -a; } 2>&1'\""
+# message-hook .  "unset display_filter"
+#message-hook ~U "set display_filter = \"bash -c '{ tee /dev/stderr | lbdb-fetchaddr -a; } 2>&1'\""
+message-hook . "set display_filter = \"bash -c '{ tee /dev/stderr | lbdb-fetchaddr -a; } 2>&1 '\""
 
 # khard integration
-#set query_command= "khard email --parsable %s"
-#macro index,pager A "<pipe-message>khard add-email<return>" "add the sender email address to khard"
+set query_command = "khard email --parsable %s 2>/dev/null"
+bind editor <Tab> complete-query
+bind editor ^T complete
+macro index,pager A \
+  "<pipe-message>khard add-email<return>" \
+  "add the sender email address to khard"
 
 # Macros                                                            {{{1
 
-macro index        M "T.*\n;WN" "[M]ark all messages as read"
-macro compose      \e5 "F pandoc -s -f markdown -t html \nytext/html; charset=us-ascii\n" "Convert from markdown to text/html"
+macro index M "T.*\n;WN" "[M]ark all messages as read"
+macro compose \e5 "F pandoc -s -f markdown -t html \nytext/html; charset=us-ascii\n" "Convert from markdown to text/html"
 
 # Accounts                                                          {{{1
 
-source ~/.config/mutt/pvl.rc
-#source ~/.config/mutt/pm.rc
-
-# account hooks: set connection settings - used also when checking new mail etc.
-
-#account-hook  .                'unset imap_user imap_pass'
-#account-hook  $my_pvl_folder   'set   imap_user="$my_pvl_username" imap_pass="$my_pvl_password"'
-#account-hook  $my_pm_folder    'set imap_user=
+# Default account
+source ~/.config/neomutt/accounts/pvl.rc
 
 #mailboxes $my_pvl_folder/INBOX
-folder-hook $my_pvl_folder   'source ~/.config/mutt/pvl.rc'
+#folder-hook $my_pvl_folder   'source ~/.config/mutt/pvl.rc'
+
+# Mailboxes and accounts
+#macro index,pager <f2> "<sync-mailbox><change-folder>$my_pvl_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Switch to $my_pvl_folder"
+#macro index,pager <f4> "<sync-mailbox><change-folder>$my_pm_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Change to protonmail.com"
 
 # Key bindings                                                      {{{1
 
@@ -163,7 +166,7 @@ bind pager,index                d   noop
 bind pager,index                dd  delete-message
 
 # Mail & Reply
-bind index                      \Cm list-reply # Doesn't work currently
+# bind index                      \Cm list-reply # Doesn't work currently
 
 # Threads
 bind browser,pager,index        N   search-opposite
@@ -173,9 +176,5 @@ bind pager,index                gt  next-thread
 bind pager,index                gT  previous-thread
 bind index                      za  collapse-thread
 bind index                      zA  collapse-all # Missing :folddisable/foldenable
-
-# Mailboxes and accounts
-#macro index,pager <f2> "<sync-mailbox><change-folder>$my_pvl_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Switch to $my_pvl_folder"
-#macro index,pager <f4> "<sync-mailbox><change-folder>$my_pm_folder<enter><change-folder>?<change-dir><home>^K=<enter><exit>" "Change to protonmail.com"
 
 # vim:fdm=marker fdl=0:
