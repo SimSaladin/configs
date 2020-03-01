@@ -285,7 +285,7 @@ alias ip=ip\ -c=auto
 # --proto-default <protocols> tells the protocol to use when non is specified (since curl 7.45.0)
 # --proto <protocols>         limits which protcols may be used in transit
 # --proto-redir <protocols>   this option only decidedes which procotols are allowed as redirect targets {HTTP,HTTPS,FTP,FTPS by default)
-export CURL_DEFAULT_OPTS="-j --http2 --keepalive-time 0 --proto-default https --proto -all,+https,+ftps --proto-redir -all,+https,+sftp --limit-rate 1G"
+export CURL_DEFAULT_OPTS="-j --http2 --keepalive-time 0 --proto-default https"
 
 alias curl="curl $CURL_DEFAULT_OPTS"
 alias myip6='curl https://tnx.nl/ip    -4fsS -M 1.2 --max-filesize 512 --noproxy --no-npn --no-keepalive -N'
