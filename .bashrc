@@ -333,6 +333,8 @@ awkexpr() { #{{{1
 }
 
 # alias complete {{{1
+
+# shellcheck disable=SC2046
 complete -F _complete_alias -- $(alias -p | sed -e 's/^alias \([^=]*\)=.*/\1/')
 
 # prompt                                                                 {{{1
@@ -344,6 +346,9 @@ _prompt_hostcolor() {
 }
 
 __prompt_command () {
+	# -a: append history from this session to HISTFILE
+	# -c: clear history list in this session
+	# -r: read the history file and append to this session
 	[ -n "$HISTFILE" ] && history -a && history -c && history -r || :
 
 	IFS=' ' \
@@ -412,7 +417,10 @@ __prompt() {
 }
 
 if fnmatch '*i*' "$-"; then
-	. "$(IFS=: find_in git/completion/git-prompt.sh "$XDG_DATA_DIRS")" 2>/dev/null
+	_GIT_PROMPT_SH=$(IFS=: find_in git/completion/git-prompt.sh "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}")
+	if [ -r "$_GIT_PROMPT_SH" ]; then
+		source "$_GIT_PROMPT_SH"
+	fi
 	eval "$(__prompt)"
 fi
 
