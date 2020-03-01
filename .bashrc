@@ -141,7 +141,12 @@ if is_builtin complete; then
 	shopt -q progcomp || complete -cf sudo || :
 	! complete -p pandoc &>/dev/null && command -v pandoc >/dev/null && eval "$(pandoc --bash-completion)" || :
 	! complete -p stack  &>/dev/null && command -v stack  >/dev/null && eval "$(stack --bash-completion-script stack)" || :
-	! complete -p git    &>/dev/null && . "$(IFS=: find_in git/completion/git-completion.bash "$XDG_DATA_DIRS")" || :
+	if ! complete -p git &>/dev/null; then
+		_GIT_COMPLETION_BASH=$(IFS=: find_in git/completion/git-completion.bash "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}")
+		if [ -r "$_GIT_COMPLETION_BASH" ]; then
+			source "$_GIT_COMPLETION_BASH"
+		fi
+	fi
 fi
 
 # set & export GPG_TTY, GPG_AGENT_INFO                                   {{{1
