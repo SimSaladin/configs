@@ -31,9 +31,7 @@ gitconfig = '''
   setl vts=2,8
   setl fdm=indent
   let b:undo_ftplugin .= 'setl vts< fdm<'
-'
-
-#text = ''' '''
+'''
 
 mail = '''
   setl fo-=c fo+=1na
