@@ -236,8 +236,10 @@ repo = 'aiya000/vim-ghcid-quickfix'
 
 # Vim help {{{1
 [[plugins]] # (lazy)
-repo  = 'Kuniwak/vint'
-on_if = 'executable("vint")'
+repo             = 'Kuniwak/vint'
+if               = '''has('python3')'''
+merged           = 1
+hook_post_update = ''' call init#pip3installupgrade("vim-vint") '''
 [[plugins]] # (lazy)
 repo = 'thinca/vim-ft-help_fold'
 name = 'help-fold'
