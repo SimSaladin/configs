@@ -14,7 +14,7 @@ Before=graphical-session.target
 
 [Service]
 ExecStartPre=/usr/bin/bash -c "xauth add ${DISPLAY} . $(</dev/urandom od -An -N16 -tx | tr -d ' ')"
-ExecStart=/usr/bin/Xorg ${DISPLAY} -audit 4 -auth ${XAUTHORITY} -nolisten tcp -nolisten local -noreset -nopn -retro -keeptty -novtswitch -ardelay 150 -arinterval 50 -verbose 2 vt${XDG_VTNR}
+ExecStart=/usr/bin/Xorg ${DISPLAY} -auth ${XAUTHORITY} -nolisten tcp -nolisten local -noreset -nopn -retro -keeptty -novtswitch -ardelay 150 -arinterval 50 vt${XDG_VTNR}
 Restart=no
 StandardError=journal
 
