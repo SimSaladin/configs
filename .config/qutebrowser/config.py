@@ -236,18 +236,20 @@ c.downloads.location.suggestion = 'both'
 FT_LOW_DPI = '12px "xos4 Terminess Powerline"'
 FT_HIGH_DPI = 'bold 18px "xos4 Terminess Powerline"'
 
-# TODO different if high DPI
-c.fonts.default_family = 'xos4 Terminess Powerline'
-c.fonts.default_size = '12px'  # 10pt
+FONT_ACTIVE = FT_HIGH_DPI
 
-c.fonts.hints = FT_LOW_DPI
-c.fonts.keyhint = FT_LOW_DPI
-c.fonts.messages.error = FT_LOW_DPI
-c.fonts.messages.info = FT_LOW_DPI
-c.fonts.messages.warning = FT_LOW_DPI
+# TODO different if high DPI
+c.fonts.default_family = "bold 'xos4 Terminess Powerline'"
+c.fonts.default_size = '18px'  # 10pt
+
+c.fonts.hints = FONT_ACTIVE
+c.fonts.keyhint = FONT_ACTIVE
+c.fonts.messages.error = FONT_ACTIVE
+c.fonts.messages.info = FONT_ACTIVE
+c.fonts.messages.warning = FONT_ACTIVE
 c.fonts.prompts = "default_size default_family"
 c.fonts.statusbar = "default_size default_family"
-c.fonts.tabs = FT_LOW_DPI
+c.fonts.tabs = FONT_ACTIVE
 
 # c.fonts.web.cursive.standard
 # c.fonts.web.fantasy.standard
