@@ -3,6 +3,7 @@
 Description=urxvtd - terminal emulator daemon service
 Documentation=man:urxvtd(1) man:urxvt(1)
 PartOf=graphical-session.target
+After=xrdb.service
 
 [Service]
 Slice=urxvtd.slice
