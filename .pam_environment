@@ -12,4 +12,4 @@
 # - To get a literal "$" (dollar sign) write "\$"
 # - The "#" character marks a comment line, but at the beginning of a line only!
 
-REMOTEHOST	OVERRIDE=@{PAM_RHOST}
+REMOTEHOST	DEFAULT=@{PAM_RHOST}

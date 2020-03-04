@@ -1,8 +1,0 @@
-[Unit]
-Description=Local archlinux repo update
-ConditionPathExists=/srv/archlinux
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/make db-update
-WorkingDirectory=/srv/archlinux
