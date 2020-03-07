@@ -5,6 +5,8 @@
 !.*.conf
 !.*rc
 !*.yaml
+!/bin/
+!/bin/**
 !/.config/
 !/.config/systemd/
 !/.config/systemd/user/
