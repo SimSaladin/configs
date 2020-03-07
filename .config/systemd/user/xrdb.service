@@ -1,12 +1,14 @@
 [Unit]
 Description=Load X resources ~/.Xresources
 PartOf=graphical-session.target
+ConditionPathExists=%h/.Xresources
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 Restart=on-failure
-TimeoutSec=5s
-ExecStart=/usr/bin/xrdb -display "$DISPLAY" -all -override -I "%E/xrdb" "%h/.Xresources"
+TimeoutSec=10s
+ExecStart=/usr/bin/xrdb -all "-I%E/xrdb" "%h/.Xresources"
 
 [Install]
 WantedBy=graphical.target
