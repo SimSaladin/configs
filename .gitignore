@@ -1,0 +1,12 @@
+# ~/.gitignore
+*
+!README*
+!.git*
+!.*.conf
+!.*rc
+!*.yaml
+!/.config/
+!/.config/systemd/
+!/.config/systemd/user/
+!/.config/systemd/user/**
+/.config/systemd/user/*.wants

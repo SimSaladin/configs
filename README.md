@@ -7,6 +7,21 @@ systems.
 # Setup
 
 ```sh
+cd ~
+git init .
+git remote add origin git@gitlab.com:funaali/dotfiles.git
+git fetch
+
+....
+
+git submodule update --init --recursive
+
+git crypt unlock
+```
+
+## Alternative setup: separate bare repository
+
+```sh
 git clone --bare git@gitlab.com:funaali/dotfiles.git ~/.dotfiles
 
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
