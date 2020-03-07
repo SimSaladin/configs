@@ -746,7 +746,8 @@ myCmds = CF.hinted "Commands" 1 $ \helpCmd -> do
     "M-g f"       >+ XP.windowPrompt xpConfigAuto XP.Goto XP.allWindows ? "Go to window (XP)"
 
   group "XPads" $ do
-    "M-!"   >+ togglePad "tmux-0"
+    "M-!"         >+ togglePad "tmux-0"
+    "M-<Tab>"     >+ togglePad "tmux-0"
     "M-#"   >+ togglePad "ncmpcpp"
     "M-c m" >+ togglePad "pulsemixer"
     "M-r s" >+ inputPromptWithCompl xpConfig "scratchpad" (scratchpadCompl xpConfig myScratchpads) ?+ toggleScratchpad myScratchpads ? "Prompt: pad"

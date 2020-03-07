@@ -132,7 +132,7 @@ interp sk xc = interp'
 addAll :: ShowKeys -> Cmd l () -> XConfig l -> IO (XConfig l)
 addAll sk cmds xc = do
   builder@Builder{..} <- interp sk xc cmds
-  return $ xc
+  return $ xc { keys = \_ -> mempty }
     `EZ.additionalKeys` [(k,NA.getAction v) | (k,v) <- toKeys maxBound sk (keysList builder) xc]
     `EZ.additionalMouseBindings` [(b,NA.getAction . command . c) | (b,ix) <- M.toList bButtons, Just c <- [M.lookup ix bCommandsW]]
     `saveState` builder

@@ -4,11 +4,12 @@ Description=XMonad tiling window manager (xinit)
 PartOf=graphical-session.target
 
 [Service]
-ExecStartPre=-/bin/sh -c 'exec "%E/xmonad/build" "${XDG_DATA_HOME:-%h/.local/share}/%p/xmonad-$(uname -m)-linux"'
-ExecStart=/bin/sh -c 'exec "${XDG_DATA_HOME:-%h/.local/share}/%p/xmonad-$(uname -m)-linux"'
+ExecStartPre=-/bin/sh -c 'exec "$XMONAD_CONFIG_DIR/build" "$XMONAD_DATA_DIR/xmonad-$(uname -m)-linux"'
+ExecStart=/bin/sh -c 'exec "$XMONAD_DATA_DIR/xmonad-$(uname -m)-linux"'
 Restart=always
 SyslogIdentifier=%P
 StandardError=journal
+Environment=XMONAD_CONFIG_DIR=%E/%p XMONAD_CACHE_DIR=%C/%p XMONAD_DATA_DIR=%C/%p
 
 [Install]
 WantedBy=graphical.target
