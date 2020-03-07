@@ -16,7 +16,7 @@ c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
 TOR_PROXY = 'socks5://localhost:9050'
 
 # command: pass                                                          {{{1
-c.aliases['pass'] = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-pass ' + '-d dmenu -m -U secret -u "username: (.+)" -P "password: (.+)"'
+c.aliases['pass'] = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-pass ' + '-d dmenu -m -U secret -u "username: (.+)" -P "(.+)"'
 config.bind('zl', 'pass')
 config.bind('zul', 'pass --username-only')
 config.bind('zpl', 'pass --password-only')
