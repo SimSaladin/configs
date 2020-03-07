@@ -19,6 +19,10 @@ git submodule update --init --recursive
 git crypt unlock
 ```
 
+```sh
+git worktree add --track dotfiles.master master
+```
+
 ## Alternative setup: separate bare repository
 
 ```sh
@@ -29,7 +33,6 @@ alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config submodule update --init --recursive
 
 config checkout -b node-$HOSTNAME
-config worktree add --track .dotfiles-work origin/master
 
 config config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 config config status.showUntrackedFiles no
@@ -38,7 +41,7 @@ config crypt unlock
 config config filter.git-crypt.required false
 ```
 
-## VIM (*`~/.vimrc`*)
+## VIM (*`~/.vim`*)
 
 The plugin manager (dein.vim) + plugins will be installed automatically when
 starting vim (if needed). Network connection required.
