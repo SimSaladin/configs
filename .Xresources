@@ -1,7 +1,33 @@
-! ~/.Xresources  vim:et:tw=80:
-! <url:man:xrdb.1>
+! ~/.Xresources                                                  vim:noet:tw=80:
+!
+! Notes: xrdb                                                               {{{1
+!
+! See <url:man:xrdb.1> and `info cpp`
+!
+! Useful pre-processor symbols:
+!       HOST DISPLAY_NUM NUM_SCREENS SCREEN_NUM HEIGHT WIDTH X_RESOLUTION Y_RESOLUTION
+!       (see "xrdb -symbols" for full list)
+!
+! Custom user unit for use with systemd:
+!       <url:file:~/.config/systemd/user/xrdb.service>
+!
+! Choosing properties to manipulate:
+!       xrdb -all       Operate on RESOURCE_MANAGER and SCREEN_RESOURCES properties
+!       xrdb -global    Operate on the RESOURCE_MANAGER property
+!       xrdb -screens   Operate on the SCREEN_RESOURCES property
+!
+! Modes:
+!       xrdb -load      Replace all properties (default)
+!       xrdb -override  Add to contents
+!       xrdb -merge     Merge (and sort) with current contents
+!       xrdb -remove    Remove specified properties
+!
+! Debugging:
+!       xrdb -n         Show, but do not perform changes
+!       xrdb -query     Print current properties
+!       xrdb -symbols   Dump cpp symbols
 
-#define URL_LAUNCHER xdg-open
+! Solarized color definitions                                               {{{1
 
 !!SOLARIZED HEX     16/8 TERMCOL  XTERM/HEX   L*A*B      RGB         HSB
 !!--------- ------- ---- -------  ----------- ---------- ----------- -----------
@@ -39,20 +65,66 @@
 #define S_cyan          #2aa198
 #define S_green         #859900
 
-! Fonts
+! Fonts                                                                     {{{1
+!
 ! <url:man:xlsfonts>
 ! <url:man:fc-lists(1)>
+!
 ! XXX: 12px terminus does not exist in bold
+!
+! URxvt font configuration notes:
+!
+! By default, urxvt synthesizes different styles from the main font.
+! For smaller sizes, all faces are not available, so all is explicit to make changing between font sizes possible.
+!  * Test fonts with
+!    $ printf '\e]710;%s\007' "xft:Terminess Powerline:pixelsize=12"
+!    $ terminal-font-test
+!  * Use `fc-list "Font Name"` to find exact matches for a font.
+!    Remember to `fc-list -vf` and start a new terminal when testing just
+!    installed fonts.
+!  * mixed-width fonts, for example noto by google, are not handled
+!  * font set codes
+!       710 = 50 = normal fontset
+!       711 = bold fontset
+!       712 = italic fontset
+!       713 = bold italic fontset
+!       704 = colour of italic (and bold italic) characters
+!
+!  * The community/terminus-font provided font is pretty bad. Terminess
+!    Powerline works much better via Xft.
+!  * "Terminess Powerline" available in px size: 12, 14, 16, 18, 20, 22, 24 28, 32
+!  * "WenQuanYi Micro Hei" makes sense from about 22px upwards.
+!    XXX: in 12px, WQI symbols cut off by one px at bottom
 
 #define XFT_TERMINESS      xft:xos4 Terminess Powerline
 #define XFT_NERD_TERMINESS xft:TerminessTTF Nerd Font Mono
-
 #define XLS_TERMINESS -xos4-terminesspowerline-medium-*
-
 #define XFT_DEF_1 XFT_TERMINESS
 #define XFT_DEF_2 XFT_NERD_TERMINESS
+! urxvt understands codeset
+#define XFT_SUBST1         [codeset=JISX0208]xft:WenQuanYi WenQuanYi Bitmap Song
+#define XFT_SUBST2         [codeset=JISX0208]xft:WenQuanYi Micro Hei
+#define XFT_DEF_1_SIZE(px) XFT_DEF_1:pixelsize=px,XFT_SUBST1
+#define XFT_DEF_2_SIZE(px) XFT_DEF_2:pixelsize=px,XFT_SUBST2
 
-! ----- // Colors - solarized // -------------------------------------------{{{1
+#define U_SET_FONT(ts,font) \033]ts;font\007
+#define U_FONTS(sz,fn2) U_SET_FONT(50, fn2:pixelsize=sz)U_SET_FONT(711, fn2:style=Bold)U_SET_FONT(712, fn2:style=Italic)U_SET_FONT(713, fn2:style=Bold Italic)
+
+Xmessage*font:		XLS_TERMINESS-18-*
+x11-ssh-askpass*font:	XLS_TERMINESS-18-*
+
+#if HEIGHT > 1080
+URxvt.font:		XFT_DEF_1_SIZE(18)
+#elif HEIGHT > 768
+URxvt.font:		XFT_DEF_1_SIZE(14)
+#else
+URxvt.font:		XFT_DEF_1_SIZE(12)
+#endif
+URxvt.boldFont:		XFT_DEF_1:style=Bold
+URxvt.italicFont:	XFT_DEF_1:style=Italic
+URxvt.boldItalicFont:	XFT_DEF_1:style=Bold Italic
+
+! Colors (solarized dark)                                                   {{{1
 
 *background:            S_base03
 *foreground:            S_base1
@@ -95,108 +167,15 @@
 *color7:                S_base2
 *color15:               S_base3
 
-! ----- // X cursor // -----------------------------------------------------{{{1
-
-!Xcursor.theme: Neutral
-!Xcursor.size:  14
-
-! ----- // Xft // ----------------------------------------------------------{{{1
-
-! These are for applications that ignore fontconfig settings (rxvt-unicode).
-!Xft.autohint:  0
-!Xft.lcdfilter: lcddefault
-!Xft.hintstyle: hintslight
-!Xft.hinting:   1
-!Xft.antialias: 1
-! This helps fc if EDID info is not available (fc defaults to Xft.dpi)
-!Xft.dpi:			96
-
-! ----- // URxvt // --------------------------------------------------------{{{1
+! URxvt                                                                     {{{1
 !
 ! <url:man:urxvt.1>
-! <url:man:urxvtperl.3>
+! <url:man:urxvt.7>
 !
-! URxvt font configuration notes:
+! Perl extensions <url:man:urxvtperl.3>
 !
-! By default, urxvt synthesizes different styles from the main font.
-! For smaller sizes, all faces are not available, so all is explicit to make changing between font sizes possible.
-!  * Test fonts with
-!    $ printf '\e]710;%s\007' "xft:Terminess Powerline:pixelsize=12"
-!    $ terminal-font-test
-!  * Use `fc-list "Font Name"` to find exact matches for a font.
-!    Remember to `fc-list -vf` and start a new terminal when testing just
-!    installed fonts.
-!  * mixed-width fonts, for example noto by google, are not handled
-!  * font set codes
-!       710 = 50 = normal fontset
-!       711 = bold fontset
-!       712 = italic fontset
-!       713 = bold italic fontset
-!       704 = colour of italic (and bold italic) characters
-!
-!  * The community/terminus-font provided font is pretty bad. Terminess
-!    Powerline works much better via Xft.
-!  * "Terminess Powerline" available in px size: 12, 14, 16, 18, 20, 22, 24 28, 32
-!  * "WenQuanYi Micro Hei" makes sense from about 22px upwards.
-!    XXX: in 12px, WQI symbols cut off by one px at bottom
-
-!URxvt.geometry: 80x24
-!URxvt.colorBD: colour
-!URxvt.colorIT: colour
-!URxvt.colorUL: colour
-URxvt.underlineColor: #93a1a1
-!URxvt.jumpScroll: bool
-!URxvt.skipScroll: bool
-URxvt.letterSpace: 0
-
-! urxvt understands codeset
-#define XFT_SUBST1         [codeset=JISX0208]xft:WenQuanYi WenQuanYi Bitmap Song
-#define XFT_SUBST2         [codeset=JISX0208]xft:WenQuanYi Micro Hei
-#define XFT_DEF_1_SIZE(px) XFT_DEF_1:pixelsize=px,XFT_SUBST1
-#define XFT_DEF_2_SIZE(px) XFT_DEF_2:pixelsize=px,XFT_SUBST2
-
-#define U_SET_FONT(ts,font) \033]ts;font\007
-
-#define U_FONTS(sz,fn2) U_SET_FONT(50, fn2:pixelsize=sz)U_SET_FONT(711, fn2:style=Bold)U_SET_FONT(712, fn2:style=Italic)U_SET_FONT(713, fn2:style=Bold Italic)
-
-#if HEIGHT > 1080
-URxvt.font: XFT_DEF_1_SIZE(18)
-#elif HEIGHT > 720
-URxvt.font: XFT_DEF_1_SIZE(14)
-#else
-URxvt.font: XFT_DEF_1_SIZE(12)
-#endif
-URxvt.boldFont:          XFT_DEF_1:style=Bold
-URxvt.italicFont:        XFT_DEF_1:style=Italic
-URxvt.boldItalicFont:    XFT_DEF_1:style=Bold Italic
-URxvt.urgentOnBell:      true
-! action on [C-][S-]PrintScreen (default: lpr or so)
-URxvt.print-pipe:        cat >/dev/null
-URxvt.scrollBar:         false
-URxvt.scrollTtyOutput:   false
-URxvt.scrollWithBuffer:  true
-URxvt.scrollTtyKeypress: true
-URxvt.saveLines:         8192
-URxvt.skipBuiltinGlyphs: false
-URxvt.lineSpace:         0
-! Meta (Alt) + keypress sets the 8th bit instead (default Esc prefix is used).
-URxvt.meta8:             true
-! pastableTabs: store tabs as actual tab characters (true)
-URxvt.pastableTabs:      true
-URxvt.cursorBlink:       false
-URxvt.pointerBlank:      true
-!URxvt.pointerShape:
-URxvt.cutchars:          `&()*,;<=>?@[]^{|}\040\042\047\057\072\134│
-URxvt.tripleclickwords:  true
-URxvt.modifier:          alt
-
-! ISO 14755 5.1 press & hold Control + Shift, enter hex digits (separate many with Space), release modifiers
-! iSO 14755 5.2 (Keyboard symbols entry)
-URxvt.iso14755:    true
-URxvt.iso14755_52: false
-
-! mods: ISOLevel3, AppKeypad, Control, NumLock, Shift, Meta, Lock, Mod1, Mod2, Mod3, Mod4, Mod5
-! abbrev I, K, C, N, S, M, A, L, 1, 2, 3, 4, 5
+! Paths searched for extensions:
+!       resource:perl-lib $URXVT_PERL_LIB ~/.urxvt/ext /usr/lib/urxvt/perl
 
 ! OCT DEC ASCII printf other
 ! 010 008 BS        \b    ^H
@@ -207,73 +186,102 @@ URxvt.iso14755_52: false
 ! 040 032 SPACE
 ! 177 127 DEL             ^?
 !
-! xterm-like modifyOtherKeys: \e[27;<mods>;<code>~
-!  1 shift
-!  2 control
-!  4 meta
-!  8 super
-! 16 hyper
-! 32 alt
 
-#define K_BS     \010
-#define K_DEL    \177
+!URxvt.geometry:
+!URxvt.colorBD:
+!URxvt.colorIT:
+!URxvt.colorUL:
+URxvt.underlineColor:	#93a1a1
+!URxvt.jumpScroll:
+!URxvt.skipScroll:
+URxvt.letterSpace:	0
+
+URxvt.urgentOnBell:	true
+! action on [C-][S-]PrintScreen (default: lpr or so)
+URxvt.print-pipe:	cat >/dev/null
+URxvt.scrollBar:	false
+URxvt.scrollTtyOutput:	false
+URxvt.scrollWithBuffer:	true
+URxvt.scrollTtyKeypress:true
+URxvt.saveLines:	8192
+URxvt.skipBuiltinGlyphs:false
+URxvt.lineSpace:	0
+! Meta (Alt) + keypress sets the 8th bit instead (default Esc prefix is used).
+URxvt.meta8:		true
+! pastableTabs: store tabs as actual tab characters (true)
+URxvt.pastableTabs:	true
+URxvt.cursorBlink:	false
+URxvt.pointerBlank:	true
+!URxvt.pointerShape:
+URxvt.cutchars:		`&()*,;<=>?@[]^{|}\040\042\047\057\072\134│
+URxvt.tripleclickwords:	true
+URxvt.modifier:		alt
+
+! ISO 14755 5.1 press & hold Control + Shift, enter hex digits (separate many
+! with Space), release modifiers
+!
+! iSO 14755 5.2 (Keyboard symbols entry)
+URxvt.iso14755:		true
+URxvt.iso14755_52:	false
 
 ! backspacekey ~ stty erase
+URxvt.backspacekey:	\010
+URxvt.deletekey:	\033[3~
 
-URxvt.backspacekey:       \010
-URxvt.keysym.C-BackSpace: \033[27;2;8~
+URxvt.perl-ext-common:	default,url-select,clipboard,searchable-scrollback,keysym-list,bell-command
+!URxvt.perl-lib:
+!URxvt.perl-eval:
 
-URxvt.deletekey:       \033[3~
-URxvt.keysym.C-Delete: \033[27;2;127~
+URxvt.bell-command:	dunstify -a urxvt -i utilities-terminal -c Application,TerminalEmulator "URxvt" "Bell"
 
-#define S_Home   \033[7~
-#define S_End    \033[8~
-URxvt.keysym.Home:    S_Home
-URxvt.keysym.End:     S_End
-URxvt.keysym.KP_Home: S_Home
-URxvt.keysym.KP_End:  S_End
+URxvt.url-select.autocopy:true
+URxvt.url-select.button:1
+URxvt.url-select.launcher:xdg-open
+URxvt.url-select.underline:true
 
-URxvt.keysym.C-Tab:   \033[27;2;9~
-URxvt.keysym.S-C-Tab: \033[27;3;9~
-URxvt.keysym.M-Tab:   \033[27;4;9~
-URxvt.keysym.I-Tab:   \033[27;4;9~
+! Key mappings. See <url:man:urxvt.1#keysym.sym:> for details.
 
-! <M-u>  perl/url-select
-! <M-g>  shortcut for piped grep
-! <M-n>  Nullify stdout&err
-! <M-h>  shortcut for piped head
-URxvt.keysym.M-u: perl:url-select:select_next
-URxvt.keysym.M-g: string: | grep\040
-URxvt.keysym.M-n: string: >/dev/null 2>&1
-URxvt.keysym.M-h: string: | head\040
+URxvt.keysym.Home:	\033[7~
+URxvt.keysym.End:	\033[8~
+URxvt.keysym.KP_Home:	\033[7~
+URxvt.keysym.KP_End:	\033[8~
 
-! <M-C-a>...<M-C-i>: font selections 12px-32px
-URxvt.keysym.M-C-a: command:U_FONTS(12, XFT_DEF_1)
-URxvt.keysym.M-C-b: command:U_FONTS(14, XFT_DEF_1)
-URxvt.keysym.M-C-c: command:U_FONTS(16, XFT_DEF_1)
-URxvt.keysym.M-C-d: command:U_FONTS(18, XFT_DEF_1)
-URxvt.keysym.M-C-e: command:U_FONTS(20, XFT_DEF_2)
-URxvt.keysym.M-C-f: command:U_FONTS(22, XFT_DEF_2)
-URxvt.keysym.M-C-g: command:U_FONTS(24, XFT_DEF_2)
-URxvt.keysym.M-C-h: command:U_FONTS(28, XFT_DEF_2)
-URxvt.keysym.M-C-i: command:U_FONTS(32, XFT_DEF_2)
+URxvt.keysym.M-u:	perl:url-select:select_next
+URxvt.keysym.M-g:	string: | grep\040
+URxvt.keysym.M-n:	string: >/dev/null 2>&1
+URxvt.keysym.M-h:	string: | head\040
 
-URxvt.perl-ext-common: default,url-select,clipboard,searchable-scrollback,keysym-list,bell-command
-!URxvt.perl-eval: string
-!URxvt.perl-lib: path
+URxvt.keysym.M-C-a:	command:U_FONTS(12, XFT_DEF_1)
+URxvt.keysym.M-C-b:	command:U_FONTS(14, XFT_DEF_1)
+URxvt.keysym.M-C-c:	command:U_FONTS(16, XFT_DEF_1)
+URxvt.keysym.M-C-d:	command:U_FONTS(18, XFT_DEF_1)
+URxvt.keysym.M-C-e:	command:U_FONTS(20, XFT_DEF_2)
+URxvt.keysym.M-C-f:	command:U_FONTS(22, XFT_DEF_2)
+URxvt.keysym.M-C-g:	command:U_FONTS(24, XFT_DEF_2)
+URxvt.keysym.M-C-h:	command:U_FONTS(28, XFT_DEF_2)
+URxvt.keysym.M-C-i:	command:U_FONTS(32, XFT_DEF_2)
 
-! selection-popup, matcher extensions use this
-URxvt.url-launcher: URL_LAUNCHER
+! xterm-style modifyOtherKeys: \e[27;<modifiers>;<keycode>~
+!
+! For use in VIM, see <url:vimhelp:modifyOtherKeys>
+!
+! ";2" is Shift
+! ";3" is Alt
+! ";5" is Ctrl
+! ";9" is Meta
+!
+!	Shift	1
+!	Control	2
+!	Meta	4
+!	Super	8
+!	Hyper	16
+!	Alt	32
+!
+! XXX: incomplete; could be generated.
 
-! url-select (extension)
-URxvt.url-select.autocopy:  true
-URxvt.url-select.button:    1
-URxvt.url-select.launcher:  URL_LAUNCHER
-URxvt.url-select.underline: true
-
-URxvt.bell-command: notify-send URxvt "bell!"
-
-! ----- // other // --------------------------------------------------------{{{1
-
-Xmessage*font:        XLS_TERMINESS-18-*
-x11-ssh-askpass*font: XLS_TERMINESS-18-*
+URxvt.keysym.C-Tab:		\033[27;2;9~
+URxvt.keysym.S-C-Tab:		\033[27;3;9~
+URxvt.keysym.M-Tab:		\033[27;4;9~
+URxvt.keysym.I-Tab:		\033[27;4;9~
+URxvt.keysym.C-BackSpace:	\033[27;2;8~
+URxvt.keysym.C-Delete:		\033[27;2;127~
