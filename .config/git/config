@@ -12,7 +12,7 @@
 #   [section "subsection"]
 #
 # Includes:
-#   [include "pathname"]
+#   [include]
 #   [includeIf "gitdir:~/.git"]
 #   [includeIf "onbranch:foo-branch"]
 
