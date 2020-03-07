@@ -7,7 +7,7 @@ endif
 
 " See <url:vimhelp:ft-man-plugin> {{{1
 let g:no_man_maps             = 1
-let g:ft_man_folding_enable   = 0
+let g:ft_man_folding_enable   = 1
 let g:ft_man_no_sect_fallback = 1
 
 " operator-surround                                                  {{{1

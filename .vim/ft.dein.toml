@@ -14,12 +14,8 @@ python  = 'setl sw=4 et'
 elm     = 'setl sw=4 et'
 java    = 'setl sw=4 et'
 groovy  = 'setl sw=4 et'
-
-vimwiki = '''
-  setl sw=2
-  setl tw=120
-  let b:undo_ftplugin .= 'setl sw< tw<'
-'''
+pandoc  = 'setl sw=4 et'
+vimwiki = 'setl sw=2 tw=120'
 
 config  = '''
   setl fdm=expr
