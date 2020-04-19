@@ -167,30 +167,33 @@ c.url.open_base_url = True
 c.url.searchengines = {
     'DEFAULT': 'https://duckduckgo.com/?q={}',
     'ddg': 'https://duckduckgo.com/?q={}',
-    'g': 'https://www.google.com/?q={}',
-    'g.maps': 'https://www.google.com/maps/search/{}',
+    'google': 'https://www.google.com/?q={}',
+    'googlemaps': 'https://www.google.com/maps/search/{}',
     # wiki
-    'w.en': 'https://en.wikipedia.org/w/index.php?search={}',
-    'w.fi': 'https://fi.wikipedia.org/w/index.php?search={}',
-    'w.archlinux': 'https://wiki.archlinux.org/?search={}',
-    'w.relexsolutions': 'https://wiki.relexsolutions.com/dosearchsite.action?queryString={}',
+    'wiki': 'https://en.wikipedia.org/w/index.php?search={}',
+    'wiki-fi': 'https://fi.wikipedia.org/w/index.php?search={}',
+    'archwiki': 'https://wiki.archlinux.org/?search={}',
     # shops
-    'ebay.com': 'https://www.ebay.com/sch/i.html?_nkw={}',
+    'ebay': 'https://www.ebay.com/sch/i.html?_nkw={}',
     'amazon.de': 'https://www.amazon.de/s?field-keywords={}',
     'mouser.at': 'https://www.mouser.at/Search/Refine?Keyword={}',
     # tech
     'blockchain': 'https://www.blockchain.com/search?search={}',
     'dockerhub': 'https://hub.docker.com/search?q={}&type=image',
-    'ghc': 'https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/search.html?q={}',
+    'ghc-docs': 'https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/search.html?q={}',
     'hackage': 'https://hackage.haskell.org/packages/search?terms={}',
-    'python': 'https://docs.python.org/3/search.html?q={}',
+    'python-docs': 'https://docs.python.org/3/search.html?q={}',
     'stackage': 'https://www.stackage.org/lts/hoogle?q={}',
     # forums
-    'lastfm': 'https://www.last.fm/search?q={}',
-    'nyaasi': 'https://nyaa.si/?f=0&c=1_2&q={}',
-    'rutracker': 'https://rutracker.org/forum/tracker.php?nm={}',
-    'imdb': 'https://www.imdb.com/find?s=all&q={}',
-    'mal': 'https://myanimelist.net/search/all?q={}',
+    'last.fm': 'https://www.last.fm/search?q={}',
+    'nyaa.si': 'https://nyaa.si/?f=0&c=1_2&q={}',
+    'rutracker.org': 'https://rutracker.org/forum/tracker.php?nm={}',
+    'imdb.com': 'https://www.imdb.com/find?s=all&q={}',
+    'myanimelist.net': 'https://myanimelist.net/search/all?q={}',
+    # misc
+    'youtube.com': 'https://www.youtube.com/results?search_query={}',
+    'kotikokki.net': 'https://www.kotikokki.net/reseptit/?freeText={}',
+    'merriam-webster.com': 'https://www.merriam-webster.com/dictionary?s={}',
 }
 
 GOOGLE_TRANSLATE_URL = 'https://translate.google.com'
@@ -217,8 +220,8 @@ c.tabs.new_position.stacking = True
 c.tabs.new_position.related = 'next'  # first / last / next / prev
 c.tabs.new_position.unrelated = 'last'
 c.tabs.title.alignment = 'left'  # left / right / center
-c.tabs.title.format = '{audio:^4}{index:>2}:{current_title}'
-c.tabs.title.format_pinned = '{audio:^4}{index:>2}:{current_title}'
+c.tabs.title.format = '{audio}{index:>2}:{current_title}'
+c.tabs.title.format_pinned = '{audio}{index:>2}:{current_title}'
 c.tabs.favicons.scale = 1.0
 c.tabs.favicons.show = 'always'  # always / never / pinned
 
