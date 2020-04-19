@@ -39,7 +39,7 @@ TMUX_BIN=(/usr/bin/tmux)
 IS_LAST_COMMAND=
 
 DEFAULT_COMMAND=attach-session # tmux default is new-session
-DEFAULT_FMT_LIST_SESSIONS='#{session_id} #S: #{session_windows} windows (created #{t:session_created})#{?session_group, (group #{session_group}),}#{?session_attached, (attached),}'
+DEFAULT_FMT_LIST_SESSIONS=$'#S\t#{session_windows} windows\tcreated #{t:session_created}\t#{?session_group, (group #{session_group}),}#{?session_attached, (attached),}'
 DEFAULT_LIST_SESSIONS_FILTER='#{!=:#{destroy-unattached},1}'
 
 tmux () { "${TMUX_BIN[@]}" "$@"; }
